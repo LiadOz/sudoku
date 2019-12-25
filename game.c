@@ -1,6 +1,3 @@
-#define BLOCK_WIDTH 2
-#define BLOCK_HEIGHT 3
-
 #include <stdlib.h>
 /*
  * temp include for debugging
@@ -13,29 +10,54 @@
  * state - the state of the board with user guesses
  * fixed - determine wheter a cell is fixed (1) or not (0)
  */
+
 typedef struct {
-    int solution[BLOCK_WIDTH * BLOCK_HEIGHT][BLOCK_WIDTH * BLOCK_HEIGHT];
-    int state[BLOCK_WIDTH * BLOCK_HEIGHT][BLOCK_WIDTH * BLOCK_HEIGHT];
-    int fixed[BLOCK_WIDTH * BLOCK_HEIGHT][BLOCK_WIDTH * BLOCK_HEIGHT];
+    int **solution;
+    int **state;
+    int **fixed;
+    int width;
+    int height;
+    int size;
 } Board;
+void sample_board(Board* p);
 
 /*
  * used to populate the board
  */
-void init_board(Board* p, int width, int height){
-    /* dynamically allocate memory to struct */
+void init_board(Board* b, int width, int height){
+    int i;
+    b->solution = malloc(width * height * sizeof(int *));
+    b->state = malloc(width * height * sizeof(int *));
+    b->fixed = malloc(width * height * sizeof(int *));
+    for(i = 0; i < width * height; i++){
+        b->solution[i] = malloc(width * height * sizeof(int));
+        b->state[i] = malloc(width * height * sizeof(int)); 
+        b->fixed[i] = malloc(width * height * sizeof(int));
+    }
+    b->width = width;
+    b->height = height;
+    b->size = width * height;
     /* create random board */
 }
 
 /* used to free allocation when program exits */
-void free_board(Board* p){
-    /* free up resources */
+void free_board(Board* b){
+    int i;
+    for(i = 0; i < b->size; i++){
+        free(b->solution[i]);
+        free(b->state[i]);
+        free(b->fixed[i]);
+    }
+    free(b->solution);
+    free(b->state);
+    free(b->fixed);
 }
 
 /* Returns array of all the numbers in the row
  * assumes row is in the range
  */
 int* get_row_numbers(Board* b, int row){
+    /* not good if user frees then the board is invalid */
     return b->state[row];
 }
 
@@ -69,6 +91,24 @@ int* NOTWORKINGYETget_block_numbers(Board* b, int block_number){
         }
     }
     return arr;
+}
+
+
+/* testing thigns */
+int main(){
+    Board b2;
+    init_board(&b2, 2, 3);
+    sample_board(&b2);
+
+    int* arr = get_column_numbers(&b2, 1);
+    for(int i = 0; i < 6; i++){
+        printf("%d ", arr[i]);
+    }
+    printf("\n%d\n", b2.size);
+
+    free(arr);
+    free_board(&b2);
+    return 0;
 }
 
 /*
@@ -189,16 +229,4 @@ void sample_board(Board* p){
     p->fixed[5][3] = 1;
     p->fixed[5][4] = 0;
     p->fixed[5][5] = 0;
-}
-
-int main(){
-    Board b1;
-    sample_board(&b1);
-    int* arr = get_row_numbers(&b1, 1);
-    for(int i = 0; i < 6; i++){
-        printf("%d ", arr[i]);
-    }
-    free(arr);
-    printf("\n");
-    return 0;
 }
