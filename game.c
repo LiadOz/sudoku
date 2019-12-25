@@ -67,9 +67,9 @@ int* get_row_numbers(Board* b, int row){
  */
 int* get_column_numbers(Board* b, int col){
     /* needs to be allocated and freed */
-    int *arr = malloc(BLOCK_HEIGHT * BLOCK_WIDTH * sizeof(int));
+    int *arr = malloc(b->size * sizeof(int));
     int i;
-    for(i = 0; i < BLOCK_HEIGHT * BLOCK_WIDTH; i++){
+    for(i = 0; i < b->size; i++){
         arr[i] = b->state[i][col];
     }
     return arr;
@@ -83,13 +83,10 @@ int* get_column_numbers(Board* b, int col){
  */
 int* NOTWORKINGYETget_block_numbers(Board* b, int block_number){
     /* needs to be allocated and freed */
-    int *arr = malloc(BLOCK_HEIGHT * BLOCK_WIDTH * sizeof(int));
+    int *arr = malloc(b->size * sizeof(int));
     int i, j, count = 0;
-    for(i = 0; i < BLOCK_HEIGHT; i++){
-        for(j = 0; j < BLOCK_WIDTH; j++){
-            arr[count++] = b->state[i][j];
-        }
-    }
+    :!a
+
     return arr;
 }
 
