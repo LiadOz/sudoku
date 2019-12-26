@@ -177,8 +177,8 @@ void hint(Board* b, int x, int y){
 /*GENERIC LINE LENGTH CALCULATOR*/
 int lineCalc(Board* b) {
 	int nums = b->width * b->height;
-	int pipes = b->width + 1;
-	int spaces = nums + pipes;
+	int pipes = b->height + 1;
+	int spaces = nums + pipes - 1;
 	int lineLength = spaces + pipes + 2*nums;
 
 	return lineLength;
