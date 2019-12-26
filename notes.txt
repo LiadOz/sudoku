@@ -2,3 +2,4 @@
 * in game.c every mode should be used with a constant
 * after set_value the puzzle needs to be checked if it is finished
 * organize the boards & and * signs
+* look at special remarks for memory allocation

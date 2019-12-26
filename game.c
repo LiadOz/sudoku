@@ -125,11 +125,14 @@ int number_in_area(Board* b, int mode, int index, int number){
     if(mode == 0){
         arr = get_row_numbers(b, index);
     }
-    if(mode == 1){
+    else if(mode == 1){
         arr = get_column_numbers(b, index);
     }
-    if(mode == 2){
+    else if(mode == 2){
         arr = get_block_numbers(b, index);
+    }
+    else {
+        return -1;
     }
 
     result = number_in_array(arr, number, b->size);
@@ -238,12 +241,14 @@ void printBoard(Board* b) {
 /* testing things */
 int main(){
     Board b2;
-    init_board(&b2, 2, 3);
-    sample_board(&b2);
+    init_board(&b2, 2, 6);
+    /* sample_board(&b2); */
 	printBoard(&b2);
     set_cell(&b2, 5, 5 ,2);
-    set_cell(&b2, 5, 6 ,2);
+	printBoard(&b2);
     hint(&b2, 5, 6);
+    set_cell(&b2, 5, 6 ,5);
+	printBoard(&b2);
     free_board(&b2);
     return 0;
 }
