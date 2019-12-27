@@ -234,6 +234,117 @@ void printBoard(Board* b) {
 	}
 }
 
+/*VALIDATION*/
+
+int validateRow(int i, int j, Board* b) {
+	int value = b->solution[i][j];
+	int index;
+	for (index = 0; index < b->size; index++) {
+		if (index != j) {
+			if (b->solution[i][index] == value) {
+				return 0;
+			}
+		}
+	}
+	
+	return 1;
+}
+
+int validateColumn(int i, int j, Board* b) {
+	int value = b->solution[i][j];
+	int index;
+	for (index = 0; index < b->size; index++) {
+		if (index != i) {
+			if (b->solution[index][j] == value) {
+				return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
+int validateBlock(int i, int j, Board* b) {
+	int x, y;
+	int value = b->solution[i][j];
+	for (x = i - (i % b->height); x < b->height + i - (i % b->height); x++) {
+		for (y = j - (j % b->width); y < b->width + j - (j % b->width); y++) {
+			if (x == i && y == j) {
+				continue;
+			}
+			if (b->solution[x][y] == value) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+int validate(int i, int j, Board* b) {
+	if (!validateRow(i, j, b)) {
+		return 0;
+	}
+	if (!validateColumn(i, j, b)) {
+		return 0;
+	}
+	if (!validateBlock(i, j, b)) {
+		return 0;
+	}
+
+	return 1;
+}
+
+/*BACKTRACKING SOLVING BOARD*/
+
+int solveByDBT(int i, int j, Board* b) {
+	/*DONE SOLVING*/
+	if (i == b->size) {
+		printf("SUDOKU SOLVED!");
+		return 1;
+	}
+	/*No Solution - return 0*/
+	if (b->solution[i][j] > b->size) {
+		if (i == 0 && j == 0) {
+			printf("there is no solution for this board");
+			return 0;
+		}
+		/*Go Back - return */
+		b->solution[i][j] = 0;
+		if (j == 0) {
+			solveByDBT(i - 1, b->size - 1, b);
+		}
+		else {
+			solveByDBT(i, j - 1, b);
+		}
+		
+	}
+	/*FIXED CELL - move to the next cell*/
+	if (b->fixed[i][j] == 1) {
+		if (j == b->size - 1) {
+			solveByDBT(i + 1, 0, b);
+		}
+		else {
+			solveByDBT(i, j + 1, b);
+		}
+		
+	}
+	b->state[i][j] += 1;
+	/*RECURSION STEP*/
+	if (validte(i, j, b)) { /*VALID -continue to the next cell*/
+		if (j == b->size - 1) {
+			solveByDBT(i + 1, 0, b);
+		}
+		else {
+			solveByDBT(i, j + 1, b);
+		}
+	}
+	/*NOT VALID - Try again on the same cell*/
+	else {
+		solveByDBT(i, j, b);
+	}
+}
+
+
 /* testing things */
 int main(){
     Board b2;
