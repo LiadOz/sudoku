@@ -1,3 +1,5 @@
 *.swp
 *.o
 *.exe
+.vs/
+Project1/
