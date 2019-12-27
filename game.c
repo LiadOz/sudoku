@@ -153,8 +153,6 @@ int valid_set_value(Board* b, int x, int y, int val){
  */
 void set_cell(Board* b, int x, int y, int val){
     int i;
-    x = x - 1;
-    y = y - 1;
     if(b->fixed[x][y] == 1){
         printf("Error: cell is fixed\n");
         return;
@@ -169,8 +167,6 @@ void set_cell(Board* b, int x, int y, int val){
 
 /* gives hint to cell (x, y) when they start at 1 */
 void hint(Board* b, int x, int y){
-    x = x - 1;
-    y = y - 1;
     printf("Hint: set cell to %d\n", b->solution[x][y]);
 }
 
