@@ -344,6 +344,61 @@ int solveByDBT(int i, int j, Board* b) {
 	}
 }
 
+/*Create a legal set of numbers for cell [i][j]*/
+/*not sure about the allocation here,
+* maybe it's better to allocate the array outside the function and send it as a parameter(?)
+* need to free the memory(?)
+*/
+int* legalNumbers(int i, int j, Board* b) {
+	int* legalArr = malloc(b->size * sizeof(int));
+	int count = 0;
+	int index;
+	int valueInCell = b->solution[i][j];
+	for (index = 1; index < b->size + 1; index++) {
+		if (index != valueInCell) {
+			b->solution[i][j] = index;
+			if (validate(i, j, b)) {
+				legalArr[count] = index;
+				count++;
+			}
+		}
+	}
+	b->solution[i][j] = valueInCell;
+	return legalArr;
+}
+
+/*Create a solution for an empty board with randomize backtracking*/
+/*PROBLEM: Randomize also for 1 legal number*/
+int createSolution(int i, int j, Board* b) {
+	int index, randIndex, tempNum;
+	/*Done*/
+	if (i == b->size) {
+		printf("Solution is ready!");
+		return 1;
+	}
+	int* legalNums = legalNumbers(i, j, b);
+	int len = sizeof(legalNums) / sizeof(int);
+	for (index = 0; index < len; index++) {
+		do {
+			randIndex = rand() % len;
+		} while (legalNums[randIndex] != 0);
+		tempNum = legalNums[randIndex];
+		legalNums[randIndex] = 0;
+		b->solution[i][j] = tempNum;
+		if (j == b->size - 1) {
+			if (createSolution(i + 1, 0, b) == 1) {
+				return 1;
+			}
+		}
+		else {
+			if (createSolution(i, j + 1, b) == 1) {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 
 /* testing things */
 int main(){
