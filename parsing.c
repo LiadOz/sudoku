@@ -1,62 +1,63 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "parsing.h"
 
-#define MAX_INPUT_SIZE 1024
-#define SET_CELL_COMMAND "set"
-#define HINT_CELL_COMMAND "hint"
-#define VALIDATE_COMMAND "validate"
-#define RESTART_COMMAND "restart"
-#define EXIT_COMMAND "exit"
-#define INVALID_COMMAND "Error: invalid command\n"
 #define COMMAND_DELIMITER " \t\r\n"
-#define SET_READ_ARGS 3
-#define HINT_READ_ARGS 2
 
-void set(int x, int y, int z){
+/*
+static void set(int x, int y, int z){
     printf("setting cell (%d,%d) to %d (placeholder)\n", x, y, z);
 }
-void hint(int x, int y){
+static void hint(int x, int y){
     printf("hint for cell (%d,%d) is 0 (placeholder)\n", x, y);
 }
-void validate(){
+static void validate(){
     printf("validating ... (placeholder)\n");
 }
-void restart(){
+static void restart(){
     printf("restarting... (placeholder)\n");
 }
-void exit_game(){
+static void exit_game(){
     printf("exiting... (placeholder)\n");
 }
+*/
 
 /* gets array input and args array and fills it with the number of arguemnts needed
- * returns 0 if failed and prints error message
+ * returns the number of assigned arguemnts
  * according to the excuetable anything other than a number seems to be 0
+ * when parsing each number gets reduced by 1
  */
-int get_args(char* input, int* args, int num){
-    int i;
+static int get_args(char* input, int* args){
+    int i = 0;
     int arg;
     char* token;
-    strtok(input, COMMAND_DELIMITER);
-    for(i = 0; i < num; i++){
-        token = strtok(NULL, COMMAND_DELIMITER);
-        if(token == NULL){
-            printf(INVALID_COMMAND);
-            return 0;
-        }
+    token = strtok(input, COMMAND_DELIMITER);
+    token = strtok(NULL, COMMAND_DELIMITER);
+    while(token != NULL){
         arg = atoi(token);
-        args[i] = arg;
+        args[i++] = arg;
+        token = strtok(NULL, COMMAND_DELIMITER);
     }
-    return 1;
+    return i;
 }
 
+/* sets a Command struct from user input */
+void user_input(Command *cmd){
+    char input[MAX_INPUT_SIZE];
+    char input_copy[MAX_INPUT_SIZE];
+    fgets(input, MAX_INPUT_SIZE, stdin);  
+    strcpy(input_copy, input);
+    cmd->name = strtok(input_copy, COMMAND_DELIMITER);
+    cmd->arg_length = get_args(input, cmd->args);
+}
 /* takes care of user input after the game has been initialized */
-int user_input(){
+void user_input_old(){
     /* takes input from the user then according to the command scans for the arguments */
+    /*
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
     char* operation;
-    int i;
     fgets(input, MAX_INPUT_SIZE, stdin);  
     strcpy(input_copy, input);
     operation = strtok(input_copy, COMMAND_DELIMITER);
@@ -84,9 +85,5 @@ int user_input(){
     else{
         printf(INVALID_COMMAND);
     }
-}
-int main(){
-    user_input();
-    user_input();
-    user_input();
+    */
 }
