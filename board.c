@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include "board.h"
 
-/*
- * Board struct:
- * solution - the last solution given by the validate method
- * state - the state of the board with user guesses
- * fixed - determine wheter a cell is fixed (1) or not (0)
- */
 
 void sample_board(Board* p);
 
@@ -16,17 +10,49 @@ void sample_board(Board* p);
  */
 void init_board(Board* b, int width, int height){
     int i;
-    b->solution = malloc(width * height * sizeof(int *));
-    b->state = malloc(width * height * sizeof(int *));
-    b->fixed = malloc(width * height * sizeof(int *));
+    int** p;
+    int* p2;
+    p = malloc(width * height * sizeof(int *));
+    if(p == NULL){
+        exit(0);
+    }
+    b->solution = p;
+    
+    p = malloc(width * height * sizeof(int *));
+    if(p == NULL){
+        exit(0);
+    }
+    b->state = p;
+
+    p = malloc(width * height * sizeof(int *));
+    if(p == NULL){
+        exit(0);
+    }
+    b->fixed = p;
+
     for(i = 0; i < width * height; i++){
-        b->solution[i] = calloc(width * height, sizeof(int));
-        b->state[i] = calloc(width * height, sizeof(int)); 
-        b->fixed[i] = calloc(width * height, sizeof(int));
+        p2 = calloc(width * height, sizeof(int));
+        if(p2 == NULL){
+            exit(0);
+        }
+        b->solution[i] = p2;
+
+        p2 = calloc(width * height, sizeof(int));
+        if(p2 == NULL){
+            exit(0);
+        }
+        b->state[i] = p2;
+
+        p2 = calloc(width * height, sizeof(int));
+        if(p2 == NULL){
+            exit(0);
+        }
+        b->fixed[i] = p2;
     }
     b->width = width;
     b->height = height;
     b->size = width * height;
+    b->correct_cells = 0;
     /* create random board */
 }
 
@@ -60,6 +86,9 @@ int number_in_array(int* arr, int number, int size){
  */
 int* get_row_numbers(Board* b, int row){
     int *arr = malloc(b->size * sizeof(int));
+    if(arr = NULL){
+        exit(0);
+    }
     int i;
     for(i = 0; i < b->size; i++){
         arr[i] = b->state[row][i];
@@ -74,6 +103,9 @@ int* get_row_numbers(Board* b, int row){
  */
 int* get_column_numbers(Board* b, int col){
     int *arr = malloc(b->size * sizeof(int));
+    if(arr = NULL){
+        exit(0);
+    }
     int i;
     for(i = 0; i < b->size; i++){
         arr[i] = b->state[i][col];
@@ -94,6 +126,9 @@ int get_coordinate_block_number(Board* b, int x, int y){
  */
 int* get_block_numbers(Board* b, int block_number){
     int *arr = malloc(b->size * sizeof(int));
+    if(arr = NULL){
+        exit(0);
+    }
     int block_y = block_number / b->height;
     int block_x = block_number - (block_y * b->height);
     int start_x = b->width * block_x;
@@ -143,17 +178,20 @@ int valid_set_value(Board* b, int x, int y, int val){
 
 /* sets a cell to value with x, y coordinates
  * x and y starts at 1
+ * returns 1 when assignment worked
  */
-void set_cell(Board* b, int x, int y, int val){
+int set_cell(Board* b, int x, int y, int val){
     if(b->fixed[x][y] == 1){
         printf("Error: cell is fixed\n");
-        return;
+        return 0;
     }
     if(valid_set_value(b, x, y, val)){
         b->state[x][y] = val;
+        return 1;
     }
     else{
         printf("Error: value is invalid\n");
+        return 0;
     }
 }
 
