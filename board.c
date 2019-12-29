@@ -123,7 +123,7 @@ int* get_column_numbers(Board* b, int col){
 
 /* returns the block index of coordinates */
 int get_coordinate_block_number(Board* b, int x, int y){
-    return y / b->height * b->height + x / b->width;
+    return x / b->height * b->height + y / b->width;
 }
 
 /* Returns array of all the numbers in the block
@@ -179,7 +179,7 @@ int number_in_area(Board* b, int mode, int index, int number){
 
 /* checks if value can be inserted into x y coordinates return 1 if true */
 int valid_set_value(Board* b, int x, int y, int val){
-    if(!number_in_area(b, 0, y, val) && !number_in_area(b, 1, x, val) && !number_in_area(b, 2, get_coordinate_block_number(b, x, y), val)){
+    if(!number_in_area(b, 0, x, val) && !number_in_area(b, 1, y, val) && !number_in_area(b, 2, get_coordinate_block_number(b, x, y), val)){
         return 1;
             }
     return 0;
@@ -208,20 +208,18 @@ int set_cell(Board* b, int x, int y, int val){
 void hint(Board* b, int x, int y){
     printf("Hint: set cell to %d\n", b->solution[x][y]);
 }
-
-/* testing things */
 /*
 int main(){
-    Board b2;
-    init_board(&b2, 2, 6);
-	printBoard(&b2);
-    set_cell(&b2, 5, 5 ,2);
-	printBoard(&b2);
-    hint(&b2, 5, 6);
-    set_cell(&b2, 5, 6 ,5);
-	printBoard(&b2);
-    free_board(&b2);
-    return 0;
+    Board b;
+    int i;
+    init_board(&b, 2, 3);
+    sample_board(&b);
+    printf("%d\n", get_coordinate_block_number(&b, 3, 4));
+    int* arr = get_block_numbers(&b, 5); 
+    for(i = 0; i < 6; i++){
+        printf("%d\n", arr[i]);
+    }
+    return 1;
 }
 */
 
