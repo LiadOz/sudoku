@@ -5,7 +5,6 @@ COMP_FLAG = -ansi -Wall -Wextra -Werror -pedantic-errors
 
 $(EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@
-	rm -f $(OBJS)
 main.o: main.c game.h
 	$(CC) $(COMP_FLAG) -c $*.c
 game.o: game.c game.h
