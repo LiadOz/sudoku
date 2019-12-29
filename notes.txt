@@ -3,3 +3,4 @@
 * after set_value the puzzle needs to be checked if it is finished
 * organize the boards & and * signs
 * look at special remarks for memory allocation
+* change solver.c line 112 to the correct number
