@@ -14,18 +14,21 @@ void init_board(Board* b, int width, int height){
     int* p2;
     p = malloc(width * height * sizeof(int *));
     if(p == NULL){
+        printf("Error: init_board has failed\n");
         exit(0);
     }
     b->solution = p;
     
     p = malloc(width * height * sizeof(int *));
     if(p == NULL){
+        printf("Error: init_board has failed\n");
         exit(0);
     }
     b->state = p;
 
     p = malloc(width * height * sizeof(int *));
     if(p == NULL){
+        printf("Error: init_board has failed\n");
         exit(0);
     }
     b->fixed = p;
@@ -33,18 +36,21 @@ void init_board(Board* b, int width, int height){
     for(i = 0; i < width * height; i++){
         p2 = calloc(width * height, sizeof(int));
         if(p2 == NULL){
+            printf("Error: init_board has failed\n");
             exit(0);
         }
         b->solution[i] = p2;
 
         p2 = calloc(width * height, sizeof(int));
         if(p2 == NULL){
+            printf("Error: init_board has failed\n");
             exit(0);
         }
         b->state[i] = p2;
 
         p2 = calloc(width * height, sizeof(int));
         if(p2 == NULL){
+            printf("Error: init_board has failed\n");
             exit(0);
         }
         b->fixed[i] = p2;
@@ -85,11 +91,12 @@ int number_in_array(int* arr, int number, int size){
  * dynamically allocate memory must be freed
  */
 int* get_row_numbers(Board* b, int row){
+    int i;
     int *arr = malloc(b->size * sizeof(int));
-    if(arr = NULL){
+    if(arr == NULL){
+        printf("Error: get_row_numbers has failed\n");
         exit(0);
     }
-    int i;
     for(i = 0; i < b->size; i++){
         arr[i] = b->state[row][i];
     }
@@ -102,11 +109,12 @@ int* get_row_numbers(Board* b, int row){
  * dynamically allocate memory must be freed
  */
 int* get_column_numbers(Board* b, int col){
+    int i;
     int *arr = malloc(b->size * sizeof(int));
-    if(arr = NULL){
+    if(arr == NULL){
+        printf("Error: get_column_numbers has failed\n");
         exit(0);
     }
-    int i;
     for(i = 0; i < b->size; i++){
         arr[i] = b->state[i][col];
     }
@@ -125,15 +133,16 @@ int get_coordinate_block_number(Board* b, int x, int y){
  * dynamically allocate memory must be freed
  */
 int* get_block_numbers(Board* b, int block_number){
-    int *arr = malloc(b->size * sizeof(int));
-    if(arr = NULL){
-        exit(0);
-    }
     int block_y = block_number / b->height;
     int block_x = block_number - (block_y * b->height);
     int start_x = b->width * block_x;
     int start_y = b->height* block_y;
     int i, j, c = 0;
+    int *arr = malloc(b->size * sizeof(int));
+    if(arr == NULL){
+        printf("Error: get_block_numbers has failed\n");
+        exit(0);
+    }
     for(i = start_y; i < b->height + start_y; i++){
         for(j = start_x; j < b->width + start_x; j++){
             arr[c++] = b->state[i][j];

@@ -21,5 +21,6 @@ void init_board(Board* b, int width, int height);
 void free_board(Board* b);
 int set_cell(Board* b, int x, int y, int val);
 void hint(Board* b, int x, int y);
+void sample_board(Board* p);
 
 #endif
