@@ -195,6 +195,14 @@ int set_cell(Board* b, int x, int y, int val){
         return 0;
     }
     if(valid_set_value(b, x, y, val)){
+        /* if the user added a new number the number of correct_cells goes up
+         * if the user removed a number the number of correct_cells goes down */
+        if(b->state[x][y] == 0 && val != 0){
+            b->correct_cells++;
+        }
+        if(b->state[x][y] != 0 && val == 0){
+            b->correct_cells--;
+        }
         b->state[x][y] = val;
         return 1;
     }

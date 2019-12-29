@@ -6,6 +6,7 @@
 #define VALIDATE_COMMAND "validate"
 #define RESTART_COMMAND "restart"
 #define EXIT_COMMAND "exit"
+#define PRINT_AFTER 100
 #define INVALID_COMMAND "Error: invalid command\n"
 #define SET_READ_ARGS 3
 #define HINT_READ_ARGS 2

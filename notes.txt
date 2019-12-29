@@ -4,3 +4,4 @@
 * organize the boards & and * signs
 * look at special remarks for memory allocation
 * change solver.c line 112 to the correct number
+* line 15 in game.c
