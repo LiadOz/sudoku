@@ -1,7 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "parsing.h"
+
 
 #define COMMAND_DELIMITER " \t\r\n"
 
