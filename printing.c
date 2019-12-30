@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "board.h"
+#include "printing.h"
 /*GENERIC LINE LENGTH CALCULATOR*/
 int lineCalc(Board* b) {
 	int nums = b->width * b->height;

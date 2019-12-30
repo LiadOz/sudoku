@@ -55,18 +55,27 @@ int execute_command(Board *b, Command *cmd){
     return 1;
 }
 
-int test_game(){
-    Board b2;
+int game_flow(){
+    /* variable and board init */
+    Board b;
     Command cmd;
-    init_board(&b2, 2, 2);
-    createSolution(0, 0, &b2);
-	printBoard2(&b2);
+    int cells;
+    init_board(&b, 2, 2);
+    createSolution(0, 0, &b);
+
+    /* get number of cells from the user and make the state */
+    cells = 2;
+    create_board_state(&b, cells);
+	printBoard2(&b);
+
+    /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
         do{
         user_input(&cmd);
-        } while(execute_command(&b2, &cmd) != PRINT_AFTER);
-        printBoard(&b2);
+        } while(execute_command(&b, &cmd) != PRINT_AFTER);
+        printBoard(&b);
+
+        /* if the board is finished then only restart and exit should be allowed */
     }
-    free_board(&b2);
     return 1;
 }
