@@ -5,6 +5,7 @@
 #include "parsing.h"
 #include "game.h"
 #include "printing.h"
+#include "solver.h"
 
 void exit_game(Board *b){
     printf("Exiting...\n");
@@ -57,9 +58,10 @@ int execute_command(Board *b, Command *cmd){
 int test_game(){
     Board b2;
     Command cmd;
-    init_board(&b2, 2, 3);
-    sample_board(&b2);
-	printBoard(&b2);
+    me();
+    init_board(&b2, 3, 3);
+    createSolution(0, 0, &b2);
+	printBoard2(&b2);
     while(1){
         do{
         user_input(&cmd);
