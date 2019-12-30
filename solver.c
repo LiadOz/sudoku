@@ -111,7 +111,7 @@ int solveByDBT(int i, int j, Board* b) {
 	else {
 		solveByDBT(i, j, b);
 	}
-    return -33333;
+    return 0;
 }
 
 /*Create a legal set of numbers for cell [i][j]*/
