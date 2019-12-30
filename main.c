@@ -1,5 +1,5 @@
 #include "game.h"
 int main(){
-    test_game();
+    game_flow();
     return 1;
 }

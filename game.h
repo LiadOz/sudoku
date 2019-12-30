@@ -11,7 +11,7 @@
 #define SET_READ_ARGS 3
 #define HINT_READ_ARGS 2
 
-int test_game();
+int game_flow();
 
 
 
