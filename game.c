@@ -58,8 +58,7 @@ int execute_command(Board *b, Command *cmd){
 int test_game(){
     Board b2;
     Command cmd;
-    me();
-    init_board(&b2, 3, 3);
+    init_board(&b2, 2, 2);
     createSolution(0, 0, &b2);
 	printBoard2(&b2);
     while(1){

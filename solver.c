@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "board.h"
+#include "solver.h"
 /*VALIDATION*/
 
 int validateRow(int i, int j, Board* b) {
