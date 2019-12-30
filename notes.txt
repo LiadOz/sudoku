@@ -6,3 +6,4 @@
 * change solver.c line 112 to the correct number
 * fix printing 0 instead of nothing
 * finished all the comments in game.c
+* put seed at start of the program

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "board.h"
 #include "solver.h"
+#include "printing.h"
 /*VALIDATION*/
 
 int validateRow(int i, int j, Board* b) {
@@ -138,7 +139,8 @@ int* legalNumbers(int i, int j, Board* b) {
 
 /*Create a solution for an empty board with randomize backtracking*/
 /*PROBLEM: Randomize also for 1 legal number*/
-int createSolution(int i, int j, Board* b) {
+int createSolution2(int i, int j, Board* b) {
+    int t;
 	int index, randIndex, tempNum;
     int* legalNums;
     int len;
@@ -148,7 +150,11 @@ int createSolution(int i, int j, Board* b) {
 		return 1;
 	}
 	legalNums = legalNumbers(i, j, b);
-	len = sizeof(legalNums) / sizeof(int);
+	len = b->size;
+    printBoard2(b);
+    for(t = 0; t < len; t++){
+        printf("%d ", legalNums[t]);
+    }
 	for (index = 0; index < len; index++) {
 		do {
 			randIndex = rand() % len;
@@ -168,4 +174,59 @@ int createSolution(int i, int j, Board* b) {
 		}
 	}
 	return 0;
+}
+/* gets the ith random element */
+int get_i_element(int* arr, int arr_size, int i){
+    int c = 1;
+    int j;
+    for(j = 0; j < arr_size; j++){
+        if(arr[j] != 0){
+            if(i == c){
+                arr[j] = 0;
+                return arr[j];
+            }
+            c++;
+        }
+    }
+}
+/* given array returns a random number and set its value to 0 */
+int choose_random(int* arr, int arr_size){
+    int i;
+    int len = 0;
+    int r;
+    /* calculate the number of integers different to 0 */
+    for(i = 0; i < arr_size; i++){
+        if(arr[i] != 0){
+            len++;
+        }
+    }
+    if(len == 1){
+        return get_i_element(arr, arr_size, 1);
+    }
+    r = rand() % len;
+    return get_i_element(arr, arr_size, r);
+}
+
+int createSolution(int i, int j, Board* b) {
+    /* TODO add - if (i == b->size) { - should be checked if correct */
+    int index;
+    int* legalNums;
+    legalNums = legalNumbers(i, j, b);
+	for (index = 0; index < b->size; index++) {
+        /* only use choose_random function to get next number */
+
+        /* TODO find out where to deallocate - i think it should be before the return */
+        /* should be added 
+		if (j == b->size - 1) {
+			if (createSolution(i + 1, 0, b) == 1) {
+				return 1;
+			}
+		}
+		else {
+			if (createSolution(i, j + 1, b) == 1) {
+				return 1;
+			}
+		}
+        */
+    }
 }
