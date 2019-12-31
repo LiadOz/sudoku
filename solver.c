@@ -178,19 +178,19 @@ int createSolution2(int i, int j, Board* b) {
 }
 
 /* gets the ith random element */
-	int get_i_element(int* arr, int arr_size, int i) {
-		int c = 1;
-		int j;
-		for (j = 0; j < arr_size; j++) {
-			if (arr[j] != 0) {
-				if (i == c) {
-					arr[j] = 0;
-					return arr[j];
-				}
-				c++;
+int get_i_element(int* arr, int arr_size, int i) {
+	int c = 1;
+	int j;
+	for (j = 0; j < arr_size; j++) {
+		if (arr[j] != 0) {
+			if (i == c) {
+				arr[j] = 0;
+				return arr[j];
 			}
+			c++;
 		}
 	}
+}
         
 
 /* given array returns a random number and set its value to 0 */
