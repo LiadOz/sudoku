@@ -178,7 +178,8 @@ int createSolution2(int i, int j, Board* b) {
 }
 
 /* gets the ith random element */
-int get_i_element(int* arr, int arr_size, int i) {
+
+int get_i_element(int* arr, int arr_size, int i){
 	int c = 1;
 	int j;
 	for (j = 0; j < arr_size; j++) {
@@ -190,6 +191,7 @@ int get_i_element(int* arr, int arr_size, int i) {
 			c++;
 		}
 	}
+	return -555;
 }
         
 
@@ -211,3 +213,28 @@ int choose_random(int* arr, int arr_size){
     return get_i_element(arr, arr_size, r);
 }
 
+int createSolution(int i, int j, Board* b) {
+    /* TODO add - if (i == b->size) { - should be checked if correct */
+    int index;
+    int* legalNums;
+    legalNums = legalNumbers(i, j, b);
+    choose_random(legalNums, 4); /* not used should be removed immdiately */
+	for (index = 0; index < b->size; index++) {
+        /* only use choose_random function to get next number */
+
+        /* TODO find out where to deallocate - i think it should be before the return */
+        /* should be added 
+		if (j == b->size - 1) {
+			if (createSolution(i + 1, 0, b) == 1) {
+				return 1;
+			}
+		}
+		else {
+			if (createSolution(i, j + 1, b) == 1) {
+				return 1;
+			}
+		}
+        */
+    }
+    return -500;
+}
