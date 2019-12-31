@@ -188,6 +188,7 @@ int get_i_element(int* arr, int arr_size, int i){
             c++;
         }
     }
+    return -500;
 }
 /* given array returns a random number and set its value to 0 */
 int choose_random(int* arr, int arr_size){
@@ -212,6 +213,7 @@ int createSolution(int i, int j, Board* b) {
     int index;
     int* legalNums;
     legalNums = legalNumbers(i, j, b);
+    choose_random(legalNums, 4); /* not used should be removed immdiately */
 	for (index = 0; index < b->size; index++) {
         /* only use choose_random function to get next number */
 
@@ -229,4 +231,5 @@ int createSolution(int i, int j, Board* b) {
 		}
         */
     }
+    return -500;
 }
