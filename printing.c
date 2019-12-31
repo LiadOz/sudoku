@@ -93,6 +93,7 @@ void printBoard2(Board* b) {
 			}
 			/*FIXED CELL*/
 			if (b->fixed[x][y] == 1) {
+				printf("FIXED CELL!\n");
 				printf(".%d", b->solution[x][y]);
 			}
 			/*REGULAR CELL*/

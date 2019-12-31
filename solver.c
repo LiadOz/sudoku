@@ -119,6 +119,7 @@ int solveByDBT(int i, int j, Board* b) {
 * need to free the memory(?)
 */
 int* legalNumbers(int i, int j, Board* b) {
+	printf("%d", b->size);
 	int* legalArr = malloc(b->size * sizeof(int));
 	int count = 0;
 	int index;
@@ -148,6 +149,7 @@ int createSolution(int i, int j, Board* b) {
 		return 1;
 	}
 	legalNums = legalNumbers(i, j, b);
+	
 	len = sizeof(legalNums) / sizeof(int);
 	for (index = 0; index < len; index++) {
 		do {
