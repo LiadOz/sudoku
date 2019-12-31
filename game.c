@@ -59,13 +59,13 @@ int game_flow(){
     /* variable and board init */
     Board b;
     Command cmd;
-    int cells;
+    /*int cells;*/
     init_board(&b, 2, 2);
     createSolution(0, 0, &b);
 
     /* get number of cells from the user and make the state */
-    cells = 2;
-    create_board_state(&b, cells);
+    /*cells = 2;*/
+    /*create_board_state(&b, cells);*/
 	printBoard2(&b);
 
     /* the game loop starts until the user uses the exit command or finished the board */
