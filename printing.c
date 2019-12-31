@@ -97,7 +97,7 @@ void printBoard2(Board* b) {
 				printf(".%d", b->solution[x][y]);
 			}
 			/*REGULAR CELL*/
-			else if (&b->solution[x][y] != 0) {
+			else if (b->solution[x][y] != 0) {
 				printf(" %d", b->solution[x][y]);
 			}
 			/*EMPTY CELL*/

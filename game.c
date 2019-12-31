@@ -60,8 +60,8 @@ int game_flow(){
     Board b;
     Command cmd;
     /*int cells;*/
-    init_board(&b, 2, 2);
-    createSolution(0, 0, &b);
+    init_board(&b, 3, 3);
+    createSolution2(0, 0, &b);
 
     /* get number of cells from the user and make the state */
     /*cells = 2;*/

@@ -120,8 +120,7 @@ int solveByDBT(int i, int j, Board* b) {
 * need to free the memory(?)
 */
 int* legalNumbers(int i, int j, Board* b) {
-	printf("%d", b->size);
-	int* legalArr = malloc(b->size * sizeof(int));
+	int* legalArr = calloc(b->size , sizeof(int));
 	int count = 0;
 	int index;
 	int valueInCell = b->solution[i][j];
@@ -135,97 +134,126 @@ int* legalNumbers(int i, int j, Board* b) {
 		}
 	}
 	b->solution[i][j] = valueInCell;
+	for (index = 0; index < b->size; index++) {
+		printf("this is a legal number: %d\n", legalArr[index]);
+	}
 	return legalArr;
+}
+
+int getNotZero(int* arr, int arr_size) {
+	printf("hello from the getNotZero FUNCTION\n");
+	int i;
+	int len = 0;
+	/* calculate the number of integers different to 0 */
+	for (i = 0; i < arr_size; i++) {
+		if (arr[i] != 0) {
+			len++;
+		}
+	}
+
+	return len;
 }
 
 /*Create a solution for an empty board with randomize backtracking*/
 /*PROBLEM: Randomize also for 1 legal number*/
 int createSolution2(int i, int j, Board* b) {
-    int t;
+	int t;
 	int index, randIndex, tempNum;
-    int* legalNums;
-    int len;
+	int* legalNums;
+	int len;
 	/*Done*/
 	if (i == b->size) {
-		printf("Solution is ready!");
+		printf("Solution is ready!\n");
 		return 1;
 	}
 	legalNums = legalNumbers(i, j, b);
-
 	len = b->size;
-    printBoard2(b);
-    for(t = 0; t < len; t++){
-        printf("%d ", legalNums[t]);
+	printf("board after setting cell %d %d:\n", i, j);
+	printBoard2(b);
+	printf("legal number of cell %d %d:\n", i, j);
+	for (t = 0; t < len; t++) {
+		printf("%d ", legalNums[t]);
+	}
+	
 	for (index = 0; index < len; index++) {
-		do {
-			randIndex = rand() % len;
-		} while (legalNums[randIndex] != 0);
-		tempNum = legalNums[randIndex];
-		legalNums[randIndex] = 0;
+		int notZeroNums = getNotZero(legalNums, len);
+		printf("not zero numbers: %d:\n", notZeroNums);
+		if (notZeroNums == 0) {
+			break;
+		}
+		else {
+			printf("before choose_random from loop");
+			tempNum = choose_random(legalNums, len);
+		}
+		
+		printf("this is tempNum: %d", tempNum);
 		b->solution[i][j] = tempNum;
 		if (j == b->size - 1) {
-			if (createSolution(i + 1, 0, b) == 1) {
+			if (createSolution2(i + 1, 0, b) == 1) {
 				return 1;
 			}
 		}
 		else {
-			if (createSolution(i, j + 1, b) == 1) {
+			if (createSolution2(i, j + 1, b) == 1) {
 				return 1;
 			}
+		}
+	}
+
+	b->solution[i][j] = 0;
+	return 0;
+}
+
+/* gets the ith random element */
+int get_i_element(int* arr, int arr_size, int i) {
+	int c = 0;
+	int j;
+	for (j = 0; j < arr_size; j++) {
+		if (arr[j] != 0) {
+			if (i == c) {
+				c = arr[j];
+				arr[j] = 0;
+				return c;
+			}
+			c++;
 		}
 	}
 	return 0;
 }
 
-/* gets the ith random element */
 
-int get_i_element(int* arr, int arr_size, int i){
-	int c = 1;
-	int j;
-	for (j = 0; j < arr_size; j++) {
-		if (arr[j] != 0) {
-			if (i == c) {
-				arr[j] = 0;
-				return arr[j];
-			}
-			c++;
-		}
-	}
-	return -555;
-}
         
 
 /* given array returns a random number and set its value to 0 */
 int choose_random(int* arr, int arr_size){
-    int i;
+	int randNum;
     int len = 0;
     int r;
     /* calculate the number of integers different to 0 */
-    for(i = 0; i < arr_size; i++){
-        if(arr[i] != 0){
-            len++;
-        }
-    }
+	len = getNotZero(arr, arr_size);
     if(len == 1){
-        return get_i_element(arr, arr_size, 1);
+        return get_i_element(arr, arr_size, 0);
     }
     r = rand() % len;
-    return get_i_element(arr, arr_size, r);
+	randNum = get_i_element(arr, arr_size, r);
+    return randNum;
 }
 
 int createSolution(int i, int j, Board* b) {
     /* TODO add - if (i == b->size) { - should be checked if correct */
+	int randNum;
     int index;
     int* legalNums;
     legalNums = legalNumbers(i, j, b);
-    choose_random(legalNums, 4); /* not used should be removed immdiately */
 	for (index = 0; index < b->size; index++) {
-        /* only use choose_random function to get next number */
 
+        /* only use choose_random function to get next number */
+		randNum = choose_random(legalNums, b->size);
         /* TODO find out where to deallocate - i think it should be before the return */
-        /* should be added 
+		b->solution[i][j] = randNum;
 		if (j == b->size - 1) {
 			if (createSolution(i + 1, 0, b) == 1) {
+
 				return 1;
 			}
 		}
@@ -234,7 +262,8 @@ int createSolution(int i, int j, Board* b) {
 				return 1;
 			}
 		}
-        */
     }
+	printf("hello from the createSolution FUNCTION\n cell NOT Good!!\n");
     return -500;
 }
+
