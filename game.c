@@ -25,8 +25,10 @@ int execute_command(Board *b, Command *cmd){
             printf(INVALID_COMMAND);
             return 0;
         }
-        set_cell(b, args[1]-1, args[0]-1, args[2]);
-        return PRINT_AFTER;
+        if(set_cell(b, args[1]-1, args[0]-1, args[2])){
+            return PRINT_AFTER;
+        }
+        return 0;
     }
     else if(strcmp(operation, HINT_CELL_COMMAND) == 0){
         if(length < HINT_READ_ARGS){
@@ -55,14 +57,29 @@ int execute_command(Board *b, Command *cmd){
     return 1;
 }
 
+int get_cells_to_keep_from_user(Board *b){
+    int input;
+    printf("Please enter the number of cells to fill [0-%d]:\n", b->size*b->size-1);
+    while(1){
+        scanf("%d", &input);
+        if(feof(stdin)){
+            exit_game(b);
+        }
+        if(input >= 0 && input <= b->size*b->size-1) {
+            break;
+        }
+        printf("Error: invalid number of cells to fill (should be between 0 and %d)\n", b->size*b->size-1);
+    }
+    return input;
+}
+
 int game_flow(){
     /* variable and board init */
     Board b;
     Command cmd;
-    /*int cells;*/
     init_board(&b, 3, 3);
     createSolution(0, 0, &b);
-    set_from_solution(&b, 70);
+    set_from_solution(&b, get_cells_to_keep_from_user(&b));
     /* get number of cells from the user and make the state */
     /*cells = 2;*/
     /*create_board_state(&b, cells);*/

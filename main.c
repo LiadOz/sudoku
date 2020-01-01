@@ -1,10 +1,11 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "game.h"
 
 int main(int argc, char *argv[]){
-    if (argc > 0){
-        srand(atoi(argv[0]));
+    if (argc > 1){
+        srand(atoi(argv[1]));
     }
     else{
         srand(5);
