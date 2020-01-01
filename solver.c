@@ -63,56 +63,72 @@ int validate(int i, int j, Board* b) {
 	return 1;
 }
 
-/*BACKTRACKING SOLVING BOARD*/
+/*copy the solved state into solution*/
+void copySolution(Board* b) {
+	int i, j;
+	for (i = 0; i < b->size; i++) {
+		for (j = 0; j < b->size; j++) {
+			b->solution[i][j] = b->state[i][j];
+		}
+	}
+}
 
+/*BACKTRACKING SOLVING BOARD*/
 int solveByDBT(int i, int j, Board* b) {
-	/*DONE SOLVING*/
+	int index;
+	/*FOUND A SOLUTION*/
 	if (i == b->size) {
-		printf("SUDOKU SOLVED!");
+		copySolution(b);
+		printf("Validation passed : board is solvable\n");
 		return 1;
 	}
-	/*No Solution - return 0*/
-	if (b->solution[i][j] > b->size) {
-		if (i == 0 && j == 0) {
-			printf("there is no solution for this board");
-			return 0;
-		}
-		/*Go Back - return */
-		b->solution[i][j] = 0;
-		if (j == 0) {
-			solveByDBT(i - 1, b->size - 1, b);
-		}
-		else {
-			solveByDBT(i, j - 1, b);
-		}
-		
-	}
-	/*FIXED CELL - move to the next cell*/
-	if (b->fixed[i][j] == 1) {
+	
+	if (b->state[i][j] != 0) {
 		if (j == b->size - 1) {
-			solveByDBT(i + 1, 0, b);
+			if (solveByDBT(i + 1, 0, b) == 0) {
+				if (i == 0 && j == 0) {
+					printf("Validation failed: board is unsolvable\n");
+				}
+				return 0;
+			}
+			return 1;
 		}
 		else {
-			solveByDBT(i, j + 1, b);
-		}
-		
-	}
-	b->state[i][j] += 1;
-	/*RECURSION STEP*/
-	if (validate(i, j, b)) { /*VALID -continue to the next cell*/
-		if (j == b->size - 1) {
-			solveByDBT(i + 1, 0, b);
-		}
-		else {
-			solveByDBT(i, j + 1, b);
+			if (solveByDBT(i, j + 1, b) == 0) {
+				if (i == 0 && j == 0) {
+					printf("Validation failed: board is unsolvable\n");
+				}
+				return 0;
+			}
+			return 1;
 		}
 	}
-	/*NOT VALID - Try again on the same cell*/
-	else {
-		solveByDBT(i, j, b);
+
+	for (index = 1; index < b->size + 1; index++) {
+		if (valid_set_value(b, i, j, index)) {
+			b->state[i][j] = index;
+			/*go to next cell*/
+			if (j == b->size - 1) {
+				if (solveByDBT(i + 1, 0, b) == 1) {
+					b->state[i][j] = 0;
+					return 1;
+				}
+			}
+			else {
+				if (solveByDBT(i, j + 1, b) == 1) {
+					b->state[i][j] = 0;
+					return 1;
+				}
+			}
+		}
 	}
-    return 0;
+	b->state[i][j] = 0;
+	if (i == 0 && j == 0) {
+		printf("Validation failed: board is unsolvable\n");
+	}
+	return 0;
 }
+
 
 /*Create a legal set of numbers for cell [i][j]*/
 /*not sure about the allocation here,
