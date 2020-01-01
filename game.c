@@ -15,6 +15,7 @@ void exit_game(Board *b){
     free_board(b);
     exit(0);
 }
+
 /* executes commands to the board */
 int execute_command(Board *b, Command *cmd){
     char* operation = cmd->name;
@@ -44,12 +45,9 @@ int execute_command(Board *b, Command *cmd){
     else if(strcmp(operation, VALIDATE_COMMAND) == 0){
         solveByDBT(0, 0, b);
     }
-    /*
     else if(strcmp(operation, RESTART_COMMAND) == 0){
-        restart();
-        return PRINT_AFTER;
+        return RESTART_AFTER;
     }
-    */
     else if(strcmp(operation, EXIT_COMMAND) == 0){
         exit_game(b);
     }
@@ -76,25 +74,32 @@ int get_cells_to_keep_from_user(Board *b){
     return input;
 }
 
-int game_flow(){
-    /* variable and board init */
+Board init_game(int width, int height){
     Board b;
-    Command cmd;
-    init_board(&b, 3, 3);
+    init_board(&b, width, height);
     createSolution(0, 0, &b);
     set_from_solution(&b, get_cells_to_keep_from_user(&b));
-    /* get number of cells from the user and make the state */
-    /*cells = 2;*/
-    /*create_board_state(&b, cells);*/
 	printBoard(&b);
+
+    return b;
+}
+
+int game_flow(){
+    /* variable and board init */
+    Board b = init_game(3, 3);
+    Command cmd;
+    int next_command;
 
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
-        do{
         user_input(&cmd);
-        } while(execute_command(&b, &cmd) != PRINT_AFTER);
-        printBoard(&b);
-
+        next_command = execute_command(&b, &cmd);
+        if(next_command == PRINT_AFTER){
+            printBoard(&b);
+        }
+        if(next_command == RESTART_AFTER){
+            b = init_game(3, 3);
+        }
         /* if the board is finished then only restart and exit should be allowed */
     }
     return 1;
