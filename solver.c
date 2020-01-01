@@ -134,14 +134,10 @@ int* legalNumbers(int i, int j, Board* b) {
 		}
 	}
 	b->solution[i][j] = valueInCell;
-	for (index = 0; index < b->size; index++) {
-		printf("this is a legal number: %d\n", legalArr[index]);
-	}
 	return legalArr;
 }
 
 int getNotZero(int* arr, int arr_size) {
-	printf("hello from the getNotZero FUNCTION\n");
 	int i;
 	int len = 0;
 	/* calculate the number of integers different to 0 */
@@ -154,55 +150,6 @@ int getNotZero(int* arr, int arr_size) {
 	return len;
 }
 
-/*Create a solution for an empty board with randomize backtracking*/
-/*PROBLEM: Randomize also for 1 legal number*/
-int createSolution2(int i, int j, Board* b) {
-	int t;
-	int index, randIndex, tempNum;
-	int* legalNums;
-	int len;
-	/*Done*/
-	if (i == b->size) {
-		printf("Solution is ready!\n");
-		return 1;
-	}
-	legalNums = legalNumbers(i, j, b);
-	len = b->size;
-	printf("board after setting cell %d %d:\n", i, j);
-	printBoard2(b);
-	printf("legal number of cell %d %d:\n", i, j);
-	for (t = 0; t < len; t++) {
-		printf("%d ", legalNums[t]);
-	}
-	
-	for (index = 0; index < len; index++) {
-		int notZeroNums = getNotZero(legalNums, len);
-		printf("not zero numbers: %d:\n", notZeroNums);
-		if (notZeroNums == 0) {
-			break;
-		}
-		else {
-			printf("before choose_random from loop");
-			tempNum = choose_random(legalNums, len);
-		}
-		
-		printf("this is tempNum: %d", tempNum);
-		b->solution[i][j] = tempNum;
-		if (j == b->size - 1) {
-			if (createSolution2(i + 1, 0, b) == 1) {
-				return 1;
-			}
-		}
-		else {
-			if (createSolution2(i, j + 1, b) == 1) {
-				return 1;
-			}
-		}
-	}
-
-	b->solution[i][j] = 0;
-	return 0;
-}
 
 /* gets the ith random element */
 int get_i_element(int* arr, int arr_size, int i) {
@@ -221,9 +168,6 @@ int get_i_element(int* arr, int arr_size, int i) {
 	return 0;
 }
 
-
-        
-
 /* given array returns a random number and set its value to 0 */
 int choose_random(int* arr, int arr_size){
 	int randNum;
@@ -239,21 +183,29 @@ int choose_random(int* arr, int arr_size){
     return randNum;
 }
 
+/*Create a solution for an empty board with randomize backtracking*/
 int createSolution(int i, int j, Board* b) {
-    /* TODO add - if (i == b->size) { - should be checked if correct */
-	int randNum;
-    int index;
-    int* legalNums;
-    legalNums = legalNumbers(i, j, b);
-	for (index = 0; index < b->size; index++) {
-
-        /* only use choose_random function to get next number */
-		randNum = choose_random(legalNums, b->size);
-        /* TODO find out where to deallocate - i think it should be before the return */
-		b->solution[i][j] = randNum;
+	int index, tempNum;
+	int* legalNums;
+	int len;
+	/*Done*/
+	if (i == b->size) {
+		return 1;
+	}
+	legalNums = legalNumbers(i, j, b);
+	len = b->size;
+	for (index = 0; index < len; index++) {
+		int notZeroNums = getNotZero(legalNums, len);
+		if (notZeroNums == 0) {
+			break;
+		}
+		else {
+			tempNum = choose_random(legalNums, len);
+		}
+		
+		b->solution[i][j] = tempNum;
 		if (j == b->size - 1) {
 			if (createSolution(i + 1, 0, b) == 1) {
-
 				return 1;
 			}
 		}
@@ -262,8 +214,8 @@ int createSolution(int i, int j, Board* b) {
 				return 1;
 			}
 		}
-    }
-	printf("hello from the createSolution FUNCTION\n cell NOT Good!!\n");
-    return -500;
-}
+	}
 
+	b->solution[i][j] = 0;
+	return 0;
+}

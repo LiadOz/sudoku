@@ -30,20 +30,20 @@ void printBoard(Board* b) {
 		}
 		/*Column*/
 		for (y = 0; y < b->size; y++) {
-			/*PIPE LOGIC*/
-			if (y % b->width == 0) {
-				printf("|");
-				/*PRINT SPACE AFTER PIPE*/
-				if (y < b->size - 1) {
-					printf(" ");
-				}
-			}
-			/*FIXED CELL*/
-			if (b->fixed[x][y] == 1) {
+            /*PIPE LOGIC*/
+            if (y % b->width == 0) {
+                printf("|");
+                /*PRINT SPACE AFTER PIPE*/
+                if (y < b->size - 1) {
+                    printf(" ");
+                }
+            }
+            /*FIXED CELL*/
+            if (b->fixed[x][y] == 1) {
 				printf(".%d", b->solution[x][y]);
 			}
 			/*REGULAR CELL*/
-			else if (&b->state[x][y] != 0) {
+			else if (b->state[x][y] != 0) {
 				printf(" %d", b->state[x][y]);
 			}
 			/*EMPTY CELL*/
@@ -93,7 +93,6 @@ void printBoard2(Board* b) {
 			}
 			/*FIXED CELL*/
 			if (b->fixed[x][y] == 1) {
-				printf("FIXED CELL!\n");
 				printf(".%d", b->solution[x][y]);
 			}
 			/*REGULAR CELL*/
