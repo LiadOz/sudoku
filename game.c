@@ -7,6 +7,7 @@
 #include "printing.h"
 #include "solver.h"
 
+
 void exit_game(Board *b){
     printf("Exiting...\n");
     free_board(b);
