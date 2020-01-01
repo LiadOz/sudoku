@@ -39,11 +39,9 @@ int execute_command(Board *b, Command *cmd){
         hint(b, args[1]-1, args[0]-1);
 
     }
-    /*
     else if(strcmp(operation, VALIDATE_COMMAND) == 0){
-        validate();
+        solveByDBT(0, 0, b);
     }
-    */
     else if(strcmp(operation, RESTART_COMMAND) == 0){
         return RESTART_AFTER;
     }
