@@ -1,0 +1,23 @@
+50
+set 3 2 1
+set 3 2 0
+set 3 2 7
+validate
+set 9 8 1
+set 9 8 7
+validate
+set 5 4 2
+validate
+set 3 2 0
+validate
+restart
+78
+validate
+set 4 5 2
+hint 1 4
+set 1 4 					 4
+set 8 5 3
+restart
+80
+set 				 9        7 7
+exit
