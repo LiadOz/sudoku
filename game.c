@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -94,6 +92,9 @@ int game_flow(){
     while(1){
         user_input(&cmd);
         next_command = execute_command(&b, &cmd);
+        if (feof(stdin)){
+            exit_game(&b);
+        }
         if(next_command == PRINT_AFTER){
             printBoard(&b);
         }

@@ -24,5 +24,6 @@ int set_cell(Board* b, int x, int y, int val);
 void hint(Board* b, int x, int y);
 void sample_board(Board* p);
 void set_from_solution(Board* b, int empty_cells);
+int valid_set_value(Board* b, int x, int y, int val);
 
 #endif
