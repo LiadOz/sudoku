@@ -75,6 +75,7 @@ void free_board(Board* b){
 /* sets the game state to user according to solved board and a number of cells to be keep */
 void set_from_solution(Board* b, int empty_cells){
     int r_x, r_y;
+    b->correct_cells = empty_cells;
     while(empty_cells > 0){
         r_x = rand() % b->size;
         r_y = rand() % b->size;
@@ -204,6 +205,9 @@ int set_cell(Board* b, int x, int y, int val){
     if(b->fixed[x][y] == 1){
         printf("Error: cell is fixed\n");
         return 0;
+    }
+    if(b->state[x][y] == val){
+        return 1;
     }
     if(valid_set_value(b, x, y, val)){
         /* if the user added a new number the number of correct_cells goes up
