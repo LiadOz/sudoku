@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,9 +30,6 @@ void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
     fgets(input, MAX_INPUT_SIZE, stdin);  
-    if(feof(stdin)){
-        cmd->eof = 1;
-    }
     strcpy(input_copy, input);
     cmd->name = strtok(input_copy, COMMAND_DELIMITER);
     cmd->arg_length = get_args(input, cmd->args);

@@ -12,6 +12,5 @@ typedef struct {
     char* name;
     int args[MAX_INPUT_SIZE-1];
     int arg_length;
-    int eof;
 } Command;
 #endif

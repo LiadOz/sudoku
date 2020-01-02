@@ -79,7 +79,7 @@ int solveByDBT(int i, int j, Board* b) {
 	/*FOUND A SOLUTION*/
 	if (i == b->size) {
 		copySolution(b);
-		printf("Validation passed : board is solvable\n");
+		printf("Validation passed: board is solvable\n");
 		return 1;
 	}
 	
@@ -135,15 +135,10 @@ int solveByDBT(int i, int j, Board* b) {
 * maybe it's better to allocate the array outside the function and send it as a parameter(?)
 * need to free the memory(?)
 */
-int* legalNumbers(int i, int j, Board* b) {
-	int* legalArr = calloc(b->size , sizeof(int));
+int* legalNumbers(int i, int j, Board* b, int* legalArr) {
 	int count = 0;
 	int index;
 	int valueInCell = b->solution[i][j];
-    if(legalArr == NULL){
-        printf("Error: calloc has failed\n");
-        exit(0);
-    }
 	for (index = 1; index < b->size + 1; index++) {
 		if (index != valueInCell) {
 			b->solution[i][j] = index;
@@ -206,13 +201,16 @@ int choose_random(int* arr, int arr_size){
 /*Create a solution for an empty board with randomize backtracking*/
 int createSolution(int i, int j, Board* b) {
 	int index, tempNum;
-	int* legalNums;
+	int* legalNums = calloc(b->size, sizeof(int));
 	int len;
-	/*Done*/
+    if(legalNums == NULL){
+        printf("Error: calloc has failed\n");
+        exit(0);
+    }
 	if (i == b->size) {
 		return 1;
 	}
-	legalNums = legalNumbers(i, j, b);
+	legalNums = legalNumbers(i, j, b, legalNums);
 	len = b->size;
 	for (index = 0; index < len; index++) {
 		int notZeroNums = getNotZero(legalNums, len);
@@ -226,16 +224,19 @@ int createSolution(int i, int j, Board* b) {
 		b->solution[i][j] = tempNum;
 		if (j == b->size - 1) {
 			if (createSolution(i + 1, 0, b) == 1) {
+                free(legalNums);
 				return 1;
 			}
 		}
 		else {
 			if (createSolution(i, j + 1, b) == 1) {
+                free(legalNums);
 				return 1;
 			}
 		}
 	}
 
 	b->solution[i][j] = 0;
+    free(legalNums);
 	return 0;
 }

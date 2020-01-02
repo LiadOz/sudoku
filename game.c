@@ -8,6 +8,7 @@
 #include "solver.h"
 
 
+/* exits the game and frees allocated memory */
 void exit_game(Board *b){
     printf("Exiting...\n");
     free_board(b);
@@ -56,6 +57,7 @@ int execute_command(Board *b, Command *cmd,int game_finished){
     return 1;
 }
 
+/* gets the number of cells to keep in solution */
 int get_cells_to_keep_from_user(Board *b){
     int input;
     printf("Please enter the number of cells to fill [0-%d]:\n", b->size*b->size-1);
@@ -72,6 +74,7 @@ int get_cells_to_keep_from_user(Board *b){
     return input;
 }
 
+/* initializing the board and the entire game according to board size */
 Board init_game(int width, int height){
     Board b;
     init_board(&b, width, height);
@@ -82,6 +85,7 @@ Board init_game(int width, int height){
     return b;
 }
 
+/* the entire game loop mechanic */
 int game_flow(){
     /* variable and board init */
     Board b = init_game(3, 3);
@@ -93,10 +97,10 @@ int game_flow(){
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
         user_input(&cmd);
-        next_command = execute_command(&b, &cmd, game_finished);
         if (feof(stdin)){
             exit_game(&b);
         }
+        next_command = execute_command(&b, &cmd, game_finished);
         if(next_command == PRINT_AFTER){
             printBoard(&b);
             if(b.correct_cells == b.size * b.size){

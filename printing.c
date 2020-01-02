@@ -64,8 +64,8 @@ void printBoard(Board* b) {
 		printf("\n");
 	}
 }
-/*BOARD PRINTER BY POINTER*/
-void printBoard2(Board* b) {
+/*BOARD SOLUTION PRINTER BY POINTER*/
+void printSolution(Board* b) {
 	/*LINE LENGTH CALC*/
 	int lineLength = lineCalc(b);
 

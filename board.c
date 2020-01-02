@@ -3,7 +3,7 @@
 #include "board.h"
 
 /*
- * used to populate the board
+ * used to initialize the board
  */
 void init_board(Board* b, int width, int height){
     int i;
@@ -56,7 +56,6 @@ void init_board(Board* b, int width, int height){
     b->height = height;
     b->size = width * height;
     b->correct_cells = 0;
-    /* create random board */
 }
 
 /* used to free allocation when program exits */
@@ -191,6 +190,9 @@ int number_in_area(Board* b, int mode, int index, int number){
 
 /* checks if value can be inserted into x y coordinates return 1 if true */
 int valid_set_value(Board* b, int x, int y, int val){
+    if(val == 0){
+        return 1;
+    }
     if(!number_in_area(b, 0, x, val) && !number_in_area(b, 1, y, val) && !number_in_area(b, 2, get_coordinate_block_number(b, x, y), val)){
         return 1;
             }
