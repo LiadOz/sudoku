@@ -140,6 +140,10 @@ int* legalNumbers(int i, int j, Board* b) {
 	int count = 0;
 	int index;
 	int valueInCell = b->solution[i][j];
+    if(legalArr == NULL){
+        printf("Error: calloc has failed\n");
+        exit(0);
+    }
 	for (index = 1; index < b->size + 1; index++) {
 		if (index != valueInCell) {
 			b->solution[i][j] = index;

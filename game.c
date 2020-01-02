@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,14 +15,14 @@ void exit_game(Board *b){
 }
 
 /* executes commands to the board */
-int execute_command(Board *b, Command *cmd){
+int execute_command(Board *b, Command *cmd,int game_finished){
     char* operation = cmd->name;
     int* args = cmd->args;
     int length = cmd->arg_length;
     if(operation == NULL){
         return 0;
     }
-    if(strcmp(operation, SET_CELL_COMMAND) == 0){
+    if(strcmp(operation, SET_CELL_COMMAND) == 0 && game_finished != FINISHED){
         if(length < SET_READ_ARGS){
             printf(INVALID_COMMAND);
             return 0;
@@ -34,7 +32,7 @@ int execute_command(Board *b, Command *cmd){
         }
         return 0;
     }
-    else if(strcmp(operation, HINT_CELL_COMMAND) == 0){
+    else if(strcmp(operation, HINT_CELL_COMMAND) == 0 && game_finished != FINISHED){
         if(length < HINT_READ_ARGS){
             printf(INVALID_COMMAND);
             return 0;
@@ -42,7 +40,7 @@ int execute_command(Board *b, Command *cmd){
         hint(b, args[1]-1, args[0]-1);
 
     }
-    else if(strcmp(operation, VALIDATE_COMMAND) == 0){
+    else if(strcmp(operation, VALIDATE_COMMAND) == 0 && game_finished != FINISHED){
         solveByDBT(0, 0, b);
     }
     else if(strcmp(operation, RESTART_COMMAND) == 0){
@@ -89,18 +87,27 @@ int game_flow(){
     Board b = init_game(3, 3);
     Command cmd;
     int next_command;
+    /* if the board is finished then only restart and exit should be allowed */
+    int game_finished = 0; 
 
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
         user_input(&cmd);
-        next_command = execute_command(&b, &cmd);
+        next_command = execute_command(&b, &cmd, game_finished);
+        if (feof(stdin)){
+            exit_game(&b);
+        }
         if(next_command == PRINT_AFTER){
             printBoard(&b);
+            if(b.correct_cells == b.size * b.size){
+                printf("Puzzle solved successfully\n");
+                game_finished = FINISHED;
+            }
         }
         if(next_command == RESTART_AFTER){
             b = init_game(3, 3);
+            game_finished = 0;
         }
-        /* if the board is finished then only restart and exit should be allowed */
     }
     return 1;
 }
