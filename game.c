@@ -109,6 +109,7 @@ int game_flow(){
             }
         }
         if(next_command == RESTART_AFTER){
+            free_board(&b);
             b = init_game(3, 3);
             game_finished = 0;
         }

@@ -208,6 +208,7 @@ int createSolution(int i, int j, Board* b) {
         exit(0);
     }
 	if (i == b->size) {
+        free(legalNums);
 		return 1;
 	}
 	legalNums = legalNumbers(i, j, b, legalNums);
