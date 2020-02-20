@@ -195,8 +195,26 @@ int valid_set_value(Board* b, int x, int y, int val){
     }
     if(!number_in_area(b, 0, x, val) && !number_in_area(b, 1, y, val) && !number_in_area(b, 2, get_coordinate_block_number(b, x, y), val)){
         return 1;
-            }
+    }
     return 0;
+}
+/* fills arr with the options for numbers in cell
+ * returns the size the array */
+int get_options_array(Board* b, int i, int j, int** arr){
+    int val;
+    int count = 0;
+    int* options;
+    options = malloc((b->size + 1) * sizeof(int));
+    for(val = 1; val <= b->size; val++){
+        if(valid_set_value(b, i, j, val)){
+            options[count] = val;
+            count++;
+        }
+    }
+    options = realloc(options, count * sizeof(int));
+    *arr = options;
+    return count;
+
 }
 
 /* sets a cell to value with x, y coordinates

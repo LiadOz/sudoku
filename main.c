@@ -3,7 +3,9 @@
 #include <string.h>
 #include "game.h"
 
+#include "lp_solver.h"
 int main(int argc, char *argv[]){
+    test();
     if (argc > 1){
         srand(atoi(argv[1]));
     }
