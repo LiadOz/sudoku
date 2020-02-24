@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "board.h"
+#define READ_MAX_SIZE 3
 
 /* save the board state to location 'file_path' */
 int save_board(Board* b, char file_path[]){
@@ -26,5 +29,39 @@ int save_board(Board* b, char file_path[]){
     }
 
     fclose(fptr);
+    return 1;
+}
+
+/* Reads a file and creates a new board according to it */
+int read_file(Board* b, Board* new_b, char file_path[]){
+    FILE *fptr;
+    int height, width;
+    int i, j;
+    char temp[READ_MAX_SIZE];
+    char* point_ptr;
+    fptr = fopen(file_path, "r");
+    if(fptr == NULL){
+        printf("Error opening file");
+        return -1;
+    }
+    fscanf(fptr, "%d", &height);
+    fscanf(fptr, "%d", &width);
+
+    init_board(new_b, width, height);
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            fscanf(fptr, "%s", temp);
+            point_ptr = strchr(temp, '.');
+            if(point_ptr == NULL)
+                new_b->state[i][j] = atoi(temp);
+            else {
+                *point_ptr = '\0';
+                new_b->solution[i][j] = atoi(temp);
+                new_b->fixed[i][j] = 1;
+            }
+        }
+        printf("\n");
+    }
+
     return 1;
 }

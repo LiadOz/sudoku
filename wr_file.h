@@ -2,4 +2,5 @@
 #define WR_FILE
 #include "board.h"
 int save_board(Board* b, char file_path[]);
+int read_file(Board* b, Board* new_b, char file_path[]);
 #endif
