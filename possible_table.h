@@ -8,6 +8,7 @@
 typedef struct{
     int value;
     int* valid_nums;
+    double* percent;
     int count;
     int start_index;
     int end_index;
@@ -23,5 +24,8 @@ typedef struct{
 } EntryTable;
 
 int init_entry_table(EntryTable* et, Board* b);
+void insert_solution(EntryTable* et, double* sol);
+void fill_with_thresh(EntryTable* et, Board* b, double thresh);
+void print_table(EntryTable* et);
 void free_entry_table(EntryTable* et);
 #endif
