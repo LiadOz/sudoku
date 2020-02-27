@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "board.h"
+#include "possible_table.h"
 
 /*
  * used to initialize the board
@@ -217,6 +218,12 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 }
 
+
+/* sets board state cell to value with x, y coordinates */
+void free_set_cell(Board* b ,int x, int y, int val){
+    b->state[x][y] = val;
+}
+
 /* sets a cell to value with x, y coordinates
  * x and y starts at 1
  * returns 1 when assignment worked
@@ -238,7 +245,7 @@ int set_cell(Board* b, int x, int y, int val){
         if(b->state[x][y] != 0 && val == 0){
             b->correct_cells--;
         }
-        b->state[x][y] = val;
+        free_set_cell(b, x, y, val);
         return 1;
     }
     else{
@@ -250,4 +257,71 @@ int set_cell(Board* b, int x, int y, int val){
 /* gives hint to cell (x, y) when they start at 1 */
 void hint(Board* b, int x, int y){
     printf("Hint: set cell to %d\n", b->solution[x][y]);
+}
+
+/* resest the state of the board */
+void reset_board_state(Board* b){
+    int i, j;
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            b->state[i][j] = 0;
+        }
+    }
+}
+
+/* randomly fills x cells in the board with legal values
+ * if a cell can't be filled BOARD_SETTING_ERROR is returned
+ * otherwise BOARD_SET is returned */
+int generate_random_cells(Board* b, int x){
+    int r_x, r_y, op_length, cell_index;
+    int* cell_options;
+    while(x > 0){
+        r_x = rand() % b->size;
+        r_y = rand() % b->size;
+        if(!b->state[r_x][r_y]){
+            op_length = get_options_array(b, r_x, r_y, &cell_options);
+            if(op_length == 0){
+                /* No value can be set to cell */
+                free(cell_options);
+                reset_board_state(b);
+                return BOARD_SETTING_ERROR;
+            }
+            cell_index = rand() % op_length;
+            b->state[r_x][r_y] = cell_options[cell_index];
+            free(cell_options);
+            x--;
+        }
+    }
+    return BOARD_SET;
+}
+
+/* randomly selects x cells to remove from state */
+void generate_from_solution(Board* b, int x){
+    int r_x, r_y;
+    while(x > 0){
+        r_x = rand() % b->size;
+        r_y = rand() % b->size;
+        if(b->state[r_x][r_y]){
+            b->state[r_x][r_y] = 0;
+            b->fixed[r_x][r_y] = 0;
+            x--;
+        }
+    }
+}
+
+/* autofills cells with obvious values
+ * board can be not valid after */
+void autofill(Board* b){
+    EntryTable et;
+    PossibleEntry pt;
+    int i, j;
+    init_entry_table(&et, b);
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            pt = et.entries[i][j];
+            if (!pt.value && pt.count == 1)
+                free_set_cell(b, i, j, pt.valid_nums[0]);
+        }
+    }
+    free_entry_table(&et);
 }

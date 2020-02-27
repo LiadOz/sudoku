@@ -9,11 +9,7 @@
 #define ILP 1
 #define LP 2
 #define RANDOM_UB 15
-
-/* for test purposes */
-#include "printing.h"
-#include "solver.h"
-
+#define MAX_GENERATE_TRIES 1000
 
 /* creates constraints for cell and inside ind and val
  * returns the length
@@ -292,6 +288,7 @@ int validate_board(Board* b){
     ret_val = find_solution(&et, sol, ILP);
 
     free_entry_table(&et);
+    free(sol);
     return ret_val;
 }
 
@@ -363,18 +360,50 @@ int guess_hint(Board* b, int i, int j){
     return ret_val;
 }
 
+/* fills ILP solution into board */
+void fill_solution(Board* b, EntryTable* et, double* sol){
+    int i, j, k;
+    PossibleEntry pt;
+    for (i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            pt = et->entries[i][j];
+            if(!pt.value){
+                for(k = pt.start_index; k < pt.end_index - 1; k++){
+                    if(sol[k] == 1.0)
+                        b->state[i][j] = et->var_arr[k];
+                }
+            }
+            b->fixed[i][j] = 1;
+        }
+    }
+}
 
-void test(){
-    Board b;
-    int height = 3;
-    int width = 4;
-    init_board(&b, height, width);
-    createSolution(0, 0, &b);
-    set_from_solution(&b, 35);
-
-    guess_hint(&b, 0, 0);
-	printBoard(&b);
-    validate_board(&b);
-    printf("\n");
-    free_board(&b);
+/* generates a board using ILP first it generate x cells in random
+ * then finds a solution and removes y cells from it
+ * if generation fails MAX_GENERATE_TRIES times it returns NO_SOLUTION_FOUND
+ * otherwise SOLUTION_FOUND is returned */
+int generate_using_ILP(Board* b, int x, int y){
+    EntryTable et;
+    int tries = 0;
+    double* sol = NULL;
+    while (tries < MAX_GENERATE_TRIES){
+        if(generate_random_cells(b, x) == BOARD_SETTING_ERROR){
+            tries++;
+            continue;
+        }
+        init_entry_table(&et, b);
+        sol = malloc(et.var_count * sizeof(double));
+        if(find_solution(&et, sol, ILP) == SOLUTION_FOUND){
+            /* create the solution */
+            fill_solution(b, &et, sol);
+            generate_from_solution(b, y);
+            free(sol);
+            return SOLUTION_FOUND;
+        }
+        reset_board_state(b);
+        tries++;
+        free_entry_table(&et);
+        free(sol);
+    }
+    return NO_SOLUTION_FOUND;
 }

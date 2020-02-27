@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#define BOARD_SETTING_ERROR -1
+#define BOARD_SET 1
 /*
  * Board struct:
  * solution - the last solution given by the validate method
@@ -26,5 +28,9 @@ void sample_board(Board* p);
 void set_from_solution(Board* b, int empty_cells);
 int valid_set_value(Board* b, int x, int y, int val);
 int get_options_array(Board* b, int i, int j, int** arr);
+int generate_random_cells(Board* b, int x);
+void reset_board_state(Board* b);
+void generate_from_solution(Board* b, int x);
+void autofill(Board* b);
 
 #endif
