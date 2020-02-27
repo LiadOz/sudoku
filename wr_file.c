@@ -33,7 +33,7 @@ int save_board(Board* b, char file_path[]){
 }
 
 /* Reads a file and creates a new board according to it */
-int read_file(Board* b, Board* new_b, char file_path[]){
+int read_file(Board* b, char file_path[]){
     FILE *fptr;
     int height, width;
     int i, j;
@@ -47,21 +47,21 @@ int read_file(Board* b, Board* new_b, char file_path[]){
     fscanf(fptr, "%d", &height);
     fscanf(fptr, "%d", &width);
 
-    init_board(new_b, width, height);
+    init_board(b, width, height);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             fscanf(fptr, "%s", temp);
             point_ptr = strchr(temp, '.');
             if(point_ptr == NULL)
-                new_b->state[i][j] = atoi(temp);
+                b->state[i][j] = atoi(temp);
             else {
                 *point_ptr = '\0';
-                new_b->solution[i][j] = atoi(temp);
-                new_b->fixed[i][j] = 1;
+                b->state[i][j] = atoi(temp);
+                b->fixed[i][j] = 1;
             }
         }
-        printf("\n");
     }
 
+    fclose(fptr);
     return 1;
 }

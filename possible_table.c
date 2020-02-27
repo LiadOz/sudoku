@@ -44,8 +44,8 @@ int init_entry_table(EntryTable* et, Board* b){
                     vars++;
                 }
                 temp.end_index = vars+1;
+                temp.percent = calloc(temp.count, sizeof(double));
             }
-            temp.percent = calloc(temp.count, sizeof(double));
             options[i][j] = temp;
         }
     }
@@ -151,4 +151,3 @@ void free_entry_table(EntryTable* et){
     free(et->entries);
     free(et->var_arr);
 }
-
