@@ -8,6 +8,7 @@
 int validate_board(Board* b);
 int guess_board(Board* b, double thresh);
 int ILP_hint(Board* b, int i, int j);
+int guess_hint(Board* b, int i, int j);
 void test();
 
 #endif

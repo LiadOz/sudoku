@@ -278,6 +278,10 @@ int find_solution(EntryTable* et, double* sol, int mode){
     return ret_val;
 }
 
+/* Checks for solution to the board using LP
+ * if no solution exits NO_SOLUTION_FOUND is returned 
+ * otherwise SOLUTION_FOUND is returned */
+
 int validate_board(Board* b){
     EntryTable et;
     int ret_val;
@@ -291,6 +295,8 @@ int validate_board(Board* b){
     return ret_val;
 }
 
+/* gives the answer to a cell using ILP
+ * if no solution exits NO_SOLUTION_FOUND is returned */
 int ILP_hint(Board* b, int i, int j){
     EntryTable et;
     PossibleEntry pt;
@@ -303,7 +309,7 @@ int ILP_hint(Board* b, int i, int j){
     ret_val = find_solution(&et, sol, ILP);
     if(ret_val == SOLUTION_FOUND){
         pt = et.entries[i][j];
-        for(k = pt.start_index; k < pt.end_index; k++){
+        for(k = pt.start_index; k < pt.end_index - 1; k++){
             if(sol[k] == 1.0)
                 ret_val = et.var_arr[k];
         }
@@ -313,6 +319,8 @@ int ILP_hint(Board* b, int i, int j){
     return ret_val;
 }
 
+/* gives a guess to the board using LP 
+ * if no solution exits NO_SOLUTION_FOUND is returned */
 int guess_board(Board* b, double thresh){
     EntryTable et;
     double* sol = NULL;
@@ -329,6 +337,33 @@ int guess_board(Board* b, double thresh){
     return ret_val;
 }
 
+
+/* Prints scores for available values 
+ * if no solution exits NO_SOLUTION_FOUND is returned */
+int guess_hint(Board* b, int i, int j){
+    EntryTable et;
+    PossibleEntry pt;
+    double* sol = NULL;
+    int ret_val;
+    int k;
+    init_entry_table(&et, b);
+    sol = malloc(et.var_count * sizeof(double));
+
+    ret_val = find_solution(&et, sol, LP);
+    if(ret_val == SOLUTION_FOUND){
+        pt = et.entries[i][j];
+        for(k = pt.start_index; k < pt.end_index-1; k++){
+            if(sol[k] >= 0.01)
+                printf("%d : %1.2f%% \n", et.var_arr[k], sol[k]);
+        }
+    }
+
+    free(sol);
+    free_entry_table(&et);
+    return ret_val;
+}
+
+
 void test(){
     Board b;
     int height = 3;
@@ -337,7 +372,7 @@ void test(){
     createSolution(0, 0, &b);
     set_from_solution(&b, 35);
 
-    guess_board(&b, 0.34);
+    guess_hint(&b, 0, 0);
 	printBoard(&b);
     validate_board(&b);
     printf("\n");
