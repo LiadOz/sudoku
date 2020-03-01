@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "stack.h"
 #include "board.h"
 
@@ -20,20 +22,22 @@ int is_empty(Node* top) {
 }
 
 void push(Node** top, int x, int y, int value) {
-	Node* node = new_node(x, y, value);
+	Node* node = new_node(x, y, value, 0);
 	node->prev = *top;
 	*top = node;
 }
 
 int pop(Node** top, Board* b) {
-	if (is_empty(top)) {
+	Node* temp;
+    int counter;
+	if (is_empty(*top)) {
 		return 0;
 	}
-	b->state[top->x][top->y] = 0;
-	Node* temp = *top;
+	b->state[(*top)->x][(*top)->y] = 0;
+	temp = *top;
 	*top = (*top)->prev;
-	int counter = temp->counter;
-	free(temp);
+    counter = temp->counter;
+    free(temp);
 	return counter;
 }
 

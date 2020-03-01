@@ -1,3 +1,5 @@
+#ifndef STACK_H
+#define STACK_H
 #include "board.h"
 
 typedef struct Node {
@@ -14,3 +16,5 @@ int is_empty(Node* top);
 void push(Node** top, int x, int y, int value);
 int pop(Node** top, Board* b);
 int top(Node* top);
+
+#endif

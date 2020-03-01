@@ -1,8 +1,10 @@
+#include <stdio.h>
 #include "stack.h"
 #include "board.h"
 
 /*Return new node of the next empty cell*/
 Node* next_empty_cell(Board* b, int x, int y, int counter) {
+    Node* node = NULL;
 	int stop = 0;
 	int i;
 	int j;
@@ -14,9 +16,9 @@ Node* next_empty_cell(Board* b, int x, int y, int counter) {
 		}
 	}
 	if (i == x && j == y && stop == 0) {
-		return NULL;
+		return node;
 	}
-	Node* node = new_node(i, j, 1, counter);
+	node = new_node(i, j, 1, counter);
 	return node;
 }
 
@@ -26,9 +28,10 @@ Node* first_empty_cell(Board* b) {
 }
 
 int num_of_solutions(Board* b) {
+    Node* temp = NULL;
 	int x;
 	int y;
-	Node** node;
+	Node** node = NULL;
 	*node = first_empty_cell(b);
 
 	while (1) {
@@ -43,7 +46,7 @@ int num_of_solutions(Board* b) {
 		while((*node)->value <= b->size) {
 			if (valid_set_value(b, x, y, (*node)->value)) {
 				b->state[x][y] = (*node)->value;
-				Node* temp = next_empty_cell(b, x, y, (*node)->counter);
+				temp = next_empty_cell(b, x, y, (*node)->counter);
 				if (temp == NULL) {
 					(*node)->counter++;
 					break;
@@ -57,7 +60,7 @@ int num_of_solutions(Board* b) {
 			}
 		}
 
-		Node* temp = (*node)->prev;
+		temp = (*node)->prev;
 		if (temp == NULL) {
 			return pop(node, b);
 		}
