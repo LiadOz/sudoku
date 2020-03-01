@@ -4,6 +4,9 @@
 #include <string.h>
 #include "game.h"
 
+
+#include <unistd.h>
+
 void move_pointer_to_end(Board* b, SetOfMoves** pointer) {
 	SetOfMoves* curr;
 	curr = b->movePointer;
@@ -32,10 +35,14 @@ int restart(Board* b, SetOfMoves* pointer) {
 
 int undo(Board* b) {
 	int i;
+    printf("the x is %d\n", b->movePointer->moves[0].x);
+    printf("the size is %d\n", b->movePointer->size);
+    printf("do you know w%d\n", b->movePointer->prev->moves[0].x);
+    sleep(3);
 	if (b->movePointer != NULL && b->movePointer->prev != NULL) {
 		for (i = 0; i < b->movePointer->size; i++) {
-			Move* move = &(b->movePointer->moves[i]);
-			b->state[move->x][move->y] = move->prevVal;
+			Move move = b->movePointer->moves[i];
+			b->state[move.x][move.y] = move.prevVal;
 		}
 		b->movePointer = b->movePointer->prev;
 		return 1;
@@ -57,17 +64,19 @@ int redo(Board* b) {
 }
 
 void init_set_command_move(Board* b, Move* curr_move) {
-	SetOfMoves* pointer = malloc(sizeof(SetOfMoves));
+	SetOfMoves move_set;
 	Move* moves_array;
-	pointer->size = 1;
-	moves_array = malloc(pointer->size * sizeof(Move));
+	move_set.size = 1;
+	moves_array = malloc(move_set.size * sizeof(Move));
 	moves_array[0] = *curr_move;
-	pointer->moves = moves_array;
-	pointer->prev = b->movePointer;
+	move_set.moves = moves_array;
+	move_set.prev = b->movePointer;
 	if (b->movePointer != NULL) {
-		(b->movePointer)->next = pointer;
+		(b->movePointer)->next = &move_set;
 	}
-	b->movePointer = pointer;
+	b->movePointer = &move_set;
+    printf("the x is %d\n", b->movePointer->moves[0].x);
+    printf("the size is %d\n", b->movePointer->size);
 }
 
 void print_change(Board* b, char* command) {
