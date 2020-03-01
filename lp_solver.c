@@ -6,10 +6,10 @@
 #include "lp_solver.h"
 #include "gurobi_c.h"
 
-/* for test purposes */
-#include "printing.h"
-#include "solver.h"
-
+#define ILP 1
+#define LP 2
+#define RANDOM_UB 15
+#define MAX_GENERATE_TRIES 1000
 
 /* creates constraints for cell and inside ind and val
  * returns the length
@@ -142,17 +142,34 @@ void add_all_constraints(GRBmodel* model, GRBenv* env,EntryTable* et){
     free(val);
 }
 
-void find_solution(Board* b){
-    GRBenv   *env   = NULL;
+/* 
+ * Uses Gurobi to find solution to board,
+ * uses either ILP or LP modes.
+ * sol must be supplied.
+ */
+int find_solution(EntryTable* et, double* sol, int mode){
+    GRBenv *env = NULL;
     GRBmodel *model = NULL;
-    int       error = 0;
-    int size;
     char* vtype;
-    int       optimstatus;
-    double* sol;
-    int i;
-    EntryTable et;
-    init_entry_table(&et, b);
+    double* obj;
+    int i, size, optimstatus, error = 0;
+    int ret_val = NO_SOLUTION_FOUND;
+    double objval;
+
+    /* allocating variables */
+    size = et->var_count;
+    vtype = malloc(size * sizeof(int));
+    if (mode == LP){
+        memset(vtype, GRB_CONTINUOUS, size);
+        obj = calloc(size, sizeof(double));
+        for(i = 0; i < size; i++){
+            obj[i] = rand() % RANDOM_UB;
+        }
+    }
+    else if (mode == ILP){
+        memset(vtype, GRB_BINARY, size);
+        obj = NULL;
+    }
 
     error = GRBloadenv(&env, "mip1.log");
     if (error) {
@@ -170,14 +187,18 @@ void find_solution(Board* b){
       printf("ERROR %d GRBnewmodel(): %s\n", error, GRBgeterrormsg(env));
       exit(0);
     }
-    size = et.var_count;
-    sol = malloc(size * sizeof(double));
-    vtype = malloc(size * sizeof(int));
-    memset(vtype, GRB_BINARY, size);
-    error = GRBaddvars(model, size, 0, NULL, NULL, NULL, NULL, NULL, NULL, vtype, NULL);
+
+    error = GRBaddvars(model, size, 0, NULL, NULL, NULL, obj, NULL, NULL, vtype, NULL);
     if (error) {
       printf("ERROR %d GRBaddvars(): %s\n", error, GRBgeterrormsg(env));
       exit(0);
+    }
+    if(mode == LP){
+        error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
+        if (error) {
+          printf("ERROR %d GRBsetintattr(): %s\n", error, GRBgeterrormsg(env));
+          exit(0);
+        }
     }
     /* update the model - to integrate new variables */ 
     error = GRBupdatemodel(model);
@@ -186,7 +207,7 @@ void find_solution(Board* b){
       exit(0);
     }
 
-    add_all_constraints(model, env, &et);
+    add_all_constraints(model, env, et);
     /* Optimize model - need to call this before calculation */
     error = GRBoptimize(model);
     if (error) {
@@ -206,47 +227,183 @@ void find_solution(Board* b){
       printf("ERROR %d GRBgetintattr(): %s\n", error, GRBgeterrormsg(env));
       exit(0);
     }
-    error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, size, sol);
-    if (error) {
-      printf("ERROR %d GRBgetdblattrarray(): %s\n", error, GRBgeterrormsg(env));
-      exit(0);
-    }
-
-
-    printf("\nOptimization complete\n");
-    /* solution found */
-    if (optimstatus == GRB_OPTIMAL) {
-        for(i = 0; i < size; i++){
-            if((int)sol[i]){
-                printf("%d ", (int)et.var_arr[i]);
-            }
+    if(mode == LP){
+        error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
+        if (error) {
+          printf("ERROR %d GRBgettdblattr(): %s\n", error, GRBgeterrormsg(env));
+          exit(0);
         }
     }
+
+    /* solution found */
+    if (optimstatus == GRB_OPTIMAL) {
+        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, size, sol);
+        if (error) {
+          printf("ERROR %d GRBgetdblattrarray(): %s\n", error, GRBgeterrormsg(env));
+          exit(0);
+        }
+        ret_val = SOLUTION_FOUND;
+        /* for debug use */
+        /*
+        if(mode == ILP){
+            for(i = 0; i < size; i++){
+                if((int)sol[i]){
+                    printf("%d ", (int)et->var_arr[i]);
+                }
+            }
+            printf("\n");
+        }
+        if (mode == LP){
+            for(i = 0; i < size; i++){
+                printf("%1.1f ", sol[i]);
+            }
+            printf("\n%f\n", objval);
+        }
+        */
+    }
     /* no solution found */
-    else if (optimstatus == GRB_INF_OR_UNBD) {
-    printf("Model is infeasible or unbounded\n");
+    else {
+        ret_val = NO_SOLUTION_FOUND;
     }
     /* error or calculation stopped */
-    else {
-    printf("Optimization was stopped early\n");
-    }
 
     free(vtype);
-    free(sol);
-    free_entry_table(&et);
+    free(obj);
     GRBfreemodel(model);
     GRBfreeenv(env);
-
+    return ret_val;
 }
-void test(){
-    Board b;
-    int height = 3;
-    int width = 5;
-    init_board(&b, height, width);
-    createSolution(0, 0, &b);
-    set_from_solution(&b, 35);
-	printBoard(&b);
-    find_solution(&b);
-    printf("\n");
-    free_board(&b);
+
+/* Checks for solution to the board using LP
+ * if no solution exits NO_SOLUTION_FOUND is returned 
+ * otherwise SOLUTION_FOUND is returned */
+
+int validate_board(Board* b){
+    EntryTable et;
+    int ret_val;
+    double* sol = NULL;
+    init_entry_table(&et, b);
+    sol = malloc(et.var_count * sizeof(double));
+
+    ret_val = find_solution(&et, sol, ILP);
+
+    free_entry_table(&et);
+    free(sol);
+    return ret_val;
+}
+
+/* gives the answer to a cell using ILP
+ * if no solution exits NO_SOLUTION_FOUND is returned */
+int ILP_hint(Board* b, int i, int j){
+    EntryTable et;
+    PossibleEntry pt;
+    int ret_val;
+    double* sol = NULL;
+    int k;
+    init_entry_table(&et, b);
+    sol = malloc(et.var_count * sizeof(double));
+
+    ret_val = find_solution(&et, sol, ILP);
+    if(ret_val == SOLUTION_FOUND){
+        pt = et.entries[i][j];
+        for(k = pt.start_index; k < pt.end_index - 1; k++){
+            if(sol[k] == 1.0)
+                ret_val = et.var_arr[k];
+        }
+    }
+    free_entry_table(&et);
+    free(sol);
+    return ret_val;
+}
+
+/* gives a guess to the board using LP 
+ * if no solution exits NO_SOLUTION_FOUND is returned */
+int guess_board(Board* b, double thresh){
+    EntryTable et;
+    double* sol = NULL;
+    int ret_val;
+    init_entry_table(&et, b);
+    sol = malloc(et.var_count * sizeof(double));
+
+    ret_val = find_solution(&et, sol, LP);
+    insert_solution(&et, sol);
+    fill_with_thresh(&et, b, thresh);
+
+    free(sol);
+    free_entry_table(&et);
+    return ret_val;
+}
+
+
+/* Prints scores for available values 
+ * if no solution exits NO_SOLUTION_FOUND is returned */
+int guess_hint(Board* b, int i, int j){
+    EntryTable et;
+    PossibleEntry pt;
+    double* sol = NULL;
+    int ret_val;
+    int k;
+    init_entry_table(&et, b);
+    sol = malloc(et.var_count * sizeof(double));
+
+    ret_val = find_solution(&et, sol, LP);
+    if(ret_val == SOLUTION_FOUND){
+        pt = et.entries[i][j];
+        for(k = pt.start_index; k < pt.end_index-1; k++){
+            if(sol[k] >= 0.01)
+                printf("%d : %1.2f%% \n", et.var_arr[k], sol[k]);
+        }
+    }
+
+    free(sol);
+    free_entry_table(&et);
+    return ret_val;
+}
+
+/* fills ILP solution into board */
+void fill_solution(Board* b, EntryTable* et, double* sol){
+    int i, j, k;
+    PossibleEntry pt;
+    for (i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            pt = et->entries[i][j];
+            if(!pt.value){
+                for(k = pt.start_index; k < pt.end_index - 1; k++){
+                    if(sol[k] == 1.0)
+                        b->state[i][j] = et->var_arr[k];
+                }
+            }
+            b->fixed[i][j] = 1;
+        }
+    }
+}
+
+/* generates a board using ILP first it generate x cells in random
+ * then finds a solution and removes y cells from it
+ * if generation fails MAX_GENERATE_TRIES times it returns NO_SOLUTION_FOUND
+ * otherwise SOLUTION_FOUND is returned */
+int generate_using_ILP(Board* b, int x, int y){
+    EntryTable et;
+    int tries = 0;
+    double* sol = NULL;
+    while (tries < MAX_GENERATE_TRIES){
+        if(generate_random_cells(b, x) == BOARD_SETTING_ERROR){
+            tries++;
+            continue;
+        }
+        init_entry_table(&et, b);
+        sol = malloc(et.var_count * sizeof(double));
+        if(find_solution(&et, sol, ILP) == SOLUTION_FOUND){
+            /* create the solution */
+            fill_solution(b, &et, sol);
+            generate_from_solution(b, y);
+            free(sol);
+            return SOLUTION_FOUND;
+        }
+        reset_board_state(b);
+        tries++;
+        free_entry_table(&et);
+        free(sol);
+    }
+    return NO_SOLUTION_FOUND;
 }
