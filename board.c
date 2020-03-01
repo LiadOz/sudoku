@@ -221,27 +221,36 @@ int get_options_array(Board* b, int i, int j, int** arr){
  * x and y starts at 1
  * returns 1 when assignment worked
  */
-int set_cell(Board* b, int x, int y, int val){
-    if(b->fixed[x][y] == 1){
+int set_cell(Board* b, int x, int y, int val, Move** set){
+	Move* s = NULL;
+	if (b->fixed[x][y] == 1) {
+		*set = s;
         printf("Error: cell is fixed\n");
         return 0;
     }
     if(b->state[x][y] == val){
+		*set = s;
         return 1;
     }
     if(valid_set_value(b, x, y, val)){
         /* if the user added a new number the number of correct_cells goes up
          * if the user removed a number the number of correct_cells goes down */
-        if(b->state[x][y] == 0 && val != 0){
+		s->x = x;
+		s->y = y;
+		s->prevVal = b->state[x][y];
+		s->currVal = val;
+		if(b->state[x][y] == 0 && val != 0){
             b->correct_cells++;
         }
         if(b->state[x][y] != 0 && val == 0){
             b->correct_cells--;
         }
         b->state[x][y] = val;
+		*set = s;
         return 1;
     }
     else{
+		*set = s;
         printf("Error: value is invalid\n");
         return 0;
     }

@@ -8,6 +8,21 @@
  * fixed - determine wheter a cell is fixed (1) or not (0)
  * correct_cells - the number of cells inputted correctly
  */
+
+typedef struct {
+	int x;
+	int y;
+	int currVal;
+	int prevVal;
+} Move;
+
+typedef struct SetOfMoves {
+	Move* moves;
+	int size;
+	struct SetOfMoves *next;
+	struct SetOfMoves *prev;
+} SetOfMoves;
+
 typedef struct {
     int **solution;
     int **state;
@@ -16,11 +31,14 @@ typedef struct {
     int height;
     int size;
     int correct_cells;
+	SetOfMoves* movePointer;
 } Board;
+
+
 
 void init_board(Board* b, int width, int height);
 void free_board(Board* b);
-int set_cell(Board* b, int x, int y, int val);
+int set_cell(Board* b, int x, int y, int val, Move** set);
 void hint(Board* b, int x, int y);
 void sample_board(Board* p);
 void set_from_solution(Board* b, int empty_cells);

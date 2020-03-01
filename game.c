@@ -6,6 +6,7 @@
 #include "game.h"
 #include "printing.h"
 #include "solver.h"
+#include "moves.h"
 
 
 /* exits the game and frees allocated memory */
@@ -17,7 +18,9 @@ void exit_game(Board *b){
 
 /* executes commands to the board */
 int execute_command(Board *b, Command *cmd,int game_finished){
-    char* operation = cmd->name;
+	Move* curr_move = NULL;
+	SetOfMoves* pointer = NULL;
+	char* operation = cmd->name;
     int* args = cmd->args;
     int length = cmd->arg_length;
     if(operation == NULL){
@@ -28,7 +31,8 @@ int execute_command(Board *b, Command *cmd,int game_finished){
             printf(INVALID_COMMAND);
             return 0;
         }
-        if(set_cell(b, args[1]-1, args[0]-1, args[2])){
+        if(set_cell(b, args[1]-1, args[0]-1, args[2], &curr_move)){
+			init_set_command_move(b, curr_move);
             return PRINT_AFTER;
         }
         return 0;
@@ -45,8 +49,25 @@ int execute_command(Board *b, Command *cmd,int game_finished){
         solveByDBT(0, 0, b);
     }
     else if(strcmp(operation, RESTART_COMMAND) == 0){
+		restart(b, pointer);
         return RESTART_AFTER;
     }
+	else if(strcmp(operation, UNDO_COMMAND) == 0) {
+		if (undo(b)) {
+			print_change(b, UNDO_COMMAND);
+			return 1;
+		}
+		/*need to print that there are no moves undo*/
+		return 0;
+	}
+	else if (strcmp(operation, REDO_COMMAND) == 0) {
+		if (redo(b)) {
+			print_change(b, REDO_COMMAND);
+			return 1;
+		}
+		/* need to print that there are no moves redo*/
+		return 0;
+	}
     else if(strcmp(operation, EXIT_COMMAND) == 0){
         exit_game(b);
     }

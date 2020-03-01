@@ -5,6 +5,8 @@
 #define HINT_CELL_COMMAND "hint"
 #define VALIDATE_COMMAND "validate"
 #define RESTART_COMMAND "restart"
+#define UNDO_COMMAND "undo"
+#define REDO_COMMAND "redo"
 #define EXIT_COMMAND "exit"
 #define FINISHED 200
 #define PRINT_AFTER 100
