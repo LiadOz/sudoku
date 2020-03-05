@@ -1,9 +1,12 @@
+#ifndef MOVES_H
+#define MOVES_H
 
+Move* create_new_move(Board* b, int x, int y, int val);
+void add_moves_to_board(Board* b, Move* head);
+void exec_moves(Board* b, char* command, int reset);
+int undo(Board* b, int reset);
+int redo(Board* b, int reset);
+void print_change(Board* b, char* command, Move* move);
+void reset(Board* b);
 
-void move_pointer_to_end(Board* b, SetOfMoves** pointer);
-void free_moves(Board* b, SetOfMoves* pointer);
-int restart(Board* b, SetOfMoves* pointer);
-int undo(Board* b);
-int redo(Board* b);
-void init_set_command_move(Board* b, Move* curr_move);
-void print_change(Board* b, char* command);
+#endif

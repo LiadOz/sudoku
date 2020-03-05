@@ -11,19 +11,20 @@
  * correct_cells - the number of cells inputted correctly
  */
 
-typedef struct {
+typedef struct Move{
 	int x;
 	int y;
 	int currVal;
 	int prevVal;
+	struct Move* next;
 } Move;
 
-typedef struct SetOfMoves {
-	Move* moves;
-	int size;
-	struct SetOfMoves *next;
-	struct SetOfMoves *prev;
-} SetOfMoves;
+typedef struct Moves_Bundle {
+	int first;
+	Move* head;
+	struct Moves_Bundle* next;
+	struct Moves_Bundle* prev;
+} Moves_Bundle;
 
 typedef struct {
     int **solution;
@@ -33,7 +34,7 @@ typedef struct {
     int height;
     int size;
     int correct_cells;
-	SetOfMoves* movePointer;
+	Moves_Bundle* movePointer;
 } Board;
 
 
@@ -49,6 +50,6 @@ int get_options_array(Board* b, int i, int j, int** arr);
 int generate_random_cells(Board* b, int x);
 void reset_board_state(Board* b);
 void generate_from_solution(Board* b, int x);
-void autofill(Board* b);
+int autofill(Board* b, Move** head);
 
 #endif

@@ -2,11 +2,14 @@
 #include <stdio.h>
 #include "board.h"
 #include "possible_table.h"
+#include "moves.h"
+#include "game.h"
 
 /*
  * used to initialize the board
  */
 void init_board(Board* b, int width, int height){
+	Moves_Bundle* first_bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
     int i;
     int** p;
     int* p2;
@@ -53,6 +56,13 @@ void init_board(Board* b, int width, int height){
         }
         b->fixed[i] = p2;
     }
+
+	first_bundle->first = 1;
+	first_bundle->head = NULL;
+	first_bundle->prev = NULL;
+	first_bundle->next = NULL;
+
+	b->movePointer = first_bundle;
     b->width = width;
     b->height = height;
     b->size = width * height;
@@ -220,7 +230,8 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 
 /* sets board state cell to value with x, y coordinates */
-void free_set_cell(Board* b ,int x, int y, int val){
+void free_set_cell(Board* b ,int x, int y, int val, Move** move){
+	*move = create_new_move(b, x, y, val);
     b->state[x][y] = val;
 }
 
@@ -228,36 +239,27 @@ void free_set_cell(Board* b ,int x, int y, int val){
  * x and y starts at 1
  * returns 1 when assignment worked
  */
-int set_cell(Board* b, int x, int y, int val, Move** set){
-	Move* s = NULL;
+int set_cell(Board* b, int x, int y, int val, Move** move){
 	if (b->fixed[x][y] == 1) {
-		*set = s;
         printf("Error: cell is fixed\n");
         return 0;
     }
     if(b->state[x][y] == val){
-		*set = s;
         return 1;
     }
     if(valid_set_value(b, x, y, val)){
         /* if the user added a new number the number of correct_cells goes up
          * if the user removed a number the number of correct_cells goes down */
-		s->x = x;
-		s->y = y;
-		s->prevVal = b->state[x][y];
-		s->currVal = val;
 		if(b->state[x][y] == 0 && val != 0){
             b->correct_cells++;
         }
         if(b->state[x][y] != 0 && val == 0){
             b->correct_cells--;
         }
-		*set = s;
-        free_set_cell(b, x, y, val);
+        free_set_cell(b, x, y, val, move);
         return 1;
     }
     else{
-		*set = s;
         printf("Error: value is invalid\n");
         return 0;
     }
@@ -320,7 +322,10 @@ void generate_from_solution(Board* b, int x){
 
 /* autofills cells with obvious values
  * board can be not valid after */
-void autofill(Board* b){
+int autofill(Board* b, Move** head){
+	Move* curr = NULL;
+	Move* temp = NULL;
+	int first = 0;
     EntryTable et;
     PossibleEntry pt;
     int i, j;
@@ -328,9 +333,21 @@ void autofill(Board* b){
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
-            if (!pt.value && pt.count == 1)
-                free_set_cell(b, i, j, pt.valid_nums[0]);
+			if (!pt.value && pt.count == 1) {
+				if (!first) {
+					free_set_cell(b, i, j, pt.valid_nums[0], head);
+					first = 1;
+					curr = *head;
+				}
+				else {
+					free_set_cell(b, i, j, pt.valid_nums[0], &temp);
+					curr->next = temp;
+					curr = temp;
+				}
+				print_change(b, REDO_COMMAND, curr);
+			}
         }
     }
     free_entry_table(&et);
+	return first;
 }

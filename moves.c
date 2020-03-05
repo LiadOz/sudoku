@@ -4,97 +4,109 @@
 #include <string.h>
 #include "game.h"
 
-
-#include <unistd.h>
-
-void move_pointer_to_end(Board* b, SetOfMoves** pointer) {
-	SetOfMoves* curr;
-	curr = b->movePointer;
-	while (curr != NULL && curr->next != NULL) {
-		curr = curr->next;	
-	}
-	*pointer = curr;
+Move* create_new_move(Board* b, int x, int y, int val) {
+	Move* move = (Move*)malloc(sizeof(Move));
+	move->x = x;
+	move->y = y;
+	move->currVal = val;
+	move->prevVal = b->state[x][y];
+	move->next = NULL;
+	return move;
 }
 
-void free_moves(Board* b, SetOfMoves* pointer) {
-	SetOfMoves* pointer_to_free;
-	while (pointer != NULL && pointer->prev != NULL) {
-		pointer_to_free = pointer;
-		pointer = pointer->prev;
-		free(pointer_to_free->moves);
-		free(pointer_to_free);
-	}
-	b->movePointer = pointer;
-}
-
-int restart(Board* b, SetOfMoves* pointer) {
-	move_pointer_to_end(b, &pointer);
-	free_moves(b, pointer);
-	return 1;
-}
-
-int undo(Board* b) {
-	int i;
-    printf("the x is %d\n", b->movePointer->moves[0].x);
-    printf("the size is %d\n", b->movePointer->size);
-    printf("do you know w%d\n", b->movePointer->prev->moves[0].x);
-    sleep(3);
-	if (b->movePointer != NULL && b->movePointer->prev != NULL) {
-		for (i = 0; i < b->movePointer->size; i++) {
-			Move move = b->movePointer->moves[i];
-			b->state[move.x][move.y] = move.prevVal;
+void free_next_moves(Board* b) {
+	Moves_Bundle* bundle = b->movePointer->next;
+	Moves_Bundle* next_bundle;
+	Move *move, *next_move;
+	while (bundle) {
+		move = bundle->head;
+		while (move) {
+			next_move = move->next;
+			free(move);
+			move = next_move;
 		}
-		b->movePointer = b->movePointer->prev;
-		return 1;
+		next_bundle = bundle->next;
+		free(bundle);
+		bundle = next_bundle;
 	}
-	return 0;
 }
 
-int redo(Board* b) {
-	int i;
-	if (b->movePointer != NULL && b->movePointer->next != NULL) {
-		b->movePointer = b->movePointer->next;
-		for (i = 0; i < b->movePointer->size; i++) {
-			Move* move = &(b->movePointer->moves[i]);
-			b->state[move->x][move->y] = move->currVal;
-		}
-		return 1;
-	}
-	return 0;
-}
-
-void init_set_command_move(Board* b, Move* curr_move) {
-	SetOfMoves move_set;
-	Move* moves_array;
-	move_set.size = 1;
-	moves_array = malloc(move_set.size * sizeof(Move));
-	moves_array[0] = *curr_move;
-	move_set.moves = moves_array;
-	move_set.prev = b->movePointer;
+void add_moves_to_board(Board* b, Move* head) {
+	Moves_Bundle* bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
+	bundle->head = head;
 	if (b->movePointer != NULL) {
-		(b->movePointer)->next = &move_set;
+		if (b->movePointer->next != NULL) {
+			free_next_moves(b);
+		}
+		b->movePointer->next = bundle;
 	}
-	b->movePointer = &move_set;
-    printf("the x is %d\n", b->movePointer->moves[0].x);
-    printf("the size is %d\n", b->movePointer->size);
+	bundle->prev = b->movePointer;
+	bundle->next = NULL;
+	bundle->first = 0;
+	b->movePointer = bundle;
 }
 
-void print_change(Board* b, char* command) {
-	int i;
-	int length;
+void move_pointer(Board* b, char* command) {
 	if (strcmp(command, REDO_COMMAND) == 0) {
-		length = b->movePointer->size;
-		for (i = 0; i < length; i++) {
-			Move* move = &(b->movePointer->moves[i]);
-			printf("Cell (%d,%d) has changed from %d to %d",move->x, move->y, move->prevVal, move->currVal);
-		}
+		b->movePointer = b->movePointer->next;
 	}
 	else if (strcmp(command, UNDO_COMMAND) == 0) {
-		SetOfMoves* moves_before_undo = b->movePointer->next;
-		length = moves_before_undo->size;
-		for (i = 0; i < length; i++) {
-			Move* move = &(moves_before_undo->moves[i]);
-			printf("Cell (%d,%d) has changed from %d to %d", move->x, move->y, move->currVal, move->prevVal);
+		b->movePointer = b->movePointer->prev;
+	}
+}
+
+void print_change(Board* b, char* command, Move* move) {
+	if (strcmp(command, REDO_COMMAND) == 0) {
+		printf("Cell (%d,%d) has changed from %d to %d\n", move->x + 1, move->y + 1, move->prevVal, move->currVal);
+	}
+	else if (strcmp(command, UNDO_COMMAND) == 0) {
+		printf("Cell (%d,%d) has changed from %d to %d\n", move->x + 1, move->y + 1, move->currVal, move->prevVal);
+	}
+}
+
+void exec_moves(Board* b, char* command, int reset) {
+	Move* move = b->movePointer->head;
+	while (move != NULL) {
+		if (strcmp(command, REDO_COMMAND) == 0) {
+			b->state[move->x][move->y] = move->currVal;
+			if (!reset) {
+				print_change(b, REDO_COMMAND, move);
+			}
 		}
+		else if (strcmp(command, UNDO_COMMAND) == 0) {
+			b->state[move->x][move->y] = move->prevVal;
+			if (!reset) {
+				print_change(b, UNDO_COMMAND, move);
+			}
+		}
+		move = move->next;
+	}
+}
+
+int undo(Board* b, int reset) {
+	if (b->movePointer->first == 1) {
+		return 0;
+	}
+	else {
+		exec_moves(b, UNDO_COMMAND, reset);
+		move_pointer(b, UNDO_COMMAND);
+		return 1;
+	}
+}
+
+int redo(Board* b, int reset) {
+	if (b->movePointer->next == NULL) {
+		return 0;
+	}
+	else {
+		move_pointer(b, REDO_COMMAND);
+		exec_moves(b, REDO_COMMAND, reset);
+		return 1;
+	}
+}
+
+void reset(Board* b) {
+	while (b->movePointer->first != 1) {
+		undo(b, 1);
 	}
 }
