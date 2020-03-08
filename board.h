@@ -3,6 +3,9 @@
 
 #define BOARD_SETTING_ERROR -1
 #define BOARD_SET 1
+#define INIT 1
+#define EDIT 2
+#define SOLVE 3
 /*
  * Board struct:
  * solution - the last solution given by the validate method
@@ -32,6 +35,7 @@ typedef struct {
     int width;
     int height;
     int size;
+    int mode;
     int correct_cells;
 	SetOfMoves* movePointer;
 } Board;
