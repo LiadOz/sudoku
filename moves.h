@@ -8,5 +8,6 @@ int undo(Board* b, int reset);
 int redo(Board* b, int reset);
 void print_change(Board* b, char* command, Move* move);
 void reset(Board* b);
+void free_all_moves(Board* b);
 
 #endif
