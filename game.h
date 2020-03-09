@@ -7,6 +7,9 @@
 #define RESTART_COMMAND "restart"
 #define UNDO_COMMAND "undo"
 #define REDO_COMMAND "redo"
+#define NUM_SOLUTIONS_COMMAND "num_solutions"
+#define AUTOFILL_COMMAND "autofill"
+#define RESET_COMMAND "reset"
 #define EXIT_COMMAND "exit"
 #define FINISHED 200
 #define PRINT_AFTER 100

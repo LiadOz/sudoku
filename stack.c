@@ -21,23 +21,21 @@ int is_empty(Node* top) {
 	return !top;
 }
 
-void push(Node** top, int x, int y, int value) {
-	Node* node = new_node(x, y, value, 0);
+void push(Node** top, int x, int y, int value, int counter) {
+	Node* node = new_node(x, y, value, counter);
 	node->prev = *top;
 	*top = node;
 }
 
 int pop(Node** top, Board* b) {
-	Node* temp;
-    int counter;
 	if (is_empty(*top)) {
 		return 0;
 	}
 	b->state[(*top)->x][(*top)->y] = 0;
-	temp = *top;
+	Node* temp = *top;
 	*top = (*top)->prev;
-    counter = temp->counter;
-    free(temp);
+	int counter = temp->counter;
+	free(temp);
 	return counter;
 }
 

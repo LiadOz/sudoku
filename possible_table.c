@@ -121,7 +121,7 @@ int choose_random_number(EntryTable* et, Board* b, int i, int j, double thresh){
     free(cumlative_prob);
     return pt.valid_nums[min_index];
 }
-
+/*
 void fill_with_thresh(EntryTable* et, Board* b, double thresh){
     int i, j, set_value;
     for(i = 0; i < et->size; i++){
@@ -132,7 +132,7 @@ void fill_with_thresh(EntryTable* et, Board* b, double thresh){
         }
     }
 }
-
+*/
 void free_possible_entry(PossibleEntry* pe){
     free(pe->valid_nums);
     free(pe->percent);
