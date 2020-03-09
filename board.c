@@ -34,6 +34,13 @@ void init_board(Board* b, int width, int height){
     }
     b->fixed = p;
 
+    p = malloc(width * height * sizeof(int *));
+    if(p == NULL){
+        printf("Error: malloc has failed\n");
+        exit(0);
+    }
+    b->wrong = p;
+
     for(i = 0; i < width * height; i++){
         p2 = calloc(width * height, sizeof(int));
         if(p2 == NULL){
@@ -55,6 +62,12 @@ void init_board(Board* b, int width, int height){
             exit(0);
         }
         b->fixed[i] = p2;
+        p2 = calloc(width * height, sizeof(int));
+        if(p2 == NULL){
+            printf("Error: calloc has failed\n");
+            exit(0);
+        }
+        b->wrong[i] = p2;
     }
 
 	first_bundle->first = 1;
@@ -77,10 +90,12 @@ void free_board(Board* b){
         free(b->solution[i]);
         free(b->state[i]);
         free(b->fixed[i]);
+        free(b->wrong[i]);
     }
     free(b->solution);
     free(b->state);
     free(b->fixed);
+    free(b->wrong);
 }
 
 /* sets the game state to user according to solved board and a number of cells to be keep */
@@ -233,6 +248,18 @@ int get_options_array(Board* b, int i, int j, int** arr){
 /* sets board state cell to value with x, y coordinates */
 void free_set_cell(Board* b ,int x, int y, int val, Move** move){
 	*move = create_new_move(b, x, y, val);
+    /* Setting wrong cells and keeping count of wrong cells */
+    if(valid_set_value(b, x, y, val)){
+        if(b->wrong[x][y])
+            b->wrong_cells--;
+        b->wrong[x][y] = 0;
+    }
+    else{
+        if(!b->wrong[x][y])
+            b->wrong_cells++;
+        b->wrong[x][y] = 1;
+    }
+
     b->state[x][y] = val;
 }
 

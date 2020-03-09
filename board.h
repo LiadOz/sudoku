@@ -35,11 +35,13 @@ typedef struct {
     int **solution;
     int **state;
     int **fixed;
+    int **wrong;
     int width;
     int height;
     int size;
     int mode;
     int correct_cells;
+    int wrong_cells;
     int mark_errors;
 	Moves_Bundle* movePointer;
 } Board;
