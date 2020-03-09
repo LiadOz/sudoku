@@ -318,6 +318,7 @@ int ILP_hint(Board* b, int i, int j){
 
 /* gives a guess to the board using LP 
  * if no solution exits NO_SOLUTION_FOUND is returned */
+/*
 int guess_board(Board* b, double thresh){
     EntryTable et;
     double* sol = NULL;
@@ -333,6 +334,7 @@ int guess_board(Board* b, double thresh){
     free_entry_table(&et);
     return ret_val;
 }
+*/
 
 
 /* Prints scores for available values 

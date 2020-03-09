@@ -3,6 +3,7 @@
 
 #include "board.h"
 #define MAX_INPUT_SIZE 1024
+#define MAX_ARGS_SIZE 3
 #define COMMAND_EXECUTED 1
 #define COMMAND_FAILED 0
 
@@ -12,7 +13,7 @@
  * eof - determines if eof has been reached */
 typedef struct {
     char* name;
-    char* args[MAX_INPUT_SIZE-1];
+    char args[MAX_ARGS_SIZE][MAX_INPUT_SIZE-1];
     int arg_length;
 } Command;
 

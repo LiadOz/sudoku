@@ -19,6 +19,7 @@ void exit_game(Board *b){
 }
 
 /* executes commands to the board */
+/*
 int execute_command(Board *b, Command *cmd,int game_finished){
 	Move* curr_move = NULL;
 	char* operation = cmd->name;
@@ -91,8 +92,10 @@ int execute_command(Board *b, Command *cmd,int game_finished){
     }
     return 1;
 }
+*/
 
 /* gets the number of cells to keep in solution */
+/*
 int get_cells_to_keep_from_user(Board *b){
     int input;
     printf("Please enter the number of cells to fill [0-%d]:\n", b->size*b->size-1);
@@ -108,13 +111,17 @@ int get_cells_to_keep_from_user(Board *b){
     }
     return input;
 }
+*/
 
 /* initializing the board and the entire game according to board size */
 Board init_game(int width, int height){
     Board b;
     init_board(&b, width, height);
     createSolution(0, 0, &b);
+    /*
     set_from_solution(&b, get_cells_to_keep_from_user(&b));
+    */
+    set_from_solution(&b, 20);
 	printBoard(&b);
 
     return b;
