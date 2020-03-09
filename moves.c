@@ -31,6 +31,7 @@ void free_next_moves(Board* b) {
 	}
 }
 
+
 void add_moves_to_board(Board* b, Move* head) {
 	Moves_Bundle* bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
 	bundle->head = head;
@@ -109,4 +110,10 @@ void reset(Board* b) {
 	while (b->movePointer->first != 1) {
 		undo(b, 1);
 	}
+}
+
+void free_all_moves(Board* b) {
+	reset(b);
+	free_next_moves(b);
+	free(b->movePointer);
 }

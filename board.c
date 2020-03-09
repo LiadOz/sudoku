@@ -86,6 +86,7 @@ void init_board(Board* b, int width, int height){
 /* used to free allocation when program exits */
 void free_board(Board* b){
     int i;
+	free_all_moves(b);
     for(i = 0; i < b->size; i++){
         free(b->solution[i]);
         free(b->state[i]);
