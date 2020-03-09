@@ -7,20 +7,20 @@
 #include "lp_solver.h"
 #include "util.h"
 
-
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
 #define SUCCSESS 5
 #define UNUSED(x) (void)(x)
 
 #define ERRORNOUS_PRINT "Error: %s can't execute when board is errornous\n"
+#define PARAMETER_ERROR "Error: %s argument exptected %s\n"
 
 /* gets array input and args array and fills it with the number of arguemnts needed
  * returns the number of assigned arguemnts
  * according to the excuetable anything other than a number seems to be 0
  * when parsing each number gets reduced by 1
  */
-static int get_args(char* input, char** args){
+int get_args(char* input, char args[MAX_ARGS_SIZE][MAX_INPUT_SIZE-1]){
     int i = 0;
     char* token;
     token = strtok(input, COMMAND_DELIMITER);
@@ -36,7 +36,6 @@ static int get_args(char* input, char** args){
 void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
-    fflush(stdin);
     fgets(input, MAX_INPUT_SIZE, stdin);  
     strcpy(input_copy, input);
     cmd->name = strtok(input_copy, COMMAND_DELIMITER);
@@ -56,9 +55,10 @@ int edit_command(Board* b, Command* cmd){
     return -1;
 }
 int mark_errors_command(Board* b, Command* cmd){
-    int arg = check_if_int(cmd->args[0]);
-    if(arg != IS_INT){
-        printf("Error in argument 1 expected int\n");
+    int flag;
+    int arg = check_if_int(cmd->args[0], &flag);
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "1st", "int");
         return COMMAND_FAILED;
     }
     if (arg == NO_MARK_ERRORS){
@@ -242,6 +242,7 @@ int execute_command_temp(Board* b, Command* cmd){
     int i;
     User_Command uc;
     int command_found = 0;
+    b->mode = SOLVE;
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
         if(!strcmp(cmd->name, uc.name)){

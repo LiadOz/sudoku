@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = main.o game.o board.o parsing.o solver.o printing.o possible_table.o lp_solver.o wr_file.o moves.o backtrack.o stack.o
+OBJS = main.o game.o board.o parsing.o solver.o printing.o possible_table.o lp_solver.o wr_file.o moves.o backtrack.o stack.o util.o
 EXEC = sudoku
 COMP_FLAG = -ansi -g -Wall -Wextra -Werror -pedantic-errors
 GUROBI_COMP = -I/usr/local/lib/gurobi563/include
@@ -30,6 +30,8 @@ moves.o: moves.c moves.h
 backtrack.o: backtrack.c backtrack.h
 	$(CC) $(COMP_FLAG) -c $*.c
 stack.o: stack.c stack.h
+	$(CC) $(COMP_FLAG) -c $*.c
+util.o: util.c util.h
 	$(CC) $(COMP_FLAG) -c $*.c
 clean:
 	rm -f $(OBJS) $(EXEC)
