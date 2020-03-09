@@ -12,7 +12,7 @@
  * eof - determines if eof has been reached */
 typedef struct {
     char* name;
-    int args[MAX_INPUT_SIZE-1];
+    char* args[MAX_INPUT_SIZE-1];
     int arg_length;
 } Command;
 

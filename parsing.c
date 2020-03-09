@@ -4,6 +4,8 @@
 #include "parsing.h"
 #include "printing.h"
 #include "board.h"
+#include "lp_solver.h"
+#include "util.h"
 
 
 #define COMMAND_DELIMITER " \t\r\n"
@@ -11,20 +13,20 @@
 #define SUCCSESS 5
 #define UNUSED(x) (void)(x)
 
+#define ERRORNOUS_PRINT "Error: %s can't execute when board is errornous\n"
+
 /* gets array input and args array and fills it with the number of arguemnts needed
  * returns the number of assigned arguemnts
  * according to the excuetable anything other than a number seems to be 0
  * when parsing each number gets reduced by 1
  */
-static int get_args(char* input, int* args){
+static int get_args(char* input, char** args){
     int i = 0;
-    int arg;
     char* token;
     token = strtok(input, COMMAND_DELIMITER);
     token = strtok(NULL, COMMAND_DELIMITER);
     while(token != NULL){
-        arg = atoi(token);
-        args[i++] = arg;
+        strcpy(args[i++], token);
         token = strtok(NULL, COMMAND_DELIMITER);
     }
     return i;
@@ -54,10 +56,15 @@ int edit_command(Board* b, Command* cmd){
     return -1;
 }
 int mark_errors_command(Board* b, Command* cmd){
-    if (cmd->args[0] == NO_MARK_ERRORS){
+    int arg = check_if_int(cmd->args[0]);
+    if(arg != IS_INT){
+        printf("Error in argument 1 expected int\n");
+        return COMMAND_FAILED;
+    }
+    if (arg == NO_MARK_ERRORS){
         b->mark_errors = NO_MARK_ERRORS;
     }
-    else if (cmd->args[0] == MARK_ERRORS) {
+    else if (arg == MARK_ERRORS) {
         b->mark_errors = MARK_ERRORS; 
     }
     else {
@@ -78,10 +85,15 @@ int set_command(Board* b, Command* cmd){
     return -1;
 }
 int validate_command(Board* b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    if(b->wrong_cells){
+        printf(ERRORNOUS_PRINT, cmd->name);
+        return COMMAND_FAILED;
+    }
+    if(validate_board(b) == SOLUTION_FOUND)
+        printf("The board is solvable\n");
+    else
+        printf("The board is unsolvable\n");
+    return SUCCSESS;
 }
 int guess_command(Board* b, Command* cmd){
     UNUSED(b);
