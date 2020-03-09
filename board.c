@@ -67,6 +67,7 @@ void init_board(Board* b, int width, int height){
     b->height = height;
     b->size = width * height;
     b->correct_cells = 0;
+    b->mode = INIT;
 }
 
 /* used to free allocation when program exits */

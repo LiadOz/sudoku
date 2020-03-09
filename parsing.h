@@ -17,6 +17,6 @@ typedef struct {
 } Command;
 
 void user_input();
-int execute_command(Board* b, Command* cmd);
+int execute_command_temp(Board* b, Command* cmd);
 
 #endif

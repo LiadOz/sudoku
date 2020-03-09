@@ -2,12 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "parsing.h"
-#include "printing.c"
+#include "printing.h"
 #include "board.h"
 
 
 #define COMMAND_DELIMITER " \t\r\n"
-#define COMMANDS_NUM 16
+#define COMMANDS_NUM 17
 #define SUCCSESS 5
 #define UNUSED(x) (void)(x)
 
@@ -34,6 +34,7 @@ static int get_args(char* input, int* args){
 void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
+    fflush(stdin);
     fgets(input, MAX_INPUT_SIZE, stdin);  
     strcpy(input_copy, input);
     cmd->name = strtok(input_copy, COMMAND_DELIMITER);
@@ -143,9 +144,10 @@ int reset_command(Board* b, Command* cmd){
     return -1;
 }
 int exit_command(Board* b, Command* cmd){
-    UNUSED(b);
+    printf("Exiting...\n");
+    free_board(b);
+    exit(0);
     UNUSED(cmd);
-    /* TODO */
     return -1;
 }
 typedef struct {
@@ -224,13 +226,13 @@ int check_args_num(User_Command* uc, int args){
     return SUCCSESS;
 }
 
-int execute_command(Board* b, Command* cmd){
+int execute_command_temp(Board* b, Command* cmd){
     int i;
     User_Command uc;
     int command_found = 0;
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
-        if(strcmp(cmd->name, uc.name)){
+        if(!strcmp(cmd->name, uc.name)){
             command_found = 1;
             if(available_command(&uc, b->mode) == COMMAND_FAILED){
                 printf("Error: %s not available in current mode it is available in ", uc.name);

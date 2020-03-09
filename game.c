@@ -97,7 +97,7 @@ int get_cells_to_keep_from_user(Board *b){
     int input;
     printf("Please enter the number of cells to fill [0-%d]:\n", b->size*b->size-1);
     while(1){
-        scanf("%d", &input);
+        scanf("%d\n", &input);
         if(feof(stdin)){
             exit_game(b);
         }
@@ -125,13 +125,17 @@ int game_flow(){
     /* variable and board init */
     Board b = init_game(3, 3);
     Command cmd;
+    /*
     int next_command;
-    /* if the board is finished then only restart and exit should be allowed */
     int game_finished = 0; 
+    */
+    /* if the board is finished then only restart and exit should be allowed */
 
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
         user_input(&cmd);
+        execute_command_temp(&b, &cmd);
+        /*
         if (feof(stdin)){
             exit_game(&b);
         }
@@ -148,6 +152,7 @@ int game_flow(){
             b = init_game(3, 3);
             game_finished = 0;
         }
+        */
     }
     return 1;
 }
