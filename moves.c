@@ -55,7 +55,7 @@ void move_pointer(Board* b, char* command) {
 	}
 }
 
-void print_change(Board* b, char* command, Move* move) {
+void print_change(char* command, Move* move) {
 	if (strcmp(command, REDO_COMMAND) == 0) {
 		printf("Cell (%d,%d) has changed from %d to %d\n", move->x + 1, move->y + 1, move->prevVal, move->currVal);
 	}
@@ -70,13 +70,13 @@ void exec_moves(Board* b, char* command, int reset) {
 		if (strcmp(command, REDO_COMMAND) == 0) {
 			b->state[move->x][move->y] = move->currVal;
 			if (!reset) {
-				print_change(b, REDO_COMMAND, move);
+				print_change(REDO_COMMAND, move);
 			}
 		}
 		else if (strcmp(command, UNDO_COMMAND) == 0) {
 			b->state[move->x][move->y] = move->prevVal;
 			if (!reset) {
-				print_change(b, UNDO_COMMAND, move);
+				print_change(UNDO_COMMAND, move);
 			}
 		}
 		move = move->next;

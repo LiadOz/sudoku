@@ -5,7 +5,7 @@
 
 
 /*Return new node of the next empty cell*/
-Node* next_empty_cell(Board* b, int x, int y, int counter) {
+Node* next_empty_cell(Board* b, int x, int counter) {
 	Node* node = NULL;
 	int i, j;
 	for (i = x; i < b->size; i++) {
@@ -21,7 +21,7 @@ Node* next_empty_cell(Board* b, int x, int y, int counter) {
 
 /*Return new node of the first empty cell*/
 Node* first_empty_cell(Board* b) {
-	return next_empty_cell(b, 0, 0, 0);
+	return next_empty_cell(b, 0, 0);
 }
 
 int num_of_solutions(Board* b) {
@@ -39,7 +39,7 @@ int num_of_solutions(Board* b) {
 			x = node->x; y = node->y;
 			if (valid_set_value(b, x, y, node->value)) {
 				b->state[node->x][node->y] = node->value;
-				temp = next_empty_cell(b, node->x, node->y, node->counter);
+				temp = next_empty_cell(b, node->x, node->counter);
 				if (!temp) {
 					node->counter++;
 					counter = pop(&node, b);

@@ -28,13 +28,15 @@ void push(Node** top, int x, int y, int value, int counter) {
 }
 
 int pop(Node** top, Board* b) {
+    Node* temp;
+    int counter;
 	if (is_empty(*top)) {
 		return 0;
 	}
 	b->state[(*top)->x][(*top)->y] = 0;
-	Node* temp = *top;
+	temp = *top;
 	*top = (*top)->prev;
-	int counter = temp->counter;
+	counter = temp->counter;
 	free(temp);
 	return counter;
 }
