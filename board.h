@@ -6,6 +6,8 @@
 #define INIT 1
 #define EDIT 2
 #define SOLVE 3
+#define MARK_ERRORS 1
+#define NO_MARK_ERRORS 0
 /*
  * Board struct:
  * solution - the last solution given by the validate method
@@ -38,6 +40,7 @@ typedef struct {
     int size;
     int mode;
     int correct_cells;
+    int mark_errors;
 	Moves_Bundle* movePointer;
 } Board;
 

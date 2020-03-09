@@ -2,12 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include "parsing.h"
+#include "printing.c"
 #include "board.h"
 
 
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 16
 #define SUCCSESS 5
+#define UNUSED(x) (void)(x)
 
 /* gets array input and args array and fills it with the number of arguemnts needed
  * returns the number of assigned arguemnts
@@ -38,76 +40,111 @@ void user_input(Command *cmd){
     cmd->arg_length = get_args(input, cmd->args);
 }
 
-int param_in_range(Command* cmd){
-    /* TODO */
-    return -1;
-}
-
 int solve_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int edit_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int mark_errors_command(Board* b, Command* cmd){
-    /* TODO */
-    return -1;
+    if (cmd->args[0] == NO_MARK_ERRORS){
+        b->mark_errors = NO_MARK_ERRORS;
+    }
+    else if (cmd->args[0] == MARK_ERRORS) {
+        b->mark_errors = MARK_ERRORS; 
+    }
+    else {
+        printf("Error: first agument should be either %d or %d\n", NO_MARK_ERRORS, MARK_ERRORS);
+        return COMMAND_FAILED;
+    }
+    return SUCCSESS;
 }
 int print_board_command(Board* b, Command* cmd){
-    /* TODO */
-    return -1;
+    printBoard(b);
+    UNUSED(cmd);
+    return SUCCSESS;
 }
 int set_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int validate_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int guess_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int generate_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int undo_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int redo_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int save_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int hint_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int guess_hint_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int num_solutions_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int autofill_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int reset_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
 int exit_command(Board* b, Command* cmd){
+    UNUSED(b);
+    UNUSED(cmd);
     /* TODO */
     return -1;
 }
