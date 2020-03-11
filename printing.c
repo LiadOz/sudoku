@@ -3,7 +3,7 @@
 #include "printing.h"
 /*GENERIC LINE LENGTH CALCULATOR*/
 int lineCalc(Board* b) {
-	return 4*b->size + b->height + 1;
+	return 4 * b->size + b->height + 1;
 }
 
 /*BOARD PRINTER BY POINTER*/
@@ -28,28 +28,27 @@ void printBoard(Board* b) {
 			/*PIPE LOGIC*/
 			if (y % b->width == 0) {
 				printf("|");
-				/*PRINT SPACE AFTER PIPE*/
-				if (y < b->size - 1) {
-					printf(" ");
-				}
 			}
 			/*FIXED CELL*/
 			if (b->fixed[x][y] == 1) {
-				printf(".%2d", b->state[x][y]);
+				printf(" ");
+				printf("%2d.", b->state[x][y]);
 			}
 			else if (b->wrong[x][y] == 1) {
-				printf("*%2d", b->state[x][y]);
+				printf(" ");
+				printf("%2d*", b->state[x][y]);
 			}
 			/*REGULAR CELL*/
 			else if (b->state[x][y] != 0) {
-				printf(" %d", b->state[x][y]);
+				printf(" ");
+				printf("%2d", b->state[x][y]);
+				printf(" ");
 			}
 			/*EMPTY CELL*/
 			else {
-				printf("  ");
+				printf(" ");
+				printf("   ");
 			}
-			/*PRINT SPACE AFTER DIGIT*/
-			printf(" ");
 		}
 		printf("|");
 		/*LAST LINE BREAK*/
