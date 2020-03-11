@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wr_file.h"
 #include "board.h"
+#include "util.h"
 #define READ_MAX_SIZE 3
 
 /* save the board state to location 'file_path' */
@@ -40,6 +42,7 @@ int read_file(Board* b, char file_path[]){
     int i, j;
     char temp[READ_MAX_SIZE];
     char* point_ptr;
+    int val, fixed, is_number;
     fptr = fopen(file_path, "r");
     if(fptr == NULL){
         printf("Error opening file");
@@ -54,12 +57,16 @@ int read_file(Board* b, char file_path[]){
             fscanf(fptr, "%s", temp);
             point_ptr = strchr(temp, '.');
             if(point_ptr == NULL)
-                b->state[i][j] = atoi(temp);
+                fixed = 0;
             else {
                 *point_ptr = '\0';
-                b->state[i][j] = atoi(temp);
-                b->fixed[i][j] = 1;
+                fixed = 1;
             }
+            val = check_if_int(temp, &is_number);
+            if(is_number == NOT_INT || val > b->size)
+                return FILE_FORMAT_ERROR;
+            b->state[i][j] = val;
+            b->fixed[i][j] = fixed;
         }
     }
 
