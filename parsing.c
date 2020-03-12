@@ -11,6 +11,7 @@
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
 #define SUCCSESS 5
+#define DEFAULT_BOARD_SIZE 3
 #define UNUSED(x) (void)(x)
 
 #define ERRORNOUS_PRINT "Error: %s can't execute when board is errornous\n"
@@ -43,9 +44,7 @@ void user_input(Command *cmd){
     cmd->arg_length = get_args(input, cmd->args);
 }
 
-int solve_command(Board** b, Command* cmd){
-    int status;
-    status = read_file(b, cmd->args[0]);
+int get_file_status(int status){
     if(status == FILE_FORMAT_ERROR){
         printf("Error: file format is incorrect\n");
         return COMMAND_FAILED;
@@ -58,14 +57,30 @@ int solve_command(Board** b, Command* cmd){
         printf("Error: file is not solvable\n");
         return COMMAND_FAILED;
     }
+    return SUCCSESS;
+}
+
+int solve_command(Board** b, Command* cmd){
+    if(get_file_status(read_file(b, cmd->args[0])) == COMMAND_FAILED)
+        return COMMAND_FAILED;
     (*b)->mode = SOLVE;
     return SUCCSESS;
 }
 int edit_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    Board* new_b;
+    if(cmd->arg_length == 0){
+        free_board(*b);
+        new_b = malloc(sizeof(Board));
+        init_board(new_b, DEFAULT_BOARD_SIZE, DEFAULT_BOARD_SIZE);
+        new_b->mode = EDIT;
+        *b = new_b;
+    }
+    else{
+        if(get_file_status(read_file(b, cmd->args[0])) == COMMAND_FAILED)
+            return COMMAND_FAILED;
+        (*b)->mode = EDIT;
+    }
+    return SUCCSESS;
 }
 int mark_errors_command(Board** b, Command* cmd){
     int flag;

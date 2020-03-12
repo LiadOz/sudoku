@@ -86,17 +86,20 @@ void init_board(Board* b, int width, int height){
 /* used to free allocation when program exits */
 void free_board(Board* b){
     int i;
-	free_all_moves(b);
-    for(i = 0; i < b->size; i++){
-        free(b->solution[i]);
-        free(b->state[i]);
-        free(b->fixed[i]);
-        free(b->wrong[i]);
+    if(b){
+        free_all_moves(b);
+        for(i = 0; i < b->size; i++){
+            free(b->solution[i]);
+            free(b->state[i]);
+            free(b->fixed[i]);
+            free(b->wrong[i]);
+        }
+        free(b->solution);
+        free(b->state);
+        free(b->fixed);
+        free(b->wrong);
+        free(b);
     }
-    free(b->solution);
-    free(b->state);
-    free(b->fixed);
-    free(b->wrong);
 }
 
 /* sets the game state to user according to solved board and a number of cells to be keep */

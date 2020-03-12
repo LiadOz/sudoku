@@ -38,7 +38,7 @@ int save_board(Board* b, char file_path[]){
 
 /* Reads a file and creates a new board according to it */
 int read_file(Board** old_b, char file_path[]){
-    Board* b = malloc(sizeof(Board));
+    Board* b = (Board *)malloc(sizeof(Board));
     FILE *fptr;
     unsigned long pos;
     int height, width;
@@ -89,9 +89,9 @@ int read_file(Board** old_b, char file_path[]){
         }
     }
     fclose(fptr);
-    if(*old_b)
+    if(*old_b){
         free_board(*old_b);
+    }
     *old_b = b;
-    free(b);
     return FILE_READ;
 }
