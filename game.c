@@ -130,7 +130,10 @@ Board init_game(int width, int height){
 /* the entire game loop mechanic */
 int game_flow(){
     /* variable and board init */
+    /*
     Board b = init_game(3, 3);
+    */
+    Board* b = NULL;
     Command cmd;
     /*
     int next_command;
@@ -141,7 +144,7 @@ int game_flow(){
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
         user_input(&cmd);
-        execute_command_temp(&b, &cmd);
+        execute_command(&b, &cmd);
         /*
         if (feof(stdin)){
             exit_game(&b);

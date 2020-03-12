@@ -5,6 +5,7 @@
 #include "printing.h"
 #include "board.h"
 #include "lp_solver.h"
+#include "wr_file.h"
 #include "util.h"
 
 #define COMMAND_DELIMITER " \t\r\n"
@@ -42,19 +43,31 @@ void user_input(Command *cmd){
     cmd->arg_length = get_args(input, cmd->args);
 }
 
-int solve_command(Board* b, Command* cmd){
+int solve_command(Board** b, Command* cmd){
+    int status;
+    status = read_file(b, cmd->args[0]);
+    if(status == FILE_FORMAT_ERROR){
+        printf("Error: file format is incorrect\n");
+        return COMMAND_FAILED;
+    }
+    if(status == FILE_NOT_FOUND){
+        printf("Error: file not found\n");
+        return COMMAND_FAILED;
+    }
+    if(status == FILE_UNSOLVABLE){
+        printf("Error: file is not solvable\n");
+        return COMMAND_FAILED;
+    }
+    (*b)->mode = SOLVE;
+    return SUCCSESS;
+}
+int edit_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int edit_command(Board* b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
-}
-int mark_errors_command(Board* b, Command* cmd){
+int mark_errors_command(Board** b, Command* cmd){
     int flag;
     int arg = check_if_int(cmd->args[0], &flag);
     if(flag == NOT_INT){
@@ -62,10 +75,10 @@ int mark_errors_command(Board* b, Command* cmd){
         return COMMAND_FAILED;
     }
     if (arg == NO_MARK_ERRORS){
-        b->mark_errors = NO_MARK_ERRORS;
+        (*b)->mark_errors = NO_MARK_ERRORS;
     }
     else if (arg == MARK_ERRORS) {
-        b->mark_errors = MARK_ERRORS; 
+        (*b)->mark_errors = MARK_ERRORS; 
     }
     else {
         printf("Error: first agument should be either %d or %d\n", NO_MARK_ERRORS, MARK_ERRORS);
@@ -73,91 +86,91 @@ int mark_errors_command(Board* b, Command* cmd){
     }
     return SUCCSESS;
 }
-int print_board_command(Board* b, Command* cmd){
-    printBoard(b);
+int print_board_command(Board** b, Command* cmd){
+    printBoard(*b);
     UNUSED(cmd);
     return SUCCSESS;
 }
-int set_command(Board* b, Command* cmd){
+int set_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int validate_command(Board* b, Command* cmd){
-    if(b->wrong_cells){
+int validate_command(Board** b, Command* cmd){
+    if((*b)->wrong_cells){
         printf(ERRORNOUS_PRINT, cmd->name);
         return COMMAND_FAILED;
     }
-    if(validate_board(b) == SOLUTION_FOUND)
+    if(validate_board(*b) == SOLUTION_FOUND)
         printf("The board is solvable\n");
     else
         printf("The board is unsolvable\n");
     return SUCCSESS;
 }
-int guess_command(Board* b, Command* cmd){
+int guess_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int generate_command(Board* b, Command* cmd){
+int generate_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int undo_command(Board* b, Command* cmd){
+int undo_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int redo_command(Board* b, Command* cmd){
+int redo_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int save_command(Board* b, Command* cmd){
+int save_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int hint_command(Board* b, Command* cmd){
+int hint_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int guess_hint_command(Board* b, Command* cmd){
+int guess_hint_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int num_solutions_command(Board* b, Command* cmd){
+int num_solutions_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int autofill_command(Board* b, Command* cmd){
+int autofill_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int reset_command(Board* b, Command* cmd){
+int reset_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
-int exit_command(Board* b, Command* cmd){
+int exit_command(Board** b, Command* cmd){
     printf("Exiting...\n");
-    free_board(b);
+    free_board(*b);
     exit(0);
     UNUSED(cmd);
     return -1;
@@ -165,7 +178,7 @@ int exit_command(Board* b, Command* cmd){
 typedef struct {
     char* name;
     int optional_arg;
-    int (*func)(Board* b, Command* cmd);
+    int (*func)(Board** board_pointer, Command* cmd);
     int args_num;
     int available_in_solve;
     int available_in_edit;
@@ -173,7 +186,7 @@ typedef struct {
 } User_Command;
 
 User_Command commands[] = {
-    {"solve",           0, solve_command,           0, 1, 1, 1},
+    {"solve",           0, solve_command,           1, 1, 1, 1},
     {"edit",            1, edit_command,            1, 1, 1, 1},
     {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0},
     {"print_board",     0, print_board_command,     0, 1, 1, 0},
@@ -238,16 +251,18 @@ int check_args_num(User_Command* uc, int args){
     return SUCCSESS;
 }
 
-int execute_command_temp(Board* b, Command* cmd){
-    int i;
+int execute_command(Board** board_pointer, Command* cmd){
+    Board* b = *board_pointer;
+    int i, mode = INIT;
     User_Command uc;
     int command_found = 0;
-    b->mode = SOLVE;
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
         if(!strcmp(cmd->name, uc.name)){
             command_found = 1;
-            if(available_command(&uc, b->mode) == COMMAND_FAILED){
+            if(b != NULL)
+                mode = b->mode;
+            if(available_command(&uc, mode) == COMMAND_FAILED){
                 printf("Error: %s not available in current mode it is available in ", uc.name);
                 print_available_modes(&uc);
                 return COMMAND_FAILED;
@@ -257,7 +272,7 @@ int execute_command_temp(Board* b, Command* cmd){
                 return COMMAND_FAILED;
             }
             /* stages 3-5 of checking are handled in the following funcion */
-            return uc.func(b, cmd);
+            return uc.func(board_pointer, cmd);
         }
     }
     if (command_found == 0){

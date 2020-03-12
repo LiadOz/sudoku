@@ -7,6 +7,7 @@
 #include "util.h"
 #define READ_MAX_SIZE 3
 
+#include "printing.h"
 /* save the board state to location 'file_path' */
 int save_board(Board* b, char file_path[]){
     FILE *fptr;
@@ -36,40 +37,58 @@ int save_board(Board* b, char file_path[]){
 }
 
 /* Reads a file and creates a new board according to it */
-int read_file(Board* b, char file_path[]){
+int read_file(Board** old_b, char file_path[]){
+    Board* b = malloc(sizeof(Board));
     FILE *fptr;
+    unsigned long pos;
     int height, width;
     int i, j;
     char temp[READ_MAX_SIZE];
     char* point_ptr;
-    int val, fixed, is_number;
+    int val;
     fptr = fopen(file_path, "r");
     if(fptr == NULL){
-        printf("Error opening file");
-        return -1;
+        return FILE_NOT_FOUND;
     }
     fscanf(fptr, "%d", &height);
     fscanf(fptr, "%d", &width);
+    if(height < 1 || width < 1)
+        return FILE_FORMAT_ERROR;
 
     init_board(b, width, height);
+    /* first insert the fixed values and check whether the board is solvable */
+    pos = ftell(fptr);
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            if(fscanf(fptr, "%s", temp) == EOF)
+                return FILE_FORMAT_ERROR;
+            point_ptr = strchr(temp, '.');
+            if(point_ptr != NULL){
+                *point_ptr = '\0';
+                val = atoi(temp);
+                if(val > b->size)
+                    return FILE_FORMAT_ERROR;
+                else if(!valid_set_value(b, i, j, val))
+                    return FILE_UNSOLVABLE;
+                b->state[i][j] = val;
+                b->fixed[i][j] = 1;
+            }
+        }
+    }
+    fseek(fptr, pos, 0);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             fscanf(fptr, "%s", temp);
             point_ptr = strchr(temp, '.');
-            if(point_ptr == NULL)
-                fixed = 0;
-            else {
-                *point_ptr = '\0';
-                fixed = 1;
+            if(point_ptr == NULL){
+                val = atoi(temp);
+                if(val > b->size)
+                    return FILE_FORMAT_ERROR;
+                b->state[i][j] = val;
             }
-            val = check_if_int(temp, &is_number);
-            if(is_number == NOT_INT || val > b->size)
-                return FILE_FORMAT_ERROR;
-            b->state[i][j] = val;
-            b->fixed[i][j] = fixed;
         }
     }
-
     fclose(fptr);
-    return 1;
+    *old_b = b;
+    return FILE_READ;
 }
