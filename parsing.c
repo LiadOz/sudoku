@@ -170,7 +170,8 @@ int reset_command(Board** b, Command* cmd){
 }
 int exit_command(Board** b, Command* cmd){
     printf("Exiting...\n");
-    free_board(*b);
+    if(*b)
+        free_board(*b);
     exit(0);
     UNUSED(cmd);
     return -1;
