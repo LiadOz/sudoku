@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+/* currentrly these are not correct:
+ * save_board - should check for errornous in edit mode
+ */
 #include "parsing.h"
 #include "printing.h"
 #include "board.h"
@@ -148,10 +151,8 @@ int redo_command(Board** b, Command* cmd){
     return -1;
 }
 int save_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    /* errornous should be checked in edit mode*/
+    return get_file_status(save_board(*b, cmd->args[0]));
 }
 int hint_command(Board** b, Command* cmd){
     UNUSED(b);
@@ -202,6 +203,9 @@ typedef struct {
 } User_Command;
 
 User_Command commands[] = {
+/*  Command String:        Activated Function       arguments
+ *                                                  modes (S, E, I)
+ */
     {"solve",           0, solve_command,           1, 1, 1, 1},
     {"edit",            1, edit_command,            1, 1, 1, 1},
     {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0},
