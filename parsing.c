@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+/* validate board does not work currently because errornous is not checked */
 #include "parsing.h"
 #include "printing.h"
 #include "board.h"
@@ -44,6 +45,13 @@ void user_input(Command *cmd){
     cmd->arg_length = get_args(input, cmd->args);
 }
 
+/******************************************************************************
+ * This function is used in order to handle the return values 
+ * of the save and load functions and to print the correct Error messages.
+ * 
+ * Returns COMMAND_FAILED if the read or write was unsuccsessful otherwise
+ * SUCCESSS is returned.
+*****************************************************************************/
 int get_file_status(int status){
     if(status == FILE_FORMAT_ERROR){
         printf("Error: file format is incorrect\n");
@@ -60,14 +68,38 @@ int get_file_status(int status){
     return SUCCSESS;
 }
 
+/***********************************************************************************************************
+ * The following functions are triggered when an appropriate string is inserted by the user.
+ * Each function gets a pointer to the board pointer so each function can change the board to a new board.
+ * A Command struct is passed to the function which contains the user arguments and function name.
+ * Each function should satisfy the following guidelines:
+ * 1. Each parameter should be in the correct range -
+ *      make sure arguments variables types are correct (for example int instead of string).
+ *      make sure arguemnts are in the correct range (for example for threshold between 0.0 to 1.0).
+ * 2. The board is not errornous in certain commands.
+ * 3. Successful execution of the method.
+ * 
+ * Each error should be followed by descriptive error message.
+ * For concerning errornous use the ERRORNOUS_PRINT string.
+ * For error in parameter use PARAMETER_ERROR string.
+ * for example:
+ *      printf(PARAMETER_ERROR, "1st", "int") -> Error: 1st argument exptected int 
+ * 
+ * A succsessful command returnes SUCCESS if something went wrong returns COMMAND_FAILED.
+***********************************************************************************************************/
+
+/* starts a saved puzzle in solve mode */
 int solve_command(Board** b, Command* cmd){
     if(get_file_status(read_file(b, cmd->args[0])) == COMMAND_FAILED)
         return COMMAND_FAILED;
     (*b)->mode = SOLVE;
     return SUCCSESS;
 }
+
+/* starts a saved puzzle in edit mode */
 int edit_command(Board** b, Command* cmd){
     Board* new_b;
+    /* if no param is added a new board is initialized */
     if(cmd->arg_length == 0){
         free_board(*b);
         new_b = malloc(sizeof(Board));
@@ -82,6 +114,8 @@ int edit_command(Board** b, Command* cmd){
     }
     return SUCCSESS;
 }
+
+/* Sets the mark errors flag in the board */
 int mark_errors_command(Board** b, Command* cmd){
     int flag;
     int arg = check_if_int(cmd->args[0], &flag);
@@ -101,17 +135,20 @@ int mark_errors_command(Board** b, Command* cmd){
     }
     return SUCCSESS;
 }
+
 int print_board_command(Board** b, Command* cmd){
     printBoard(*b);
     UNUSED(cmd);
     return SUCCSESS;
 }
+
 int set_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int validate_command(Board** b, Command* cmd){
     if((*b)->wrong_cells){
         printf(ERRORNOUS_PRINT, cmd->name);
@@ -123,66 +160,77 @@ int validate_command(Board** b, Command* cmd){
         printf("The board is unsolvable\n");
     return SUCCSESS;
 }
+
 int guess_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int generate_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int undo_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int redo_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int save_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int hint_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int guess_hint_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int num_solutions_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int autofill_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int reset_command(Board** b, Command* cmd){
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
     return -1;
 }
+
 int exit_command(Board** b, Command* cmd){
     printf("Exiting...\n");
     if(*b)
@@ -191,6 +239,11 @@ int exit_command(Board** b, Command* cmd){
     UNUSED(cmd);
     return -1;
 }
+
+/******************************************************************************
+ * User_Command contains each command available to the user.
+ * using an array it is possible to iterate over each command.
+*****************************************************************************/
 typedef struct {
     char* name;
     int optional_arg;
@@ -221,6 +274,7 @@ User_Command commands[] = {
     {"exit",            0, exit_command,            0, 1, 1, 1}
 };
 
+/* Checks if the following command is a available in a mode */
 int available_command(User_Command* uc, int mode){
     switch (mode) {
         case INIT:
@@ -239,6 +293,8 @@ int available_command(User_Command* uc, int mode){
     return COMMAND_FAILED;
 }
 
+/* Used when a command failes due to not being in the correct mode
+ * and prints a descriptive information about where the command is available. */
 void print_available_modes(User_Command* uc){
     int add_delim = 0;
     if(uc->available_in_init){
@@ -260,6 +316,7 @@ void print_available_modes(User_Command* uc){
     printf(".\n");
 }
 
+/* Checks for the correct number of params */
 int check_args_num(User_Command* uc, int args){
         if((!uc->optional_arg && args != uc->args_num) || (uc->optional_arg && args > uc->args_num)){
             return COMMAND_FAILED;
@@ -267,6 +324,11 @@ int check_args_num(User_Command* uc, int args){
     return SUCCSESS;
 }
 
+/******************************************************************************
+ * This function itereates over each of the options for user command
+ * it find the correct command checks if the command is available in the current mode,
+ * checks the number of paramters passed and the starts command execution.
+*****************************************************************************/
 int execute_command(Board** board_pointer, Command* cmd){
     Board* b = *board_pointer;
     int i, mode = INIT;
@@ -295,5 +357,5 @@ int execute_command(Board** board_pointer, Command* cmd){
         printf("Error: invalid command\n");
         return COMMAND_FAILED;
     }
-    return -1;
+    return SUCCSESS;
 }
