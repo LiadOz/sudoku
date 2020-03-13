@@ -14,8 +14,7 @@ int save_board(Board* b, char file_path[]){
     int i, j;
     fptr = fopen(file_path, "w");
     if(fptr == NULL){
-        printf("Error opening file");
-        return -1;
+        return FILE_NOT_FOUND;
     }
     /* prints height and width */
     fprintf(fptr, "%d %d\n", b->height, b->width);
@@ -33,7 +32,7 @@ int save_board(Board* b, char file_path[]){
     }
 
     fclose(fptr);
-    return 1;
+    return FILE_SAVED;
 }
 
 /* Reads a file and creates a new board according to it */
