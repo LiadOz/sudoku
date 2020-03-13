@@ -12,6 +12,7 @@
 #define LP_SOLVER_H 
 #include "board.h"
 
+#define GUROBI_ERROR -3
 #define SOLUTION_FOUND -1
 #define NO_SOLUTION_FOUND -2
 

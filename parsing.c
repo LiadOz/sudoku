@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-/* validate board does not work currently because errornous is not checked */
+/* currentrly these are not correct:
+ * save_board - should check for errornous in edit mode
+ * validate board does not work currently because errornous is not checked */
 #include "parsing.h"
 #include "printing.h"
 #include "board.h"
@@ -190,10 +192,8 @@ int redo_command(Board** b, Command* cmd){
 }
 
 int save_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    /* errornous should be checked in edit mode*/
+    return get_file_status(save_board(*b, cmd->args[0]));
 }
 
 int hint_command(Board** b, Command* cmd){
@@ -255,6 +255,9 @@ typedef struct {
 } User_Command;
 
 User_Command commands[] = {
+/*  Command String:        Activated Function       arguments
+ *                                                  modes (S, E, I)
+ */
     {"solve",           0, solve_command,           1, 1, 1, 1},
     {"edit",            1, edit_command,            1, 1, 1, 1},
     {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0},
@@ -334,6 +337,9 @@ int execute_command(Board** board_pointer, Command* cmd){
     int i, mode = INIT;
     User_Command uc;
     int command_found = 0;
+    /* ignoring empty command */
+    if(!cmd->name)
+        return SUCCSESS;
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
         if(!strcmp(cmd->name, uc.name)){
