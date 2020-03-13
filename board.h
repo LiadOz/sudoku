@@ -50,10 +50,6 @@ typedef struct {
 
 void init_board(Board* b, int width, int height);
 void free_board(Board* b);
-int set_cell(Board* b, int x, int y, int val, Move** set);
-void hint(Board* b, int x, int y);
-void sample_board(Board* p);
-void set_from_solution(Board* b, int empty_cells);
 int valid_set_value(Board* b, int x, int y, int val);
 int get_options_array(Board* b, int i, int j, int** arr);
 int generate_random_cells(Board* b, int x);
