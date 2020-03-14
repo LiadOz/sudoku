@@ -7,6 +7,8 @@
 #include "lp_solver.h"
 #include "wr_file.h"
 #include "util.h"
+#include "moves.h"
+#include "backtrack.h"
 
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
@@ -106,12 +108,49 @@ int print_board_command(Board** b, Command* cmd){
     UNUSED(cmd);
     return SUCCSESS;
 }
-int set_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+
+int* set_params_int(Command* cmd, int* flags) {
+	int* args = (int*)malloc(cmd->arg_length * sizeof(int));
+	int i;
+	for (i = 0; i < cmd->arg_length; i++) {
+		args[i] = check_if_int(cmd->args[i], &(flags[i]));
+		if (flags[i] == NOT_INT) {
+			if (i == 0) {
+				printf(PARAMETER_ERROR, "1st", "int");
+			} else if (i == 1) {
+				printf(PARAMETER_ERROR, "2nd", "int");
+			}
+			else {
+				printf(PARAMETER_ERROR, "3rd", "int");
+			}
+		}
+	}
+	return args;
 }
+
+int set_command(Board** b, Command* cmd){
+	int* flags = calloc(cmd->arg_length, sizeof(int));
+	Move* curr_move = NULL;
+	int i;
+	int* args = set_params_int(cmd, flags);
+	for (i = 0; i < cmd->arg_length; i++) {
+		if (flags[i] == NOT_INT) {
+			free(args);
+			return COMMAND_FAILED;
+		}
+	}
+
+
+	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2], &curr_move)) {
+		if (curr_move) {
+			add_moves_to_board(*b, curr_move);
+		}
+		printBoard(*b);
+		return SUCCSESS;
+	}
+	return COMMAND_FAILED;
+}
+
 int validate_command(Board** b, Command* cmd){
     if((*b)->wrong_cells){
         printf(ERRORNOUS_PRINT, cmd->name);
@@ -136,16 +175,22 @@ int generate_command(Board** b, Command* cmd){
     return -1;
 }
 int undo_command(Board** b, Command* cmd){
-    UNUSED(b);
     UNUSED(cmd);
-    /* TODO */
-    return -1;
+	if (undo(*b, 0)) {
+		printBoard(*b);
+		return SUCCSESS;
+	}
+	printf("There are no moves to undo\n");
+    return COMMAND_FAILED;
 }
 int redo_command(Board** b, Command* cmd){
-    UNUSED(b);
     UNUSED(cmd);
-    /* TODO */
-    return -1;
+	if (redo(*b, 0)) {
+		printBoard(*b);
+		return SUCCSESS;
+	}
+	printf("There are no moves to redo\n");
+	return COMMAND_FAILED;
 }
 int save_command(Board** b, Command* cmd){
     UNUSED(b);
@@ -166,16 +211,19 @@ int guess_hint_command(Board** b, Command* cmd){
     return -1;
 }
 int num_solutions_command(Board** b, Command* cmd){
-    UNUSED(b);
     UNUSED(cmd);
-    /* TODO */
-    return -1;
+	printf("There are %d possible solutions to this borad\n", num_of_solutions(*b));
+    return SUCCSESS;
 }
 int autofill_command(Board** b, Command* cmd){
-    UNUSED(b);
+	Move* curr_move = NULL;
     UNUSED(cmd);
-    /* TODO */
-    return -1;
+	if (autofill(*b, &curr_move)) {
+		add_moves_to_board(*b, curr_move);
+	}
+	printBoard(*b);
+	return SUCCSESS;
+	
 }
 int reset_command(Board** b, Command* cmd){
     UNUSED(b);

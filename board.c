@@ -376,7 +376,7 @@ int autofill(Board* b, Move** head){
 					curr->next = temp;
 					curr = temp;
 				}
-				print_change(b, REDO_COMMAND, curr);
+				print_change(REDO_COMMAND, curr);
 			}
         }
     }
