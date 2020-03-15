@@ -164,6 +164,7 @@ Board init_game(int width, int height){
     createSolution(0, 0, &b);
     set_from_solution(&b, get_cells_to_keep_from_user(&b));
     set_from_solution(&b, 20);
+	*/
 	printBoard(&b);
 
     return b;

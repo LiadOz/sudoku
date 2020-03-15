@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "possible_table.h"
 #include "board.h"
+#include "moves.h"
 /* takes a board state and create the constraints and variables needed for gurobi */
 
 #define RANDOM_DIGITS 1000
@@ -121,18 +122,20 @@ int choose_random_number(EntryTable* et, Board* b, int i, int j, double thresh){
     free(cumlative_prob);
     return pt.valid_nums[min_index];
 }
-/*
+
 void fill_with_thresh(EntryTable* et, Board* b, double thresh){
     int i, j, set_value;
+    new_commit(b);
     for(i = 0; i < et->size; i++){
         for(j = 0; j < et->size; j++){
             set_value = choose_random_number(et, b, i, j, thresh);
             if(set_value != 0)
-                set_cell(b, i, j, set_value);
+                free_set_cell(b, i, j, set_value);
         }
     }
+    finish_commit(b);
 }
-*/
+
 void free_possible_entry(PossibleEntry* pe){
     free(pe->valid_nums);
     free(pe->percent);

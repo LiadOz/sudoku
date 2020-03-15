@@ -14,12 +14,14 @@
 #include "util.h"
 #include "moves.h"
 #include "backtrack.h"
+#include "game.h"
 
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
 #define SUCCSESS 5
 #define DEFAULT_BOARD_SIZE 3
 #define UNUSED(x) (void)(x)
+#define ARGS_OUT_OF_RANGE "The parameters are out of range\n"
 
 #define ERRORNOUS_PRINT "Error: %s can't execute when board is errornous\n"
 
@@ -149,16 +151,6 @@ int print_board_command(Board** b, Command* cmd){
 }
 
 int set_command(Board** b, Command* cmd){
-    /* temp */
-
-    new_commit(*b);
-    free_set_cell(*b, atoi(cmd->args[0]),atoi(cmd->args[1]),atoi(cmd->args[2]));
-    finish_commit(*b);
-
-
-
-
-    /*
 	int* flags = calloc(cmd->arg_length, sizeof(int));
 	Move* curr_move = NULL;
 	int i;
@@ -169,16 +161,21 @@ int set_command(Board** b, Command* cmd){
 			return COMMAND_FAILED;
 		}
 	}
+	if (out_of_range(*b, args)) {
+		printf("%s",ARGS_OUT_OF_RANGE);
+		return COMMAND_FAILED;
+	}
 
-	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2], &curr_move)) {
+	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2], &curr_move, RECORD)) {
 		if (curr_move) {
+			print_change(REDO_COMMAND, curr_move);
 			add_moves_to_board(*b, curr_move);
 		}
 		printBoard(*b);
 		return SUCCSESS;
 	}
-    */
 	return SUCCSESS;
+	printf("Cell (%d,%d) is fixed\n", args[0] - 1, args[1] - 1);
 }
 
 int validate_command(Board** b, Command* cmd){
