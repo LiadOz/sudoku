@@ -298,14 +298,13 @@ void generate_from_solution(Board* b, Board* solved, int x){
         }
     }
     /* filling the solution into the board */
+    new_commit(b);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
-            /* start recording */
-            /* use set cell here */
-            b->state[i][j] = solved->state[i][j];
-            /* stop recording */
+            free_set_cell(b, i, j, solved->state[i][j]);
         }
     }
+    finish_commit(b);
 }
 
 /* autofills cells with obvious values

@@ -318,7 +318,6 @@ int ILP_hint(Board* b, int i, int j){
 
 /* gives a guess to the board using LP 
  * if no solution exits NO_SOLUTION_FOUND is returned */
-/*
 int guess_board(Board* b, double thresh){
     EntryTable et;
     double* sol = NULL;
@@ -334,7 +333,6 @@ int guess_board(Board* b, double thresh){
     free_entry_table(&et);
     return ret_val;
 }
-*/
 
 
 /* Prints scores for available values 
@@ -390,6 +388,7 @@ int generate_using_ILP(Board* b, int x, int y){
     int tries = 0;
     double* sol = NULL;
     while (tries < MAX_GENERATE_TRIES){
+        /* using a board copy to match the solved state */
         create_board_copy(b, board_copy);
         if(generate_random_cells(board_copy, x) == BOARD_SETTING_ERROR){
             tries++;
@@ -402,6 +401,7 @@ int generate_using_ILP(Board* b, int x, int y){
             fill_solution(board_copy, &et, sol);
             generate_from_solution(b, board_copy, y);
             free(sol);
+            free_board(board_copy);
             return SOLUTION_FOUND;
         }
         reset_board_state(board_copy);

@@ -4,6 +4,7 @@
 /* currentrly these are not correct:
  * save_board - should check for errornous in edit mode
  * generate - needs to check if there are X empty values
+ * guess - need to check errornous
  * validate board does not work currently because errornous is not checked */
 #include "parsing.h"
 #include "printing.h"
@@ -153,7 +154,6 @@ int set_command(Board** b, Command* cmd){
     new_commit(*b);
     free_set_cell(*b, atoi(cmd->args[0]),atoi(cmd->args[1]),atoi(cmd->args[2]));
     finish_commit(*b);
-    printBoard(*b);
 
 
 
@@ -178,9 +178,7 @@ int set_command(Board** b, Command* cmd){
 		return SUCCSESS;
 	}
     */
-    UNUSED(b);
-    UNUSED(cmd);
-	return COMMAND_FAILED;
+	return SUCCSESS;
 }
 
 int validate_command(Board** b, Command* cmd){
@@ -196,10 +194,20 @@ int validate_command(Board** b, Command* cmd){
 }
 
 int guess_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    /* need to check for errornous */
+    /* need to check for float between 0.0 to 1.0 */
+    int flag;
+    float val = check_if_float(cmd->args[0], &flag);
+    if(flag == NOT_FLOAT){
+        printf(PARAMETER_ERROR, "1st", "float");
+        return COMMAND_FAILED;
+    }
+    if(val < 0 || val > 1.0){
+        printf(PARAMETER_ERROR, "1st", "a number between 0.0 and 1.0");
+        return COMMAND_FAILED;
+    }
+    guess_board(*b, atof(cmd->args[0]));
+    return SUCCSESS;
 }
 
 int generate_command(Board** b, Command* cmd){
@@ -229,13 +237,12 @@ int generate_command(Board** b, Command* cmd){
     }
     generate_using_ILP(*b, first_arg, second_arg);
     /* TODO */
-    return -1;
+    return SUCCSESS;
 }
 
 int undo_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	if (undo(*b, 0)) {
-		printBoard(*b);
 		return SUCCSESS;
 	}
 	printf("There are no moves to undo\n");
@@ -245,7 +252,6 @@ int undo_command(Board** b, Command* cmd){
 int redo_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	if (redo(*b, 0)) {
-		printBoard(*b);
 		return SUCCSESS;
 	}
 	printf("There are no moves to redo\n");
@@ -279,7 +285,6 @@ int num_solutions_command(Board** b, Command* cmd){
 
 int autofill_command(Board** b, Command* cmd){
 	autofill(*b);
-	printBoard(*b);
     UNUSED(cmd);
 	return SUCCSESS;
 	
@@ -312,29 +317,30 @@ typedef struct {
     int available_in_solve;
     int available_in_edit;
     int available_in_init;
+    int print_after;
 } User_Command;
 
 User_Command commands[] = {
-/*  Command String:        Activated Function       arguments
+/*  Command String:        Activated Function       arguments and print_after
  *                                                  modes (S, E, I)
  */
-    {"solve",           0, solve_command,           1, 1, 1, 1},
-    {"edit",            1, edit_command,            1, 1, 1, 1},
-    {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0},
-    {"print_board",     0, print_board_command,     0, 1, 1, 0},
-    {"set",             0, set_command,             3, 1, 1, 0},
-    {"validate",        0, validate_command,        0, 1, 1, 0},
-    {"guess",           0, guess_command,           1, 1, 0, 0},
-    {"generate",        0, generate_command,        2, 0, 1, 0},
-    {"undo",            0, undo_command,            0, 1, 1, 0},
-    {"redo",            0, redo_command,            0, 1, 1, 0},
-    {"save",            0, save_command,            1, 1, 1, 0},
-    {"hint",            0, hint_command,            2, 1, 0, 0},
-    {"guess_hint",      0, guess_hint_command,      2, 1, 0, 0},
-    {"num_solutions",   0, num_solutions_command,   0, 1, 1, 0},
-    {"autofill",        0, autofill_command,        0, 1, 0, 0},
-    {"reset",           0, reset_command,           0, 1, 1, 0},
-    {"exit",            0, exit_command,            0, 1, 1, 1}
+    {"solve",           0, solve_command,           1, 1, 1, 1, 1},
+    {"edit",            1, edit_command,            1, 1, 1, 1, 1},
+    {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0, 0},
+    {"print_board",     0, print_board_command,     0, 1, 1, 0, 0},
+    {"set",             0, set_command,             3, 1, 1, 0, 1},
+    {"validate",        0, validate_command,        0, 1, 1, 0, 0},
+    {"guess",           0, guess_command,           1, 1, 0, 0, 1},
+    {"generate",        0, generate_command,        2, 0, 1, 0, 1},
+    {"undo",            0, undo_command,            0, 1, 1, 0, 1},
+    {"redo",            0, redo_command,            0, 1, 1, 0, 1},
+    {"save",            0, save_command,            1, 1, 1, 0, 0},
+    {"hint",            0, hint_command,            2, 1, 0, 0, 0},
+    {"guess_hint",      0, guess_hint_command,      2, 1, 0, 0, 0},
+    {"num_solutions",   0, num_solutions_command,   0, 1, 1, 0, 0},
+    {"autofill",        0, autofill_command,        0, 1, 0, 0, 1},
+    {"reset",           0, reset_command,           0, 1, 1, 0, 1},
+    {"exit",            0, exit_command,            0, 1, 1, 1, 0}
 };
 
 /* Checks if the following command is a available in a mode */
@@ -420,7 +426,13 @@ int execute_command(Board** board_pointer, Command* cmd){
                 return COMMAND_FAILED;
             }
             /* stages 3-5 of checking are handled in the following funcion */
-            return uc.func(board_pointer, cmd);
+            if(uc.func(board_pointer, cmd) == SUCCSESS){
+                if(uc.print_after)
+                    printBoard(*board_pointer);
+                return SUCCSESS;
+            }
+            else
+                return COMMAND_FAILED;
         }
     }
     if (command_found == 0){

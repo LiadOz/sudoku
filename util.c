@@ -15,6 +15,16 @@ int check_if_int(char* s, int* flag){
     return num;
 }
 
+/* Returns NOT_FLOAT if is not float
+ * if it is int it returns the number */
+float check_if_float(char* s, int* flag){
+    float val;
+    if(sscanf(s, "%f", &val) != 0)
+        return val;
+    *flag = NOT_FLOAT;
+    return 0;
+}
+
 int* set_params_int(Command* cmd, int* flags) {
 	int* args = (int*)malloc(cmd->arg_length * sizeof(int));
 	int i;
