@@ -3,6 +3,7 @@
 #include <stdlib.h>
 /* currentrly these are not correct:
  * save_board - should check for errornous in edit mode
+ * generate - needs to check if there are X empty values
  * validate board does not work currently because errornous is not checked */
 #include "parsing.h"
 #include "printing.h"
@@ -149,6 +150,13 @@ int print_board_command(Board** b, Command* cmd){
 }
 
 int set_command(Board** b, Command* cmd){
+    /* temp */
+	/*
+    new_commit(*b);
+    free_set_cell(*b, atoi(cmd->args[0]),atoi(cmd->args[1]),atoi(cmd->args[2]));
+    finish_commit(*b);
+    printBoard(*b);
+	*/
 	int* flags = calloc(cmd->arg_length, sizeof(int));
 	Move* curr_move = NULL;
 	int i;
@@ -173,6 +181,7 @@ int set_command(Board** b, Command* cmd){
 		return SUCCSESS;
 	}
 	printf("Cell (%d,%d) is fixed\n", args[0] - 1, args[1] - 1);
+
 	return COMMAND_FAILED;
 }
 
@@ -196,8 +205,31 @@ int guess_command(Board** b, Command* cmd){
 }
 
 int generate_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
+    int flag;
+    int second_arg, first_arg = check_if_int(cmd->args[0], &flag);
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "1st", "int");
+        return COMMAND_FAILED;
+    }
+    if (first_arg < 0){
+        printf(PARAMETER_ERROR, "1st", "non-negative value");
+        return COMMAND_FAILED;
+    }
+    /* check for X empty cells */
+    second_arg = check_if_int(cmd->args[1], &flag);
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "2nd", "int");
+        return COMMAND_FAILED;
+    }
+    if (second_arg <= 0){
+        printf(PARAMETER_ERROR, "2nd", "positive value");
+        return COMMAND_FAILED;
+    }
+    if (second_arg > (*b)->size){
+        printf(PARAMETER_ERROR, "2nd", "size less than number of cells");
+        return COMMAND_FAILED;
+    }
+    generate_using_ILP(*b, first_arg, second_arg);
     /* TODO */
     return -1;
 }
@@ -248,12 +280,9 @@ int num_solutions_command(Board** b, Command* cmd){
 }
 
 int autofill_command(Board** b, Command* cmd){
-	Move* curr_move = NULL;
-    UNUSED(cmd);
-	if (autofill(*b, &curr_move)) {
-		add_moves_to_board(*b, curr_move);
-	}
+	autofill(*b);
 	printBoard(*b);
+    UNUSED(cmd);
 	return SUCCSESS;
 	
 }
@@ -261,7 +290,10 @@ int autofill_command(Board** b, Command* cmd){
 int reset_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	reset(*b);
+<<<<<<< HEAD
 	printBoard(*b);
+=======
+>>>>>>> ea4637cf0c99f49169c3665ff85aba38193961bf
     return SUCCSESS;
 }
 
@@ -371,6 +403,10 @@ int execute_command(Board** board_pointer, Command* cmd){
     int i, mode = INIT;
     User_Command uc;
     int command_found = 0;
+    /* exits on eof */
+    if (feof(stdin)){
+        exit_command(board_pointer, cmd);
+    }
     /* ignoring empty command */
     if(!cmd->name)
         return SUCCSESS;

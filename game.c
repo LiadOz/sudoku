@@ -10,14 +10,57 @@
 #include "moves.h"
 #include "backtrack.h"
 
+/* the entire game loop mechanic */
+int game_flow(){
+    /* variable and board init */
+    /*
+    Board b = init_game(3, 3);
+    */
+    Board* b = NULL;
+    Command cmd;
+    /*
+    int next_command;
+    int game_finished = 0; 
+    */
+    /* if the board is finished then only restart and exit should be allowed */
+
+    /* the game loop starts until the user uses the exit command or finished the board */
+    while(1){
+        user_input(&cmd);
+        execute_command(&b, &cmd);
+        /*
+        if (feof(stdin)){
+            exit_game(&b);
+        }
+        next_command = execute_command(&b, &cmd, game_finished);
+        if(next_command == PRINT_AFTER){
+            printBoard(&b);
+            if(b.correct_cells == b.size * b.size){
+                printf("Puzzle solved successfully\n");
+                game_finished = FINISHED;
+            }
+        }
+        if(next_command == RESTART_AFTER){
+            free_board(&b);
+            b = init_game(3, 3);
+            game_finished = 0;
+        }
+        */
+    }
+    return 1;
+}
+
+/*****************************************************************
+ * ******************* HW3 Code *********************************
+ ****************************************************************/
 
 /* exits the game and frees allocated memory */
+/*
 void exit_game(Board *b){
     printf("Exiting...\n");
     free_board(b);
     exit(0);
-}
-
+} */
 /* executes commands to the board */
 /*
 int execute_command(Board *b, Command *cmd,int game_finished){
@@ -114,55 +157,15 @@ int get_cells_to_keep_from_user(Board *b){
 */
 
 /* initializing the board and the entire game according to board size */
+/*
 Board init_game(int width, int height){
     Board b;
     init_board(&b, width, height);
     createSolution(0, 0, &b);
-    /*
     set_from_solution(&b, get_cells_to_keep_from_user(&b));
     set_from_solution(&b, 20);
 	*/
 	printBoard(&b);
 
     return b;
-}
-
-/* the entire game loop mechanic */
-int game_flow(){
-    /* variable and board init */
-    /*
-    Board b = init_game(3, 3);
-    */
-    Board* b = NULL;
-    Command cmd;
-    /*
-    int next_command;
-    int game_finished = 0; 
-    */
-    /* if the board is finished then only restart and exit should be allowed */
-
-    /* the game loop starts until the user uses the exit command or finished the board */
-    while(1){
-        user_input(&cmd);
-        execute_command(&b, &cmd);
-        /*
-        if (feof(stdin)){
-            exit_game(&b);
-        }
-        next_command = execute_command(&b, &cmd, game_finished);
-        if(next_command == PRINT_AFTER){
-            printBoard(&b);
-            if(b.correct_cells == b.size * b.size){
-                printf("Puzzle solved successfully\n");
-                game_finished = FINISHED;
-            }
-        }
-        if(next_command == RESTART_AFTER){
-            free_board(&b);
-            b = init_game(3, 3);
-            game_finished = 0;
-        }
-        */
-    }
-    return 1;
-}
+}*/

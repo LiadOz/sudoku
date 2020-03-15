@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "game.h"
+#include "moves.h"
 
 Move* create_new_move(Board* b, int x, int y, int val) {
 	Move* move = (Move*)malloc(sizeof(Move));
@@ -69,19 +70,13 @@ void exec_moves(Board* b, char* command, int reset) {
 	Move* move = b->movePointer->head;
 	while (move != NULL) {
 		if (strcmp(command, REDO_COMMAND) == 0) {
-			set_cell(b, move->x, move->y, move->currVal,&move, 0);
-			/*
-			b->state[move->x][move->y] = move->currVal;
-			*/
+			set_cell(b, move->x, move->y, move->currVal, &move, 0);
 			if (!reset) {
 				print_change(REDO_COMMAND, move);
 			}
 		}
 		else if (strcmp(command, UNDO_COMMAND) == 0) {
 			set_cell(b, move->x, move->y, move->prevVal, &move, 0);
-			/*
-			b->state[move->x][move->y] = move->prevVal;
-			*/
 			if (!reset) {
 				print_change(UNDO_COMMAND, move);
 			}
@@ -122,4 +117,55 @@ void free_all_moves(Board* b) {
 	reset(b);
 	free_next_moves(b);
 	free(b->movePointer);
+}
+
+/* creating a container to store the next moves */
+void new_commit(Board* b){
+    Moves_Bundle* new_commit = malloc(sizeof(Moves_Bundle));
+    new_commit->first = 0;
+    new_commit->commited = !COMMITED;
+    new_commit->head = NULL;
+    new_commit->next = NULL;
+    new_commit->prev = b->movePointer;
+
+    /* setting move in list and freeing reversed moves */
+	if (b->movePointer != NULL) {
+		if (b->movePointer->next != NULL) {
+			free_next_moves(b);
+		}
+		b->movePointer->next = new_commit;
+    }
+	b->movePointer = new_commit;
+}
+
+/* adds a move to last uncommited bundle */
+void add_move(Board* b, int x, int y, int val){
+    Move* move;
+    Moves_Bundle* curr_bundle = b->movePointer;
+    if(curr_bundle->commited == COMMITED)
+        return;
+
+    /* creating the move */
+    move = (Move*)malloc(sizeof(Move));
+    move->x = x;
+    move->y = y;
+    move->currVal = val;
+    move->prevVal = b->state[x][y];
+    move->next = NULL;
+
+    /* appending move */
+    if(curr_bundle->head){
+        curr_bundle->tail->next = move;
+        curr_bundle->tail = move;
+    }
+    else{
+        curr_bundle->head = move;
+        curr_bundle->tail = move;
+    }
+
+}
+
+/* closes the commit */
+void finish_commit(Board *b){
+    b->movePointer->commited = COMMITED;
 }

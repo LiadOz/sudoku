@@ -246,6 +246,7 @@ int get_options_array(Board* b, int i, int j, int** arr){
 *****************************************************************************/
 
 /* sets board state cell to value with x, y coordinates */
+
 void free_set_cell(Board* b ,int x, int y, int val, Move** move, int record){
 
 	if (record) {
@@ -261,8 +262,12 @@ void free_set_cell(Board* b ,int x, int y, int val, Move** move, int record){
 		b->wrong_cells++;
 	}
 	
+/*
+void free_set_cell(Board* b ,int x, int y, int val){
+    add_move(b, x, y, val);
     b->state[x][y] = val;
 }
+*/
 
 /* sets a cell to value with x, y coordinates
  * x and y starts at 1
@@ -322,33 +327,42 @@ int generate_random_cells(Board* b, int x){
 }
 
 /* randomly selects x cells to remove from state */
-void generate_from_solution(Board* b, int x){
+void generate_from_solution(Board* b, Board* solved, int x){
+	int i, j;
     int r_x, r_y;
+    /* removing cells from the solved board */
     while(x > 0){
         r_x = rand() % b->size;
         r_y = rand() % b->size;
-        if(b->state[r_x][r_y]){
-            b->state[r_x][r_y] = 0;
-            b->fixed[r_x][r_y] = 0;
+        if(solved->state[r_x][r_y]){
+            solved->state[r_x][r_y] = 0;
             x--;
+        }
+    }
+    /* filling the solution into the board */
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            /* start recording */
+            /* use set cell here */
+            b->state[i][j] = solved->state[i][j];
+            /* stop recording */
         }
     }
 }
 
 /* autofills cells with obvious values
  * board can be not valid after */
-int autofill(Board* b, Move** head){
-	Move* curr = NULL;
-	Move* temp = NULL;
-	int first = 0;
+void autofill(Board* b){
     EntryTable et;
     PossibleEntry pt;
     int i, j;
     init_entry_table(&et, b);
+    new_commit(b);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
 			if (!pt.value && pt.count == 1) {
+<<<<<<< HEAD
 				if (!first) {
 					free_set_cell(b, i, j, pt.valid_nums[0], head, RECORD);
 					first = 1;
@@ -360,11 +374,24 @@ int autofill(Board* b, Move** head){
 					curr = temp;
 				}
 				print_change(REDO_COMMAND, curr);
+=======
+                free_set_cell(b, i, j, pt.valid_nums[0]);
+                printf("Cell (%d,%d) has changed to %d\n", i, j, pt.valid_nums[0]);
+>>>>>>> ea4637cf0c99f49169c3665ff85aba38193961bf
 			}
         }
     }
     free_entry_table(&et);
-	return first;
+    finish_commit(b);
+}
+
+/* duplicates a board state to another board */
+void create_board_copy(Board* orig, Board* new_b){
+    int i, j;
+    init_board(new_b, orig->width, orig->height);
+    for(i = 0; i < orig->size; i++)
+        for(j = 0; j < orig->size; j++)
+            new_b->state[i][j] = orig->state[i][j];
 }
 
 /*************************************************************************
