@@ -296,15 +296,25 @@ int generate_random_cells(Board* b, int x){
 }
 
 /* randomly selects x cells to remove from state */
-void generate_from_solution(Board* b, int x){
+void generate_from_solution(Board* b, Board* solved, int x){
+	int i, j;
     int r_x, r_y;
+    /* removing cells from the solved board */
     while(x > 0){
         r_x = rand() % b->size;
         r_y = rand() % b->size;
-        if(b->state[r_x][r_y]){
-            b->state[r_x][r_y] = 0;
-            b->fixed[r_x][r_y] = 0;
+        if(solved->state[r_x][r_y]){
+            solved->state[r_x][r_y] = 0;
             x--;
+        }
+    }
+    /* filling the solution into the board */
+    for(i = 0; i < b->size; i++){
+        for(j = 0; j < b->size; j++){
+            /* start recording */
+            /* use set cell here */
+            b->state[i][j] = solved->state[i][j];
+            /* stop recording */
         }
     }
 }
@@ -339,6 +349,15 @@ int autofill(Board* b, Move** head){
     }
     free_entry_table(&et);
 	return first;
+}
+
+/* duplicates a board state to another board */
+void create_board_copy(Board* orig, Board* new_b){
+    int i, j;
+    init_board(new_b, orig->width, orig->height);
+    for(i = 0; i < orig->size; i++)
+        for(j = 0; j < orig->size; j++)
+            new_b->state[i][j] = orig->state[i][j];
 }
 
 /*************************************************************************

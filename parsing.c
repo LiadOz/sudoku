@@ -147,6 +147,7 @@ int print_board_command(Board** b, Command* cmd){
 }
 
 int set_command(Board** b, Command* cmd){
+    /*
 	int* flags = calloc(cmd->arg_length, sizeof(int));
 	Move* curr_move = NULL;
 	int i;
@@ -165,6 +166,9 @@ int set_command(Board** b, Command* cmd){
 		printBoard(*b);
 		return SUCCSESS;
 	}
+    */
+    UNUSED(b);
+    UNUSED(cmd);
 	return COMMAND_FAILED;
 }
 
@@ -188,6 +192,26 @@ int guess_command(Board** b, Command* cmd){
 }
 
 int generate_command(Board** b, Command* cmd){
+    int flag;
+    int second_arg, first_arg = check_if_int(cmd->args[0], &flag);
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "1st", "int");
+        return COMMAND_FAILED;
+    }
+    if (first_arg <= 0){
+        printf(PARAMETER_ERROR, "1st", "positive value");
+        return COMMAND_FAILED;
+    }
+    second_arg = check_if_int(cmd->args[1], &flag);
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "2nd", "int");
+        return COMMAND_FAILED;
+    }
+    if (second_arg <= 0){
+        printf(PARAMETER_ERROR, "2nd", "positive value");
+        return COMMAND_FAILED;
+    }
+    generate_using_ILP(*b, first_arg, second_arg);
     UNUSED(b);
     UNUSED(cmd);
     /* TODO */
@@ -252,7 +276,7 @@ int autofill_command(Board** b, Command* cmd){
 
 int reset_command(Board** b, Command* cmd){
     UNUSED(cmd);
-	reset(b);
+	reset(*b);
     return SUCCSESS;
 }
 

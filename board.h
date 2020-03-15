@@ -54,7 +54,8 @@ int valid_set_value(Board* b, int x, int y, int val);
 int get_options_array(Board* b, int i, int j, int** arr);
 int generate_random_cells(Board* b, int x);
 void reset_board_state(Board* b);
-void generate_from_solution(Board* b, int x);
+void generate_from_solution(Board* b, Board* solved, int x);
 int autofill(Board* b, Move** head);
+void create_board_copy(Board* orig, Board* new_b);
 
 #endif
