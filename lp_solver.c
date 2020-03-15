@@ -151,7 +151,7 @@ int find_solution(EntryTable* et, double* sol, int mode){
     GRBenv *env = NULL;
     GRBmodel *model = NULL;
     char* vtype;
-    double* obj;
+    double* obj = NULL;
     int i, size, optimstatus, error = 0;
     int ret_val = NO_SOLUTION_FOUND;
     double objval;
