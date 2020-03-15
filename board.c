@@ -102,20 +102,9 @@ void free_board(Board* b){
     }
 }
 
-/* sets the game state to user according to solved board and a number of cells to be keep */
-void set_from_solution(Board* b, int empty_cells){
-    int r_x, r_y;
-    b->correct_cells = empty_cells;
-    while(empty_cells > 0){
-        r_x = rand() % b->size;
-        r_y = rand() % b->size;
-        if(b->fixed[r_y][r_x] == 0){
-            b->state[r_y][r_x] = b->solution[r_y][r_x];
-            b->fixed[r_y][r_x] = 1;
-            empty_cells--;
-        }
-    }
-}
+/******************************************************************************
+ ************************** Core logic for sudoku ****************************
+*****************************************************************************/
 
 /* checks if number exists in array if true return 1 */
 int number_in_array(int* arr, int number, int size){
@@ -248,11 +237,13 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 }
 
+/****************************************************************************
+ ********************** End of core logic for sudoku ************************
+*****************************************************************************/
 
 /* sets board state cell to value with x, y coordinates */
 void free_set_cell(Board* b ,int x, int y, int val, Move** move){
 	*move = create_new_move(b, x, y, val);
-    /* Setting wrong cells and keeping count of wrong cells */
     if(valid_set_value(b, x, y, val)){
         if(b->wrong[x][y])
             b->wrong_cells--;
@@ -267,40 +258,6 @@ void free_set_cell(Board* b ,int x, int y, int val, Move** move){
     b->state[x][y] = val;
 }
 
-/* sets a cell to value with x, y coordinates
- * x and y starts at 1
- * returns 1 when assignment worked
- */
-int set_cell(Board* b, int x, int y, int val, Move** move){
-	if (b->fixed[x][y] == 1) {
-        printf("Error: cell is fixed\n");
-        return 0;
-    }
-    if(b->state[x][y] == val){
-        return 1;
-    }
-    if(valid_set_value(b, x, y, val)){
-        /* if the user added a new number the number of correct_cells goes up
-         * if the user removed a number the number of correct_cells goes down */
-		if(b->state[x][y] == 0 && val != 0){
-            b->correct_cells++;
-        }
-        if(b->state[x][y] != 0 && val == 0){
-            b->correct_cells--;
-        }
-        free_set_cell(b, x, y, val, move);
-        return 1;
-    }
-    else{
-        printf("Error: value is invalid\n");
-        return 0;
-    }
-}
-
-/* gives hint to cell (x, y) when they start at 1 */
-void hint(Board* b, int x, int y){
-    printf("Hint: set cell to %d\n", b->solution[x][y]);
-}
 
 /* resest the state of the board */
 void reset_board_state(Board* b){
@@ -383,3 +340,60 @@ int autofill(Board* b, Move** head){
     free_entry_table(&et);
 	return first;
 }
+
+/*************************************************************************
+ ************************ CODE FROM HW3 **********************************
+ ************************************************************************/
+
+/* sets the game state to user according to solved board and a number of cells to be keep */
+/*
+void set_from_solution(Board* b, int empty_cells){
+    int r_x, r_y;
+    b->correct_cells = empty_cells;
+    while(empty_cells > 0){
+        r_x = rand() % b->size;
+        r_y = rand() % b->size;
+        if(b->fixed[r_y][r_x] == 0){
+            b->state[r_y][r_x] = b->solution[r_y][r_x];
+            b->fixed[r_y][r_x] = 1;
+            empty_cells--;
+        }
+    }
+}*/
+
+/* gives hint to cell (x, y) when they start at 1 */
+/*
+void hint(Board* b, int x, int y){
+    printf("Hint: set cell to %d\n", b->solution[x][y]);
+} */
+
+/* sets a cell to value with x, y coordinates
+ * x and y starts at 1
+ * returns 1 when assignment worked
+ */
+/*
+int set_cell(Board* b, int x, int y, int val, Move** move){
+	if (b->fixed[x][y] == 1) {
+        printf("Error: cell is fixed\n");
+        return 0;
+    }
+    if(b->state[x][y] == val){
+        return 1;
+    }
+    if(valid_set_value(b, x, y, val)){
+        * if the user added a new number the number of correct_cells goes up
+         * if the user removed a number the number of correct_cells goes down *
+		if(b->state[x][y] == 0 && val != 0){
+            b->correct_cells++;
+        }
+        if(b->state[x][y] != 0 && val == 0){
+            b->correct_cells--;
+        }
+        free_set_cell(b, x, y, val, move);
+        return 1;
+    }
+    else{
+        printf("Error: value is invalid\n");
+        return 0;
+    }
+}*/
