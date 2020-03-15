@@ -26,7 +26,9 @@ typedef struct Move{
 
 typedef struct Moves_Bundle {
 	int first;
+    int commited;
 	Move* head;
+    Move* tail;
 	struct Moves_Bundle* next;
 	struct Moves_Bundle* prev;
 } Moves_Bundle;
@@ -55,7 +57,8 @@ int get_options_array(Board* b, int i, int j, int** arr);
 int generate_random_cells(Board* b, int x);
 void reset_board_state(Board* b);
 void generate_from_solution(Board* b, Board* solved, int x);
-int autofill(Board* b, Move** head);
+void autofill(Board* b);
 void create_board_copy(Board* orig, Board* new_b);
+void free_set_cell(Board* b, int x, int y, int val);
 
 #endif

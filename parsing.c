@@ -3,6 +3,7 @@
 #include <stdlib.h>
 /* currentrly these are not correct:
  * save_board - should check for errornous in edit mode
+ * generate - needs to check if there are X empty values
  * validate board does not work currently because errornous is not checked */
 #include "parsing.h"
 #include "printing.h"
@@ -147,6 +148,16 @@ int print_board_command(Board** b, Command* cmd){
 }
 
 int set_command(Board** b, Command* cmd){
+    /* temp */
+
+    new_commit(*b);
+    free_set_cell(*b, atoi(cmd->args[0]),atoi(cmd->args[1]),atoi(cmd->args[2]));
+    finish_commit(*b);
+    printBoard(*b);
+
+
+
+
     /*
 	int* flags = calloc(cmd->arg_length, sizeof(int));
 	Move* curr_move = NULL;
@@ -198,10 +209,11 @@ int generate_command(Board** b, Command* cmd){
         printf(PARAMETER_ERROR, "1st", "int");
         return COMMAND_FAILED;
     }
-    if (first_arg <= 0){
-        printf(PARAMETER_ERROR, "1st", "positive value");
+    if (first_arg < 0){
+        printf(PARAMETER_ERROR, "1st", "non-negative value");
         return COMMAND_FAILED;
     }
+    /* check for X empty cells */
     second_arg = check_if_int(cmd->args[1], &flag);
     if(flag == NOT_INT){
         printf(PARAMETER_ERROR, "2nd", "int");
@@ -211,9 +223,11 @@ int generate_command(Board** b, Command* cmd){
         printf(PARAMETER_ERROR, "2nd", "positive value");
         return COMMAND_FAILED;
     }
+    if (second_arg > (*b)->size){
+        printf(PARAMETER_ERROR, "2nd", "size less than number of cells");
+        return COMMAND_FAILED;
+    }
     generate_using_ILP(*b, first_arg, second_arg);
-    UNUSED(b);
-    UNUSED(cmd);
     /* TODO */
     return -1;
 }
@@ -264,12 +278,9 @@ int num_solutions_command(Board** b, Command* cmd){
 }
 
 int autofill_command(Board** b, Command* cmd){
-	Move* curr_move = NULL;
-    UNUSED(cmd);
-	if (autofill(*b, &curr_move)) {
-		add_moves_to_board(*b, curr_move);
-	}
+	autofill(*b);
 	printBoard(*b);
+    UNUSED(cmd);
 	return SUCCSESS;
 	
 }

@@ -242,19 +242,8 @@ int get_options_array(Board* b, int i, int j, int** arr){
 *****************************************************************************/
 
 /* sets board state cell to value with x, y coordinates */
-void free_set_cell(Board* b ,int x, int y, int val, Move** move){
-	*move = create_new_move(b, x, y, val);
-    if(valid_set_value(b, x, y, val)){
-        if(b->wrong[x][y])
-            b->wrong_cells--;
-        b->wrong[x][y] = 0;
-    }
-    else{
-        if(!b->wrong[x][y])
-            b->wrong_cells++;
-        b->wrong[x][y] = 1;
-    }
-
+void free_set_cell(Board* b ,int x, int y, int val){
+    add_move(b, x, y, val);
     b->state[x][y] = val;
 }
 
@@ -321,34 +310,23 @@ void generate_from_solution(Board* b, Board* solved, int x){
 
 /* autofills cells with obvious values
  * board can be not valid after */
-int autofill(Board* b, Move** head){
-	Move* curr = NULL;
-	Move* temp = NULL;
-	int first = 0;
+void autofill(Board* b){
     EntryTable et;
     PossibleEntry pt;
     int i, j;
     init_entry_table(&et, b);
+    new_commit(b);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
 			if (!pt.value && pt.count == 1) {
-				if (!first) {
-					free_set_cell(b, i, j, pt.valid_nums[0], head);
-					first = 1;
-					curr = *head;
-				}
-				else {
-					free_set_cell(b, i, j, pt.valid_nums[0], &temp);
-					curr->next = temp;
-					curr = temp;
-				}
-				print_change(REDO_COMMAND, curr);
+                free_set_cell(b, i, j, pt.valid_nums[0]);
+                printf("Cell (%d,%d) has changed to %d\n", i, j, pt.valid_nums[0]);
 			}
         }
     }
     free_entry_table(&et);
-	return first;
+    finish_commit(b);
 }
 
 /* duplicates a board state to another board */
