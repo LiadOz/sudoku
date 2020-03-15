@@ -8,6 +8,9 @@
 #define SOLVE 3
 #define MARK_ERRORS 1
 #define NO_MARK_ERRORS 0
+#define RECORD 1
+#define FIXED_CELL 0
+#define SUCCESS 1
 /*
  * Board struct:
  * solution - the last solution given by the validate method
@@ -56,5 +59,6 @@ int generate_random_cells(Board* b, int x);
 void reset_board_state(Board* b);
 void generate_from_solution(Board* b, int x);
 int autofill(Board* b, Move** head);
+int set_cell(Board* b, int x, int y, int val, Move** move, int record);
 
 #endif

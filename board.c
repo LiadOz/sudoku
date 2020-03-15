@@ -4,6 +4,10 @@
 #include "possible_table.h"
 #include "moves.h"
 #include "game.h"
+#include "util.h"
+
+#define UNUSED(x) (void)(x)
+
 
 /*
  * used to initialize the board
@@ -242,22 +246,44 @@ int get_options_array(Board* b, int i, int j, int** arr){
 *****************************************************************************/
 
 /* sets board state cell to value with x, y coordinates */
-void free_set_cell(Board* b ,int x, int y, int val, Move** move){
-	*move = create_new_move(b, x, y, val);
-    if(valid_set_value(b, x, y, val)){
-        if(b->wrong[x][y])
-            b->wrong_cells--;
-        b->wrong[x][y] = 0;
-    }
-    else{
-        if(!b->wrong[x][y])
-            b->wrong_cells++;
-        b->wrong[x][y] = 1;
-    }
+void free_set_cell(Board* b ,int x, int y, int val, Move** move, int record){
 
+	if (record) {
+		*move = create_new_move(b, x, y, val);
+	}
+	else {
+		UNUSED(*move);
+	}
+
+	
+	if (check_cell_errorness(b, x, y, val)) {
+		b->wrong[x][y] = 1;
+		b->wrong_cells++;
+	}
+	
     b->state[x][y] = val;
 }
 
+/* sets a cell to value with x, y coordinates
+ * x and y starts at 1
+ * record param is an indicator for record the moves to board or not
+ * returns 1 when assignment worked
+ */
+
+int set_cell(Board* b, int x, int y, int val, Move** move, int record) {
+	if (b->fixed[x][y] == 1) {
+		return FIXED_CELL;
+	}
+	if (b->state[x][y] == 0 && val != 0) {
+		b->correct_cells++;
+	}
+	if (b->state[x][y] != 0 && val == 0) {
+		b->correct_cells--;
+	}
+	free_set_cell(b, x, y, val, move, record);
+	
+	return SUCCESS;
+}
 
 /* resest the state of the board */
 void reset_board_state(Board* b){
@@ -324,12 +350,12 @@ int autofill(Board* b, Move** head){
             pt = et.entries[i][j];
 			if (!pt.value && pt.count == 1) {
 				if (!first) {
-					free_set_cell(b, i, j, pt.valid_nums[0], head);
+					free_set_cell(b, i, j, pt.valid_nums[0], head, RECORD);
 					first = 1;
 					curr = *head;
 				}
 				else {
-					free_set_cell(b, i, j, pt.valid_nums[0], &temp);
+					free_set_cell(b, i, j, pt.valid_nums[0], &temp, RECORD);
 					curr->next = temp;
 					curr = temp;
 				}
@@ -367,33 +393,3 @@ void hint(Board* b, int x, int y){
     printf("Hint: set cell to %d\n", b->solution[x][y]);
 } */
 
-/* sets a cell to value with x, y coordinates
- * x and y starts at 1
- * returns 1 when assignment worked
- */
-/*
-int set_cell(Board* b, int x, int y, int val, Move** move){
-	if (b->fixed[x][y] == 1) {
-        printf("Error: cell is fixed\n");
-        return 0;
-    }
-    if(b->state[x][y] == val){
-        return 1;
-    }
-    if(valid_set_value(b, x, y, val)){
-        * if the user added a new number the number of correct_cells goes up
-         * if the user removed a number the number of correct_cells goes down *
-		if(b->state[x][y] == 0 && val != 0){
-            b->correct_cells++;
-        }
-        if(b->state[x][y] != 0 && val == 0){
-            b->correct_cells--;
-        }
-        free_set_cell(b, x, y, val, move);
-        return 1;
-    }
-    else{
-        printf("Error: value is invalid\n");
-        return 0;
-    }
-}*/
