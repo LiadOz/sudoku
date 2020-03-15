@@ -6,6 +6,7 @@
 #define MAX_ARGS_SIZE 3
 #define COMMAND_EXECUTED 1
 #define COMMAND_FAILED 0
+#define PARAMETER_ERROR "Error: %s argument exptected %s\n"
 
 /* name - name of the function to execute
  * args - the arguments
