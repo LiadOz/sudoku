@@ -337,6 +337,10 @@ int execute_command(Board** board_pointer, Command* cmd){
     int i, mode = INIT;
     User_Command uc;
     int command_found = 0;
+    /* exits on eof */
+    if (feof(stdin)){
+        exit_command(board_pointer, cmd);
+    }
     /* ignoring empty command */
     if(!cmd->name)
         return SUCCSESS;
