@@ -79,12 +79,14 @@ void init_board(Board* b, int width, int height){
 	first_bundle->prev = NULL;
 	first_bundle->next = NULL;
 
+	b->mark_errors = 1;
 	b->movePointer = first_bundle;
     b->width = width;
     b->height = height;
     b->size = width * height;
     b->correct_cells = 0;
     b->mode = INIT;
+	b->wrong_cells = 0;
 }
 
 /* used to free allocation when program exits */
@@ -249,11 +251,11 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 void free_set_cell(Board* b ,int x, int y, int val){
     add_move(b, x, y, val);
-    b->state[x][y] = val;
 	if (check_cell_errorness(b, x, y, val)) {
 		b->wrong[x][y] = 1;
 		b->wrong_cells++;
 	}
+	b->state[x][y] = val;
 }
 
 /* sets a cell to value with x, y coordinates
@@ -263,7 +265,7 @@ void free_set_cell(Board* b ,int x, int y, int val){
  */
 
 int set_cell(Board* b, int x, int y, int val) {
-	if (b->fixed[x][y] == 1) {
+	if (!(b->mode == EDIT) && b->fixed[x][y] == 1) {
 		return FIXED_CELL;
 	}
 	if (b->state[x][y] == 0 && val != 0) {
@@ -349,7 +351,7 @@ void autofill(Board* b){
             pt = et.entries[i][j];
 			if (!pt.value && pt.count == 1) {
                 free_set_cell(b, i, j, pt.valid_nums[0]);
-                printf("Cell (%d,%d) has changed to %d\n", i, j, pt.valid_nums[0]);
+                printf("Cell (%d,%d) has changed to %d\n", i + 1, j + 1, pt.valid_nums[0]);
 			}
         }
     }

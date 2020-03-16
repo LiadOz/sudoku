@@ -120,7 +120,7 @@ void errorness_block(Board* b, int x, int y, int val, int* error) {
 			if (b->state[i][j] == val && val != 0) {
 				*error = 1;
 				if (b->wrong[i][j] == 0) {
-					b->wrong_cells--;
+					b->wrong_cells++;
 				}
 				b->wrong[i][j] = 1;
 			}
