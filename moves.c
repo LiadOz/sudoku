@@ -148,7 +148,7 @@ void new_commit(Board* b){
 void add_move(Board* b, int x, int y, int val){
     Move* move;
     Moves_Bundle* curr_bundle = b->movePointer;
-    if(curr_bundle->commited == COMMITED)
+    if(curr_bundle->first == 1 || curr_bundle->commited == COMMITED)
         return;
 
     /* creating the move */
@@ -174,4 +174,10 @@ void add_move(Board* b, int x, int y, int val){
 /* closes the commit */
 void finish_commit(Board *b){
     b->movePointer->commited = COMMITED;
+    /* remove if empty */
+    if(b->movePointer->head == NULL){
+        b->movePointer = b->movePointer->prev;
+        free_next_moves(b);
+        b->movePointer->next = NULL;
+    }
 }
