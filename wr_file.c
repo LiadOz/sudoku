@@ -69,7 +69,7 @@ int read_file(Board** old_b, char file_path[]){
                     return FILE_FORMAT_ERROR;
                 else if(!valid_set_value(b, i, j, val))
                     return FILE_UNSOLVABLE;
-                b->state[i][j] = val;
+                set_cell(b, i, j, val);
                 b->fixed[i][j] = 1;
             }
         }
@@ -83,7 +83,7 @@ int read_file(Board** old_b, char file_path[]){
                 val = atoi(temp);
                 if(val > b->size)
                     return FILE_FORMAT_ERROR;
-                b->state[i][j] = val;
+                set_cell(b, i, j, val);
             }
         }
     }
