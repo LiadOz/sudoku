@@ -157,20 +157,26 @@ int set_command(Board** b, Command* cmd){
 	for (i = 0; i < cmd->arg_length; i++) {
 		if (flags[i] == NOT_INT) {
 			free(args);
+            free(flags);
 			return COMMAND_FAILED;
 		}
 	}
+    free(flags);
 	if (out_of_range(*b, args)) {
 		printf("%s",ARGS_OUT_OF_RANGE);
+        free(args);
 		return COMMAND_FAILED;
 	}
 
     new_commit(*b);
 	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2])) {
         finish_commit(*b);
+        free(args);
 		return SUCCSESS;
 	}
-	return SUCCSESS;
+    finish_commit(*b);
+    printf("Error: cell is fixed\n");
+	return COMMAND_FAILED;
 }
 
 int validate_command(Board** b, Command* cmd){
@@ -318,7 +324,7 @@ User_Command commands[] = {
  */
     {"solve",           0, solve_command,           1, 1, 1, 1, 1},
     {"edit",            1, edit_command,            1, 1, 1, 1, 1},
-    {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0, 0},
+    {"mark_errors",     0, mark_errors_command,     1, 1, 0, 0, 1},
     {"print_board",     0, print_board_command,     0, 1, 1, 0, 0},
     {"set",             0, set_command,             3, 1, 1, 0, 1},
     {"validate",        0, validate_command,        0, 1, 1, 0, 0},
