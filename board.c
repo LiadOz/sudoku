@@ -247,27 +247,14 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 /* sets board state cell to value with x, y coordinates */
 
-void free_set_cell(Board* b ,int x, int y, int val, Move** move, int record){
-
-	if (record) {
-		*move = create_new_move(b, x, y, val);
-	}
-	else {
-		UNUSED(*move);
-	}
-
-	
+void free_set_cell(Board* b ,int x, int y, int val){
+    add_move(b, x, y, val);
+    b->state[x][y] = val;
 	if (check_cell_errorness(b, x, y, val)) {
 		b->wrong[x][y] = 1;
 		b->wrong_cells++;
 	}
-	
-/*
-void free_set_cell(Board* b ,int x, int y, int val){
-    add_move(b, x, y, val);
-    b->state[x][y] = val;
 }
-*/
 
 /* sets a cell to value with x, y coordinates
  * x and y starts at 1
@@ -275,7 +262,7 @@ void free_set_cell(Board* b ,int x, int y, int val){
  * returns 1 when assignment worked
  */
 
-int set_cell(Board* b, int x, int y, int val, Move** move, int record) {
+int set_cell(Board* b, int x, int y, int val) {
 	if (b->fixed[x][y] == 1) {
 		return FIXED_CELL;
 	}
@@ -285,7 +272,7 @@ int set_cell(Board* b, int x, int y, int val, Move** move, int record) {
 	if (b->state[x][y] != 0 && val == 0) {
 		b->correct_cells--;
 	}
-	free_set_cell(b, x, y, val, move, record);
+	free_set_cell(b, x, y, val);
 	
 	return SUCCESS;
 }
@@ -361,22 +348,8 @@ void autofill(Board* b){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
 			if (!pt.value && pt.count == 1) {
-<<<<<<< HEAD
-				if (!first) {
-					free_set_cell(b, i, j, pt.valid_nums[0], head, RECORD);
-					first = 1;
-					curr = *head;
-				}
-				else {
-					free_set_cell(b, i, j, pt.valid_nums[0], &temp, RECORD);
-					curr->next = temp;
-					curr = temp;
-				}
-				print_change(REDO_COMMAND, curr);
-=======
                 free_set_cell(b, i, j, pt.valid_nums[0]);
                 printf("Cell (%d,%d) has changed to %d\n", i, j, pt.valid_nums[0]);
->>>>>>> ea4637cf0c99f49169c3665ff85aba38193961bf
 			}
         }
     }

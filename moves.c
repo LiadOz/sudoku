@@ -70,13 +70,19 @@ void exec_moves(Board* b, char* command, int reset) {
 	Move* move = b->movePointer->head;
 	while (move != NULL) {
 		if (strcmp(command, REDO_COMMAND) == 0) {
+            /*
 			set_cell(b, move->x, move->y, move->currVal, &move, 0);
+            */
+			set_cell(b, move->x, move->y, move->currVal);
 			if (!reset) {
 				print_change(REDO_COMMAND, move);
 			}
 		}
 		else if (strcmp(command, UNDO_COMMAND) == 0) {
+            /*
 			set_cell(b, move->x, move->y, move->prevVal, &move, 0);
+            */
+			set_cell(b, move->x, move->y, move->prevVal);
 			if (!reset) {
 				print_change(UNDO_COMMAND, move);
 			}

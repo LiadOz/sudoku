@@ -152,7 +152,6 @@ int print_board_command(Board** b, Command* cmd){
 
 int set_command(Board** b, Command* cmd){
 	int* flags = calloc(cmd->arg_length, sizeof(int));
-	Move* curr_move = NULL;
 	int i;
 	int* args = set_params_int(cmd, flags);
 	for (i = 0; i < cmd->arg_length; i++) {
@@ -166,16 +165,12 @@ int set_command(Board** b, Command* cmd){
 		return COMMAND_FAILED;
 	}
 
-	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2], &curr_move, RECORD)) {
-		if (curr_move) {
-			print_change(REDO_COMMAND, curr_move);
-			add_moves_to_board(*b, curr_move);
-		}
-		printBoard(*b);
+    new_commit(*b);
+	if (set_cell(*b, args[0] - 1, args[1] - 1, args[2])) {
+        finish_commit(*b);
 		return SUCCSESS;
 	}
 	return SUCCSESS;
-	printf("Cell (%d,%d) is fixed\n", args[0] - 1, args[1] - 1);
 }
 
 int validate_command(Board** b, Command* cmd){
