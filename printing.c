@@ -113,4 +113,5 @@ void printSolution(Board* b) {
 		}
 		printf("\n");
 	}
+	printf("wrong cells: %d\n", b->wrong_cells);
 }
