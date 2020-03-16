@@ -11,6 +11,8 @@
 #define RANDOM_UB 15
 #define MAX_GENERATE_TRIES 1000
 
+#define GUROBI_ERROR_PRINT "Error in Gurobi function exiting game\n"
+
 /* creates constraints for cell and inside ind and val
  * returns the length
  * the method assumes the entry is initialized */
@@ -105,7 +107,10 @@ void add_constraint(GRBmodel* model,GRBenv* env, int size, int* ind, double* val
     int error;
     error = GRBaddconstr(model, size, ind, val, GRB_EQUAL, rhs, NULL);
     if (error) {
+        /*
       printf("ERROR %d 1st GRBaddconstr(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
 }
@@ -173,37 +178,55 @@ int find_solution(EntryTable* et, double* sol, int mode){
 
     error = GRBloadenv(&env, "mip1.log");
     if (error) {
+        /*
         printf("ERROR %d GRBloadenv(): %s\n", error, GRBgeterrormsg(env));
+        */
+        printf(GUROBI_ERROR_PRINT);
         exit(0);
     }
     /* hides information */
     error = GRBsetintparam(env, GRB_INT_PAR_LOGTOCONSOLE, 0);
     if (error) {
+        /*
         printf("ERROR %d GRBsetintattr(): %s\n", error, GRBgeterrormsg(env));
+        */
+        printf(GUROBI_ERROR_PRINT);
         exit(0);
     }
     error = GRBnewmodel(env, &model, "test", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) {
+        /*
       printf("ERROR %d GRBnewmodel(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
 
     error = GRBaddvars(model, size, 0, NULL, NULL, NULL, obj, NULL, NULL, vtype, NULL);
     if (error) {
+        /*
       printf("ERROR %d GRBaddvars(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
     if(mode == LP){
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE);
         if (error) {
+            /*
           printf("ERROR %d GRBsetintattr(): %s\n", error, GRBgeterrormsg(env));
+          */
+        printf(GUROBI_ERROR_PRINT);
           exit(0);
         }
     }
     /* update the model - to integrate new variables */ 
     error = GRBupdatemodel(model);
     if (error) {
+        /*
       printf("ERROR %d GRBupdatemodel(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
 
@@ -211,26 +234,38 @@ int find_solution(EntryTable* et, double* sol, int mode){
     /* Optimize model - need to call this before calculation */
     error = GRBoptimize(model);
     if (error) {
+        /*
       printf("ERROR %d GRBoptimize(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
 
     /* Write model to 'mip1.lp' - this is not necessary but very helpful */
     error = GRBwrite(model, "mip1.lp");
     if (error) {
+        /*
       printf("ERROR %d GRBwrite(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
 
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) {
+       /* 
       printf("ERROR %d GRBgetintattr(): %s\n", error, GRBgeterrormsg(env));
+      */
+        printf(GUROBI_ERROR_PRINT);
       exit(0);
     }
     if(mode == LP){
         error = GRBgetdblattr(model, GRB_DBL_ATTR_OBJVAL, &objval);
         if (error) {
+            /*
           printf("ERROR %d GRBgettdblattr(): %s\n", error, GRBgeterrormsg(env));
+          */
+        printf(GUROBI_ERROR_PRINT);
           exit(0);
         }
     }
@@ -239,7 +274,10 @@ int find_solution(EntryTable* et, double* sol, int mode){
     if (optimstatus == GRB_OPTIMAL) {
         error = GRBgetdblattrarray(model, GRB_DBL_ATTR_X, 0, size, sol);
         if (error) {
+            /*
           printf("ERROR %d GRBgetdblattrarray(): %s\n", error, GRBgeterrormsg(env));
+          */
+        printf(GUROBI_ERROR_PRINT);
           exit(0);
         }
         ret_val = SOLUTION_FOUND;
