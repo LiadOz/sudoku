@@ -59,9 +59,11 @@ int read_file(Board** old_b, char file_path[]){
     pos = ftell(fptr);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
+            /* testing if inputs exists */
             if(fscanf(fptr, "%s", temp) == EOF)
                 return FILE_FORMAT_ERROR;
             point_ptr = strchr(temp, '.');
+            /* inserting fixed values */
             if(point_ptr != NULL){
                 *point_ptr = '\0';
                 val = atoi(temp);

@@ -18,6 +18,7 @@ int game_flow(){
     */
     Board* b = NULL;
     Command cmd;
+    printf("****    SUDOKU GAME    ****\n");
     /*
     int next_command;
     int game_finished = 0; 

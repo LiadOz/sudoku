@@ -21,9 +21,9 @@
 #define SUCCSESS 5
 #define DEFAULT_BOARD_SIZE 3
 #define UNUSED(x) (void)(x)
-#define ARGS_OUT_OF_RANGE "The parameters are out of range\n"
 
-#define ERRORNOUS_PRINT "Error: %s can't execute when board is errornous\n"
+#define ARGS_OUT_OF_RANGE "The parameters are out of range\n"
+#define ERRORNOUS_PRINT "Error: command %s can't execute when board is errornous\n"
 
 
 /* gets array input and args array and fills it with the number of arguemnts needed
@@ -74,6 +74,49 @@ int get_file_status(int status){
         return COMMAND_FAILED;
     }
     return SUCCSESS;
+}
+
+/* checks for errornous and prints appropriate message */
+int errornous_check(Board* b, Command* cmd){
+    if(b->wrong_cells){
+        printf(ERRORNOUS_PRINT, cmd->name);
+        return COMMAND_FAILED;
+    }
+    return SUCCESS;
+}
+
+/* checks for errornous and for parameters in range */
+int check_coordinates(Board* b, Command* cmd){
+    int flag;
+    int y, x = check_if_int(cmd->args[0], &flag) - 1;
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "1st", "int");
+        return COMMAND_FAILED;
+    }
+    y = check_if_int(cmd->args[1], &flag) - 1;
+    if(flag == NOT_INT){
+        printf(PARAMETER_ERROR, "2nd", "int");
+        return COMMAND_FAILED;
+    }
+    if(x < 0 || x >= b->size){
+        printf("Error: 1st parameter expected ranged 1 up to %d\n", b->size);
+        return COMMAND_FAILED;
+    }
+    if(y < 0 || x >= b->size){
+        printf("Error: 2nd parameter expected ranged 1 up to %d\n", b->size);
+        return COMMAND_FAILED;
+    }
+    if(errornous_check(b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
+    if(b->fixed[x][y]){
+        printf("Error: cell is fixed\n");
+        return COMMAND_FAILED;
+    }
+    if(b->state[x][y]){
+        printf("Error: cell is already set\n");
+        return COMMAND_FAILED;
+    }
+    return SUCCESS;
 }
 
 /***********************************************************************************************************
@@ -180,10 +223,8 @@ int set_command(Board** b, Command* cmd){
 }
 
 int validate_command(Board** b, Command* cmd){
-    if((*b)->wrong_cells){
-        printf(ERRORNOUS_PRINT, cmd->name);
+    if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
-    }
     if(validate_board(*b) == SOLUTION_FOUND)
         printf("The board is solvable\n");
     else
@@ -192,8 +233,6 @@ int validate_command(Board** b, Command* cmd){
 }
 
 int guess_command(Board** b, Command* cmd){
-    /* need to check for errornous */
-    /* need to check for float between 0.0 to 1.0 */
     int flag;
     float val = check_if_float(cmd->args[0], &flag);
     if(flag == NOT_FLOAT){
@@ -204,6 +243,8 @@ int guess_command(Board** b, Command* cmd){
         printf(PARAMETER_ERROR, "1st", "a number between 0.0 and 1.0");
         return COMMAND_FAILED;
     }
+    if(errornous_check(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
     guess_board(*b, atof(cmd->args[0]));
     return SUCCSESS;
 }
@@ -211,12 +252,18 @@ int guess_command(Board** b, Command* cmd){
 int generate_command(Board** b, Command* cmd){
     int flag;
     int second_arg, first_arg = check_if_int(cmd->args[0], &flag);
+    int max_cells = 0;
     if(flag == NOT_INT){
         printf(PARAMETER_ERROR, "1st", "int");
         return COMMAND_FAILED;
     }
     if (first_arg < 0){
         printf(PARAMETER_ERROR, "1st", "non-negative value");
+        return COMMAND_FAILED;
+    }
+    max_cells = (*b)->size * (*b)->size - (*b)->correct_cells;
+    if (max_cells - first_arg < 0){
+        printf("Error: in 1st parameter expected up to %d cells\n", max_cells);
         return COMMAND_FAILED;
     }
     /* check for X empty cells */
@@ -229,12 +276,13 @@ int generate_command(Board** b, Command* cmd){
         printf(PARAMETER_ERROR, "2nd", "positive value");
         return COMMAND_FAILED;
     }
-    if (second_arg > (*b)->size){
+    if (second_arg > (*b)->size * (*b)->size){
         printf(PARAMETER_ERROR, "2nd", "size less than number of cells");
         return COMMAND_FAILED;
     }
+    if(errornous_check(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
     generate_using_ILP(*b, first_arg, second_arg);
-    /* TODO */
     return SUCCSESS;
 }
 
@@ -257,33 +305,37 @@ int redo_command(Board** b, Command* cmd){
 }
 
 int save_command(Board** b, Command* cmd){
-    /* errornous should be checked in edit mode*/
+    if((*b)->mode == EDIT && errornous_check(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
     return get_file_status(save_board(*b, cmd->args[0]));
 }
 
 int hint_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    if(check_coordinates(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
+    printf("Set cell to %d\n", ILP_hint(*b, atoi(cmd->args[0]) - 1, atoi(cmd->args[1]) - 1));
+    return SUCCSESS;
 }
 
 int guess_hint_command(Board** b, Command* cmd){
-    UNUSED(b);
-    UNUSED(cmd);
-    /* TODO */
-    return -1;
+    if(check_coordinates(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
+    guess_hint(*b, atoi(cmd->args[0]) - 1, atoi(cmd->args[1]) - 1);
+    return SUCCSESS;
 }
 
 int num_solutions_command(Board** b, Command* cmd){
+    if(errornous_check(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
     UNUSED(cmd);
 	printf("There are %d possible solutions to this borad\n", num_of_solutions(*b));
     return SUCCSESS;
 }
 
 int autofill_command(Board** b, Command* cmd){
+    if(errornous_check(*b, cmd) == COMMAND_FAILED)
+        return COMMAND_FAILED;
 	autofill(*b);
-    UNUSED(cmd);
 	return SUCCSESS;
 	
 }
