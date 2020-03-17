@@ -1,6 +1,6 @@
 CC = gcc
 OBJS = main.o game.o board.o parsing.o solver.o printing.o possible_table.o lp_solver.o wr_file.o moves.o backtrack.o stack.o util.o
-EXEC = sudoku
+EXEC = sudoku_console
 COMP_FLAG = -ansi -g -Wall -Wextra -Werror -pedantic-errors
 GUROBI_COMP = -I/usr/local/lib/gurobi563/include
 GUROBI_LIB = -L/usr/local/lib/gurobi563/lib -lgurobi56
@@ -35,3 +35,4 @@ util.o: util.c util.h
 	$(CC) $(COMP_FLAG) -c $*.c
 clean:
 	rm -f $(OBJS) $(EXEC)
+all: $(EXEC)
