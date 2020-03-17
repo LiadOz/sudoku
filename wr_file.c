@@ -41,7 +41,7 @@ int read_file(Board** old_b, char file_path[]){
     FILE *fptr;
     unsigned long pos;
     int height, width;
-    int i, j;
+    int i, j, flag;
     char temp[READ_MAX_SIZE];
     char* point_ptr;
     int val;
@@ -82,6 +82,9 @@ int read_file(Board** old_b, char file_path[]){
             fscanf(fptr, "%s", temp);
             point_ptr = strchr(temp, '.');
             if(point_ptr == NULL){
+                val = check_if_int(temp, &flag);
+                if(flag == NOT_INT)
+                    return FILE_FORMAT_ERROR;
                 val = atoi(temp);
                 if(val > b->size)
                     return FILE_FORMAT_ERROR;

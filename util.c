@@ -52,10 +52,22 @@ void errorness_row(Board* b, int x, int y, int val, int* error) {
 		if (i == y) {
 			continue;
 		}
+		if (b->state[x][i] == b->state[x][y]) {
+			if (b->wrong[x][i] == 1) {
+				b->wrong[x][i] = 0;
+				b->wrong_cells--;
+			}
+			if (b->wrong[x][y] == 1) {
+				b->wrong[x][y] = 0;
+				b->wrong_cells--;
+			}
+		}
 		if (b->state[x][i] == val && val != 0) {
-			*error = 1;
-			b->wrong[x][y] = 1;
-			break;
+			if (b->wrong[x][i] == 0) {
+				*error = 1;
+				b->wrong_cells++;
+			}
+			b->wrong[x][i] = 1;
 		}
 	}
 }
@@ -66,10 +78,22 @@ void errorness_column(Board* b, int x, int y, int val, int* error) {
 		if (i == x) {
 			continue;
 		}
+		if (b->state[i][y] == b->state[x][y]) {
+			if (b->wrong[i][y] == 1) {
+				b->wrong[i][y] = 0;
+				b->wrong_cells--;
+			}
+			if (b->wrong[x][y] == 1) {
+				b->wrong[x][y] = 0;
+				b->wrong_cells--;
+			}
+		}
 		if (b->state[i][y] == val && val != 0) {
-			*error = 1;
-			b->wrong[x][y] = 1;
-			break;
+			if (b->wrong[i][y] == 0) {
+				*error = 1;
+				b->wrong_cells++;
+			}
+			b->wrong[i][y] = 1;
 		}
 	}
 }
@@ -77,15 +101,28 @@ void errorness_column(Board* b, int x, int y, int val, int* error) {
 void errorness_block(Board* b, int x, int y, int val, int* error) {
 	int i, j;
 
+
 	for (i = (x - (x % b->height)); i < b->height + (x - (x % b->height)); i++) {
 		for (j = (y - (y % b->width)); j < b->width + (y - (y % b->width)); j++) {
 			if (i == x && j == y) {
 				continue;
 			}
+			if (b->state[i][j] == b->state[x][y]) {
+				if (b->wrong[i][j] == 1) {
+					b->wrong[i][j] = 0;
+					b->wrong_cells--;
+				}
+				if (b->wrong[x][y] == 1) {
+					b->wrong[x][y] = 0;
+					b->wrong_cells--;
+				}
+			}
 			if (b->state[i][j] == val && val != 0) {
 				*error = 1;
-				b->wrong[x][y] = 1;
-				break;
+				if (b->wrong[i][j] == 0) {
+					b->wrong_cells++;
+				}
+				b->wrong[i][j] = 1;
 			}
 		}
 	}
@@ -96,28 +133,9 @@ void errorness_block(Board* b, int x, int y, int val, int* error) {
 int check_cell_errorness(Board* b, int x, int y, int val) {
 	int error = 0;
 	errorness_row(b, x, y, val, &error);
-	if (!error) {
-		errorness_column(b, x, y, val, &error);
-	}
-	if (!error) {
-		errorness_block(b, x, y, val, &error);
-	}
+	errorness_column(b, x, y, val, &error);
+	errorness_block(b, x, y, val, &error);
 	return error;
-}
-
-void board_errorness(Board* b) {
-	int i, j;
-	b->wrong_cells = 0;
-	for (i = 0; i < b->size; i++) {
-		for (j = 0; j < b->size; j++) {
-			if (check_cell_errorness(b, i, j, b->state[i][j])) {
-				b->wrong_cells++;
-			}
-			else {
-				b->wrong[i][j] = 0;
-			}
-		}
-	}
 }
 
 int out_of_range(Board* b, int* args) {

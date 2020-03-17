@@ -109,7 +109,7 @@ void add_constraint(GRBmodel* model,GRBenv* env, int size, int* ind, double* val
     if (error) {
         /*
       printf("ERROR %d 1st GRBaddconstr(): %s\n", error, GRBgeterrormsg(env));
-      */
+      */GRBgeterrormsg(env);
         printf(GUROBI_ERROR_PRINT);
       exit(0);
     }

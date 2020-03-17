@@ -29,7 +29,7 @@ int game_flow(){
     while(1){
         user_input(&cmd);
         execute_command(&b, &cmd);
-		if ((b->correct_cells == (b->size * b->size)) && (b->wrong_cells == 0)) {
+		if (b != NULL && (b->correct_cells == (b->size * b->size)) && (b->wrong_cells == 0)) {
 			printf("The puzzle was solved successfully!");
 			b->mode = INIT;
 		}
