@@ -17,10 +17,10 @@
  * returns the length
  * the method assumes the entry is initialized */
 int create_cell_constraint(EntryTable* et, int i, int j, int* ind, double* val){
-    PossibleEntry entry = et->entries[i][j];
+    PossibleEntry* entry = et->entries[i][j];
     int k;
-    for(k = 0; k < entry.count; k++){
-        ind[k] = entry.start_index + k;
+    for(k = 0; k < entry->count; k++){
+        ind[k] = entry->start_index + k;
         val[k] = 1;
     }
     return k;
@@ -30,17 +30,17 @@ int create_cell_constraint(EntryTable* et, int i, int j, int* ind, double* val){
 int create_row_constraint(EntryTable* et, int i, int value, int* ind, double* val){
     int j, k;
     int l = 0;
-    PossibleEntry pe;
+    PossibleEntry* pe;
     for(j = 0; j < et->size; j++){
         pe = et->entries[j][i];
         /* if there is a fixed value it needs to be accounted for */
-        if(pe.value == value){
+        if(pe->value == value){
             return 0;
         }
-        if(!pe.value){
-            for(k = 0; k < pe.count; k++){
-                if(et->var_arr[pe.start_index + k] == value){
-                    ind[l] = pe.start_index + k;
+        if(!pe->value){
+            for(k = 0; k < pe->count; k++){
+                if(et->var_arr[pe->start_index + k] == value){
+                    ind[l] = pe->start_index + k;
                     val[l] = 1;
                     l++;
                 }
@@ -54,17 +54,17 @@ int create_row_constraint(EntryTable* et, int i, int value, int* ind, double* va
 int create_column_constraint(EntryTable* et, int i, int value, int* ind, double* val){
     int j, k;
     int l = 0;
-    PossibleEntry pe;
+    PossibleEntry* pe;
     for(j = 0; j < et->size; j++){
         pe = et->entries[i][j];
         /* if there is a fixed value it needs to be accounted for */
-        if(pe.value == value){
+        if(pe->value == value){
             return 0;
         }
-        if(!pe.value){
-            for(k = 0; k < pe.count; k++){
-                if(et->var_arr[pe.start_index + k] == value){
-                    ind[l] = pe.start_index + k;
+        if(!pe->value){
+            for(k = 0; k < pe->count; k++){
+                if(et->var_arr[pe->start_index + k] == value){
+                    ind[l] = pe->start_index + k;
                     val[l] = 1;
                     l++;
                 }
@@ -77,7 +77,7 @@ int create_column_constraint(EntryTable* et, int i, int value, int* ind, double*
 /* creates constraints for a block inside ind and val
  * size and residuals are returned in the third array */
 int create_block_constraint(EntryTable* et, int block_number, int value, int* ind, double* val){
-    PossibleEntry pe;
+    PossibleEntry* pe;
     int block_y = block_number / et->block_height;
     int block_x = block_number - (block_y * et->block_height);
     int start_x = et->block_width * block_x;
@@ -86,13 +86,13 @@ int create_block_constraint(EntryTable* et, int block_number, int value, int* in
     for(i = start_y; i < et->block_height + start_y; i++){
         for(j = start_x; j < et->block_width + start_x; j++){
             pe = et->entries[i][j];
-            if(pe.value == value){
+            if(pe->value == value){
                 return 0;
             }
-            if(!pe.value){
-                for(k = 0; k < pe.count; k++){
-                    if(et->var_arr[pe.start_index + k] == value){
-                        ind[l] = pe.start_index + k;
+            if(!pe->value){
+                for(k = 0; k < pe->count; k++){
+                    if(et->var_arr[pe->start_index + k] == value){
+                        ind[l] = pe->start_index + k;
                         val[l] = 1;
                         l++;
                     }
@@ -124,7 +124,7 @@ void add_all_constraints(GRBmodel* model, GRBenv* env,EntryTable* et){
     val = calloc(et->var_count, sizeof(double));
     for(i = 0; i < et->size; i++){
         for(j = 0; j < et->size; j++){
-            if(!et->entries[i][j].value){
+            if(!et->entries[i][j]->value){
                 /* constraint for each cell */
                 size = create_cell_constraint(et, i, j, ind, val);
                 add_constraint(model, env, size, ind, val, 1);
@@ -334,7 +334,7 @@ int validate_board(Board* b){
  * if no solution exits NO_SOLUTION_FOUND is returned */
 int ILP_hint(Board* b, int i, int j){
     EntryTable et;
-    PossibleEntry pt;
+    PossibleEntry* pt;
     int ret_val;
     double* sol = NULL;
     int k;
@@ -344,7 +344,7 @@ int ILP_hint(Board* b, int i, int j){
     ret_val = find_solution(&et, sol, ILP);
     if(ret_val == SOLUTION_FOUND){
         pt = et.entries[i][j];
-        for(k = pt.start_index; k < pt.end_index - 1; k++){
+        for(k = pt->start_index; k < pt->end_index - 1; k++){
             if(sol[k] == 1.0)
                 ret_val = et.var_arr[k];
         }
@@ -377,7 +377,7 @@ int guess_board(Board* b, double thresh){
  * if no solution exits NO_SOLUTION_FOUND is returned */
 int guess_hint(Board* b, int i, int j){
     EntryTable et;
-    PossibleEntry pt;
+    PossibleEntry* pt;
     double* sol = NULL;
     int ret_val;
     int k;
@@ -387,7 +387,7 @@ int guess_hint(Board* b, int i, int j){
     ret_val = find_solution(&et, sol, LP);
     if(ret_val == SOLUTION_FOUND){
         pt = et.entries[i][j];
-        for(k = pt.start_index; k < pt.end_index-1; k++){
+        for(k = pt->start_index; k < pt->end_index-1; k++){
             if(sol[k] >= 0.01)
                 printf("%d : %1.2f%% \n", et.var_arr[k], sol[k]);
         }
@@ -401,12 +401,12 @@ int guess_hint(Board* b, int i, int j){
 /* fills ILP solution into board */
 void fill_solution(Board* b, EntryTable* et, double* sol){
     int i, j, k;
-    PossibleEntry pt;
+    PossibleEntry* pt;
     for (i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et->entries[i][j];
-            if(!pt.value){
-                for(k = pt.start_index; k < pt.end_index - 1; k++){
+            if(!pt->value){
+                for(k = pt->start_index; k < pt->end_index - 1; k++){
                     if(sol[k] == 1.0)
                         b->state[i][j] = et->var_arr[k];
                 }

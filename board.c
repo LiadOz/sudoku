@@ -251,6 +251,12 @@ int get_options_array(Board* b, int i, int j, int** arr){
 
 void free_set_cell(Board* b ,int x, int y, int val){
     add_move(b, x, y, val);
+	if (b->state[x][y] == 0 && val != 0) {
+		b->correct_cells++;
+	}
+	if (b->state[x][y] != 0 && val == 0) {
+		b->correct_cells--;
+	}
 	if (check_cell_errorness(b, x, y, val)) {
 		b->wrong[x][y] = 1;
 		b->wrong_cells++;
@@ -267,12 +273,6 @@ void free_set_cell(Board* b ,int x, int y, int val){
 int set_cell(Board* b, int x, int y, int val) {
 	if (!(b->mode == EDIT) && b->fixed[x][y] == 1) {
 		return FIXED_CELL;
-	}
-	if (b->state[x][y] == 0 && val != 0) {
-		b->correct_cells++;
-	}
-	if (b->state[x][y] != 0 && val == 0) {
-		b->correct_cells--;
 	}
 	free_set_cell(b, x, y, val);
 	
@@ -342,16 +342,16 @@ void generate_from_solution(Board* b, Board* solved, int x){
  * board can be not valid after */
 void autofill(Board* b){
     EntryTable et;
-    PossibleEntry pt;
+    PossibleEntry* pt;
     int i, j;
     init_entry_table(&et, b);
     new_commit(b);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
-			if (!pt.value && pt.count == 1) {
-                free_set_cell(b, i, j, pt.valid_nums[0]);
-                printf("Cell (%d,%d) has changed to %d\n", i + 1, j + 1, pt.valid_nums[0]);
+			if (!pt->value && pt->count == 1) {
+                free_set_cell(b, i, j, pt->valid_nums[0]);
+                printf("Cell (%d,%d) has changed to %d\n", i + 1, j + 1, pt->valid_nums[0]);
 			}
         }
     }

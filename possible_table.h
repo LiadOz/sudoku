@@ -15,7 +15,7 @@ typedef struct{
 } PossibleEntry;
 
 typedef struct{
-    PossibleEntry** entries;
+    PossibleEntry*** entries;
     int* var_arr;
     int var_count;
     int size;
