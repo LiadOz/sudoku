@@ -165,6 +165,10 @@ int edit_command(Board** b, Command* cmd){
     if(cmd->arg_length == 0){
         free_board(*b);
         new_b = malloc(sizeof(Board));
+		if (new_b == NULL) {
+			printf("Error: malloc has failed\n");
+			exit(0);
+		}
         init_board(new_b, DEFAULT_BOARD_SIZE, DEFAULT_BOARD_SIZE);
         new_b->mode = EDIT;
         *b = new_b;
@@ -206,6 +210,10 @@ int print_board_command(Board** b, Command* cmd){
 
 int set_command(Board** b, Command* cmd){
 	int* flags = calloc(cmd->arg_length, sizeof(int));
+	if (flags == NULL) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
 	int i;
 	int* args = set_params_int(cmd, flags);
 	for (i = 0; i < cmd->arg_length; i++) {

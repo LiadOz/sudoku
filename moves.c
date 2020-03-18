@@ -7,6 +7,10 @@
 
 Move* create_new_move(Board* b, int x, int y, int val) {
 	Move* move = (Move*)malloc(sizeof(Move));
+	if (move == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 	move->x = x;
 	move->y = y;
 	move->currVal = val;
@@ -35,6 +39,10 @@ void free_next_moves(Board* b) {
 
 void add_moves_to_board(Board* b, Move* head) {
 	Moves_Bundle* bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
+	if (bundle == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 	bundle->head = head;
 	if (b->movePointer != NULL) {
 		if (b->movePointer->next != NULL) {
@@ -128,6 +136,10 @@ void free_all_moves(Board* b) {
 /* creating a container to store the next moves */
 void new_commit(Board* b){
     Moves_Bundle* new_commit = malloc(sizeof(Moves_Bundle));
+	if (new_commit == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     new_commit->first = 0;
     new_commit->commited = !COMMITED;
     new_commit->head = NULL;
@@ -153,6 +165,10 @@ void add_move(Board* b, int x, int y, int val){
 
     /* creating the move */
     move = (Move*)malloc(sizeof(Move));
+	if (move == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     move->x = x;
     move->y = y;
     move->currVal = val;

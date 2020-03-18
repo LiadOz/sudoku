@@ -14,6 +14,10 @@
  */
 void init_board(Board* b, int width, int height){
 	Moves_Bundle* first_bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
+	if (first_bundle == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     int i;
     int** p;
     int* p2;
@@ -231,6 +235,10 @@ int get_options_array(Board* b, int i, int j, int** arr){
     int count = 0;
     int* options;
     options = malloc((b->size + 1) * sizeof(int));
+	if (options == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     for(val = 1; val <= b->size; val++){
         if(valid_set_value(b, i, j, val)){
             options[count] = val;
@@ -238,6 +246,10 @@ int get_options_array(Board* b, int i, int j, int** arr){
         }
     }
     options = realloc(options, count * sizeof(int));
+	if (options == NULL) {
+		printf("Error: realloc has failed\n");
+		exit(0);
+	}
     *arr = options;
     return count;
 

@@ -121,7 +121,15 @@ void add_all_constraints(GRBmodel* model, GRBenv* env,EntryTable* et){
     double* val;
     int size;
     ind = calloc(et->var_count, sizeof(int));
+	if (ind == NULL) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
     val = calloc(et->var_count, sizeof(double));
+	if (val == NULL) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
     for(i = 0; i < et->size; i++){
         for(j = 0; j < et->size; j++){
             if(!et->entries[i][j]->value){
@@ -164,9 +172,17 @@ int find_solution(EntryTable* et, double* sol, int mode){
     /* allocating variables */
     size = et->var_count;
     vtype = malloc(size * sizeof(int));
+	if (vtype == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     if (mode == LP){
         memset(vtype, GRB_CONTINUOUS, size);
         obj = calloc(size, sizeof(double));
+		if (obj == NULL) {
+			printf("Error: calloc has failed\n");
+			exit(0);
+		}
         for(i = 0; i < size; i++){
             obj[i] = rand() % RANDOM_UB;
         }
@@ -322,6 +338,10 @@ int validate_board(Board* b){
     double* sol = NULL;
     init_entry_table(&et, b);
     sol = malloc(et.var_count * sizeof(double));
+	if (sol == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 
     ret_val = find_solution(&et, sol, ILP);
 
@@ -340,6 +360,10 @@ int ILP_hint(Board* b, int i, int j){
     int k;
     init_entry_table(&et, b);
     sol = malloc(et.var_count * sizeof(double));
+	if (sol == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 
     ret_val = find_solution(&et, sol, ILP);
     if(ret_val == SOLUTION_FOUND){
@@ -362,6 +386,10 @@ int guess_board(Board* b, double thresh){
     int ret_val;
     init_entry_table(&et, b);
     sol = malloc(et.var_count * sizeof(double));
+	if (sol == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 
     ret_val = find_solution(&et, sol, LP);
     insert_solution(&et, sol);
@@ -383,6 +411,10 @@ int guess_hint(Board* b, int i, int j){
     int k;
     init_entry_table(&et, b);
     sol = malloc(et.var_count * sizeof(double));
+	if (sol == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 
     ret_val = find_solution(&et, sol, LP);
     if(ret_val == SOLUTION_FOUND){
@@ -423,6 +455,10 @@ void fill_solution(Board* b, EntryTable* et, double* sol){
 int generate_using_ILP(Board* b, int x, int y){
     EntryTable et;
     Board* board_copy = malloc(sizeof(Board));
+	if (board_copy == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     int tries = 0;
     double* sol = NULL;
     while (tries < MAX_GENERATE_TRIES){
@@ -434,6 +470,10 @@ int generate_using_ILP(Board* b, int x, int y){
         }
         init_entry_table(&et, board_copy);
         sol = malloc(et.var_count * sizeof(double));
+		if (sol == NULL) {
+			printf("Error: malloc has failed\n");
+			exit(0);
+		}
         if(find_solution(&et, sol, ILP) == SOLUTION_FOUND){
             /* create the solution */
             fill_solution(board_copy, &et, sol);

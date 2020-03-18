@@ -18,6 +18,10 @@ int init_entry_table(EntryTable* et, Board* b){
     et->block_width = b->width;
     et->block_height = b->height;
     var_arr = malloc(b->size * b->size * b->size * sizeof(int));
+	if (var_arr == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     options = malloc(b->size * sizeof(PossibleEntry **));
     if(options == NULL){
         printf("Error: malloc has failed\n");
@@ -34,6 +38,10 @@ int init_entry_table(EntryTable* et, Board* b){
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             PossibleEntry* temp = malloc(sizeof(PossibleEntry));
+			if (temp == NULL) {
+				printf("Error: malloc has failed\n");
+				exit(0);
+			}
             cell = b->state[i][j];
             temp->value = cell;
             if(cell == 0){
@@ -46,12 +54,20 @@ int init_entry_table(EntryTable* et, Board* b){
                 }
                 temp->end_index = vars+1;
                 temp->percent = calloc(temp->count, sizeof(double));
+				if (temp->percent == NULL) {
+					printf("Error: calloc has failed\n");
+					exit(0);
+				}
             }
             options[i][j] = temp;
         }
     }
     et->entries = options;
     var_arr = realloc(var_arr, vars * sizeof(int));
+	if (var_arr == NULL) {
+		printf("Error: realloc has failed\n");
+		exit(0);
+	}
     et->var_arr = var_arr;
     et->var_count = vars;
     return 1;
@@ -99,6 +115,10 @@ int choose_random_number(EntryTable* et, Board* b, int i, int j, double thresh){
     double* cumlative_prob;
     PossibleEntry* pt = et->entries[i][j];
     cumlative_prob = calloc(pt->count, sizeof(double));
+	if (cumlative_prob == NULL) {
+		printf("Error: calloc has failed\n");
+		exit(0);
+	}
     for(k = 0; k < pt->count; k++){
         /* removing numbers that cannot be inserted anymore and finding the sum of the probabilty */
         if(pt->percent[k] < thresh || !valid_set_value(b, i, j, pt->valid_nums[k])){
