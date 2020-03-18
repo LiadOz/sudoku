@@ -259,6 +259,14 @@ void free_set_cell(Board* b ,int x, int y, int val){
 	}
 	b->state[x][y] = val;
 	board_errorness(b);
+	if (b->mode == EDIT) {
+		if (val != 0) {
+			b->fixed[x][y] = 1;
+		}
+		else {
+			b->fixed[x][y] = 0;
+		}
+	}
 }
 
 /* sets a cell to value with x, y coordinates
@@ -272,14 +280,6 @@ int set_cell(Board* b, int x, int y, int val) {
 		return FIXED_CELL;
 	}
 	free_set_cell(b, x, y, val);
-	if (b->mode == EDIT) {
-		if (val != 0) {
-			b->fixed[x][y] = 1;
-		}
-		else {
-			b->fixed[x][y] = 0;
-		}
-	}
 	return SUCCESS;
 }
 
