@@ -4,6 +4,7 @@
 #include "util.h"
 #include "parsing.h"
 #include "printing.h"
+#include "board.h"
 
 /* Returns NOT_INT if is not int
  * if it is int it returns the number */
@@ -132,4 +133,54 @@ int out_of_range(Board* b, int* args) {
 		return 1;
 	}
 	return 0;
+}
+
+
+Node* new_node(int x, int y, int value, int counter) {
+	Node* node = (Node*)malloc(sizeof(Node));
+	if (node == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
+	node->x = x;
+	node->y = y;
+	node->value = value;
+	node->counter = counter;
+	node->prev = NULL;
+	return node;
+}
+
+void change_value(Node* node, int value) {
+	node->value = value;
+}
+
+int is_empty(Node* top) {
+	return !top;
+}
+
+void push(Node** top, int x, int y, int value, int counter) {
+	Node* node = new_node(x, y, value, counter);
+	node->prev = *top;
+	*top = node;
+}
+
+int pop(Node** top, Board* b) {
+	Node* temp;
+	int counter;
+	if (is_empty(*top)) {
+		return 0;
+	}
+	b->state[(*top)->x][(*top)->y] = 0;
+	temp = *top;
+	*top = (*top)->prev;
+	counter = temp->counter;
+	free(temp);
+	return counter;
+}
+
+int top(Node* top) {
+	if (is_empty(top)) {
+		return 0;
+	}
+	return top->value;
 }

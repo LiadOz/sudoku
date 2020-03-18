@@ -421,7 +421,7 @@ int guess_hint(Board* b, int i, int j){
         pt = et.entries[i][j];
         for(k = pt->start_index; k < pt->end_index-1; k++){
             if(sol[k] >= 0.01)
-                printf("%d : %1.2f%% \n", et.var_arr[k], sol[k]);
+                printf("%d : %1.2f%% \n", et.var_arr[k], sol[k] * 100);
         }
     }
 
