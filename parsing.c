@@ -22,7 +22,7 @@
 #define DEFAULT_BOARD_SIZE 3
 #define UNUSED(x) (void)(x)
 
-#define ARGS_OUT_OF_RANGE "The parameters are out of range\n"
+#define ARGS_OUT_OF_RANGE "Error: the parameters are out of range, please enter a parameter between 1 to %d\n"
 #define ERRORNOUS_PRINT "Error: command %s can't execute when board is errornous\n"
 
 
@@ -206,7 +206,7 @@ int set_command(Board** b, Command* cmd){
 	}
     free(flags);
 	if (out_of_range(*b, args)) {
-		printf("%s",ARGS_OUT_OF_RANGE);
+		printf(ARGS_OUT_OF_RANGE, (*b)->size);
         free(args);
 		return COMMAND_FAILED;
 	}
