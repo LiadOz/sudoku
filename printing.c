@@ -30,13 +30,14 @@ void printBoard(Board* b) {
 				printf("|");
 			}
 			/*FIXED CELL*/
-			if ((b->mark_errors == MARK_ERRORS || b->mode == EDIT) && b->wrong[x][y] == 1 && b->state[x][y] != 0) {
-				printf(" ");
-				printf("%2d*", b->state[x][y]);
-			}
-			else if ((b->mode == EDIT || b->fixed[x][y] == 1) && b->state[x][y] != 0) {
+			if ((!(b->mode == EDIT) && b->fixed[x][y] == 1) && b->state[x][y] != 0) {
 				printf(" ");
 				printf("%2d.", b->state[x][y]);
+			}
+			/*ERRORNESS CELL*/
+			else if ((b->mark_errors == MARK_ERRORS || b->mode == EDIT) && b->wrong[x][y] == 1 && b->state[x][y] != 0) {
+				printf(" ");
+				printf("%2d*", b->state[x][y]);
 			}
 			/*REGULAR CELL*/
 			else if (b->state[x][y] != 0) {

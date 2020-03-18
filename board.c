@@ -257,11 +257,8 @@ void free_set_cell(Board* b ,int x, int y, int val){
 	if (b->state[x][y] != 0 && val == 0) {
 		b->correct_cells--;
 	}
-	if (check_cell_errorness(b, x, y, val)) {
-		b->wrong[x][y] = 1;
-		b->wrong_cells++;
-	}
 	b->state[x][y] = val;
+	board_errorness(b);
 }
 
 /* sets a cell to value with x, y coordinates
