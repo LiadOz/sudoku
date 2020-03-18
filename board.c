@@ -355,17 +355,19 @@ void generate_from_solution(Board* b, Board* solved, int x){
 }
 
 /* autofills cells with obvious values
- * board can be not valid after */
-void autofill(Board* b){
+ * board can be not valid after 
+ * returns NO_FILL if no cell has  been set */
+int autofill(Board* b){
     EntryTable et;
     PossibleEntry* pt;
-    int i, j;
+    int i, j, set = NO_FILL;
     init_entry_table(&et, b);
     new_commit(b);
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             pt = et.entries[i][j];
 			if (!pt->value && pt->count == 1) {
+                set = !NO_FILL;
                 free_set_cell(b, i, j, pt->valid_nums[0]);
                 printf("Cell (%d,%d) has changed to %d\n", i + 1, j + 1, pt->valid_nums[0]);
 			}
@@ -373,6 +375,7 @@ void autofill(Board* b){
     }
     free_entry_table(&et);
     finish_commit(b);
+    return set;
 }
 
 /* duplicates a board state to another board */

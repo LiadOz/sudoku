@@ -354,7 +354,8 @@ int num_solutions_command(Board** b, Command* cmd){
 int autofill_command(Board** b, Command* cmd){
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
-	autofill(*b);
+	if (autofill(*b) == NO_FILL)
+        return COMMAND_FAILED;
 	return SUCCSESS;
 	
 }
