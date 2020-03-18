@@ -454,13 +454,14 @@ void fill_solution(Board* b, EntryTable* et, double* sol){
  * otherwise SOLUTION_FOUND is returned */
 int generate_using_ILP(Board* b, int x, int y){
     EntryTable et;
+	int tries = 0;
+	double* sol = NULL;
     Board* board_copy = malloc(sizeof(Board));
 	if (board_copy == NULL) {
 		printf("Error: malloc has failed\n");
 		exit(0);
 	}
-    int tries = 0;
-    double* sol = NULL;
+
     while (tries < MAX_GENERATE_TRIES){
         /* using a board copy to match the solved state */
         create_board_copy(b, board_copy);

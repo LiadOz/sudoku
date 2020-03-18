@@ -34,12 +34,12 @@ float check_if_float(char* s, int* flag){
 }
 
 int* set_params_int(Command* cmd, int* flags) {
+	int i;
 	int* args = (int*)malloc(cmd->arg_length * sizeof(int));
 	if (args == NULL) {
 		printf("Error: malloc has failed\n");
 		exit(0);
 	}
-	int i;
 	for (i = 0; i < cmd->arg_length; i++) {
 		args[i] = check_if_int(cmd->args[i], &(flags[i]));
 		if (flags[i] == NOT_INT) {

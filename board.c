@@ -13,14 +13,14 @@
  * used to initialize the board
  */
 void init_board(Board* b, int width, int height){
+	int i;
+	int** p;
+	int* p2;
 	Moves_Bundle* first_bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
 	if (first_bundle == NULL) {
 		printf("Error: malloc has failed\n");
 		exit(0);
 	}
-    int i;
-    int** p;
-    int* p2;
     p = malloc(width * height * sizeof(int *));
     if(p == NULL){
         printf("Error: malloc has failed\n");

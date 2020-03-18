@@ -209,13 +209,14 @@ int print_board_command(Board** b, Command* cmd){
 }
 
 int set_command(Board** b, Command* cmd){
+	int* args;
+	int i;
 	int* flags = calloc(cmd->arg_length, sizeof(int));
 	if (flags == NULL) {
 		printf("Error: calloc has failed\n");
 		exit(0);
 	}
-	int i;
-	int* args = set_params_int(cmd, flags);
+	args = set_params_int(cmd, flags);
 	for (i = 0; i < cmd->arg_length; i++) {
 		if (flags[i] == NOT_INT) {
 			free(args);
