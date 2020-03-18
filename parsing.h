@@ -2,7 +2,7 @@
 #define PARSING_H
 
 #include "board.h"
-#define MAX_INPUT_SIZE 256
+#define MAX_INPUT_SIZE 1024
 #define MAX_ARGS_SIZE 3
 #define COMMAND_EXECUTED 1
 #define COMMAND_FAILED 0

@@ -20,6 +20,7 @@
 #define COMMANDS_NUM 17
 #define SUCCSESS 5
 #define DEFAULT_BOARD_SIZE 3
+#define OVERFLOW 256
 #define UNUSED(x) (void)(x)
 
 #define ARGS_OUT_OF_RANGE "Error: the parameters are out of range, please enter a parameter between 1 to %d\n"
@@ -48,7 +49,7 @@ void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
     fgets(input, MAX_INPUT_SIZE + 1, stdin);  
-    if(strlen(input) == MAX_INPUT_SIZE){
+    if(strlen(input) == OVERFLOW){
         cmd->c_status = TOO_MUCH_CHARS;
         /* flushing the rest of input */
         while(!strchr(input, '\n'))
@@ -464,17 +465,14 @@ int execute_command(Board** board_pointer, Command* cmd){
     User_Command uc;
     int command_found = 0;
     /* exits on eof */
-    printf("1: Command %s\n", cmd->name);
     if (feof(stdin)){
         exit_command(board_pointer, cmd);
     }
-    printf("2: Command %s\n", cmd->name);
     /* check if input is too long */
     if(cmd->c_status == TOO_MUCH_CHARS) {
         printf("Error: input too long expected up to 256 chars\n");
         return COMMAND_FAILED;
     }
-    printf("3: Command %s\n", cmd->name);
 
     /* ignoring empty command */
     if(!cmd->name)
