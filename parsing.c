@@ -36,7 +36,7 @@ int get_args(char* input, char args[MAX_ARGS_SIZE][MAX_INPUT_SIZE-1]){
     char* token;
     token = strtok(input, COMMAND_DELIMITER);
     token = strtok(NULL, COMMAND_DELIMITER);
-    while(token != NULL){
+    while(token != NULL && i < MAX_ARGS_SIZE){
         strcpy(args[i++], token);
         token = strtok(NULL, COMMAND_DELIMITER);
     }
@@ -47,7 +47,17 @@ int get_args(char* input, char args[MAX_ARGS_SIZE][MAX_INPUT_SIZE-1]){
 void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
-    fgets(input, MAX_INPUT_SIZE, stdin);  
+    fgets(input, MAX_INPUT_SIZE + 1, stdin);  
+    if(strlen(input) == MAX_INPUT_SIZE){
+        cmd->c_status = TOO_MUCH_CHARS;
+        /* flushing the rest of input */
+        while(!strchr(input, '\n'))
+            if(!fgets(input, MAX_INPUT_SIZE, stdin))
+                    break;
+        return;
+    }
+    else
+        cmd->c_status = 0;
     strcpy(input_copy, input);
     cmd->name = strtok(input_copy, COMMAND_DELIMITER);
     cmd->arg_length = get_args(input, cmd->args);
@@ -454,14 +464,24 @@ int execute_command(Board** board_pointer, Command* cmd){
     User_Command uc;
     int command_found = 0;
     /* exits on eof */
+    printf("1: Command %s\n", cmd->name);
     if (feof(stdin)){
         exit_command(board_pointer, cmd);
     }
+    printf("2: Command %s\n", cmd->name);
+    /* check if input is too long */
+    if(cmd->c_status == TOO_MUCH_CHARS) {
+        printf("Error: input too long expected up to 256 chars\n");
+        return COMMAND_FAILED;
+    }
+    printf("3: Command %s\n", cmd->name);
+
     /* ignoring empty command */
     if(!cmd->name)
         return SUCCSESS;
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
+        command_found = 0;
         if(!strcmp(cmd->name, uc.name)){
             command_found = 1;
             if(b != NULL)
