@@ -8,12 +8,18 @@
 /* Returns NOT_INT if is not int
  * if it is int it returns the number */
 int check_if_int(char* s, int* flag){
-    int num = atoi(s);
-    if(num == 0 && s[0] != '0'){
+    int i_num = atoi(s);
+	float f_num = atof(s);
+	int f_as_i = f_num;
+    if(i_num == 0 && s[0] != '0'){
         *flag = NOT_INT;
         return 0;
-    }
-    return num;
+	}
+	else if (f_as_i != f_num) {
+		*flag = NOT_INT;
+		return 0;
+	}
+    return i_num;
 }
 
 /* Returns NOT_FLOAT if is not float
