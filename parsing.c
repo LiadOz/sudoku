@@ -152,7 +152,7 @@ int check_coordinates(Board* b, Command* cmd){
 
 /* starts a saved puzzle in solve mode */
 int solve_command(Board** b, Command* cmd){
-    if(get_file_status(read_file(b, cmd->args[0])) == COMMAND_FAILED)
+    if(get_file_status(read_file(b, cmd->args[0], SOLVE)) == COMMAND_FAILED)
         return COMMAND_FAILED;
     (*b)->mode = SOLVE;
     return SUCCSESS;
@@ -170,7 +170,7 @@ int edit_command(Board** b, Command* cmd){
         *b = new_b;
     }
     else{
-        if(get_file_status(read_file(b, cmd->args[0])) == COMMAND_FAILED)
+        if(get_file_status(read_file(b, cmd->args[0], EDIT)) == COMMAND_FAILED)
             return COMMAND_FAILED;
         (*b)->mode = EDIT;
     }
@@ -293,7 +293,10 @@ int generate_command(Board** b, Command* cmd){
     }
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
-    generate_using_ILP(*b, first_arg, second_arg);
+    if(generate_using_ILP(*b, first_arg, second_arg) == NO_SOLUTION_FOUND){
+        printf("Error: puzzle cannot be generated\n");
+        return COMMAND_FAILED;
+    }
     return SUCCSESS;
 }
 

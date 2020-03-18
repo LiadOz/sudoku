@@ -36,7 +36,7 @@ int save_board(Board* b, char file_path[]){
 }
 
 /* Reads a file and creates a new board according to it */
-int read_file(Board** old_b, char file_path[]){
+int read_file(Board** old_b, char file_path[], int mode){
     Board* b = (Board *)malloc(sizeof(Board));
     FILE *fptr;
     unsigned long pos;
@@ -55,6 +55,7 @@ int read_file(Board** old_b, char file_path[]){
         return FILE_FORMAT_ERROR;
 
     init_board(b, width, height);
+    b->mode = mode;
     /* first insert the fixed values and check whether the board is solvable */
     pos = ftell(fptr);
     for(i = 0; i < b->size; i++){

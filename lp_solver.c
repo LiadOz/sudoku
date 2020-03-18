@@ -422,13 +422,16 @@ void fill_solution(Board* b, EntryTable* et, double* sol){
  * otherwise SOLUTION_FOUND is returned */
 int generate_using_ILP(Board* b, int x, int y){
     EntryTable et;
-    Board* board_copy = malloc(sizeof(Board));
+    Board* board_copy;
     int tries = 0;
     double* sol = NULL;
     while (tries < MAX_GENERATE_TRIES){
         /* using a board copy to match the solved state */
+    printf("tries = %d\n", tries);
+        board_copy = malloc(sizeof(Board));
         create_board_copy(b, board_copy);
         if(generate_random_cells(board_copy, x) == BOARD_SETTING_ERROR){
+            free_board(board_copy);
             tries++;
             continue;
         }
@@ -440,13 +443,14 @@ int generate_using_ILP(Board* b, int x, int y){
             generate_from_solution(b, board_copy, y);
             free(sol);
             free_board(board_copy);
+            free_entry_table(&et);
             return SOLUTION_FOUND;
         }
         reset_board_state(board_copy);
         tries++;
         free_entry_table(&et);
         free(sol);
+        free_board(board_copy);
     }
-    free_board(board_copy);
     return NO_SOLUTION_FOUND;
 }
