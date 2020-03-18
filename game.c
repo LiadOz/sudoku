@@ -30,10 +30,16 @@ int game_flow(){
         printf("Enter next command\n");
         user_input(&cmd);
         execute_command(&b, &cmd);
-		if (b != NULL && (b->correct_cells == (b->size * b->size)) && (b->wrong_cells == 0)) {
-			printf("The puzzle was solved successfully!");
-			b->mode = INIT;
-		}
+		if (b != NULL && (b->correct_cells == (b->size * b->size))) {
+			if (b->wrong_cells == 0) {
+				printf("The puzzle was solved successfully!\n");
+				free(b);
+				b = NULL;
+			}
+			else {
+				printf("Board is errorness, keep trying..\n");
+			}
+		} 
         /*
         if (feof(stdin)){
             exit_game(&b);
