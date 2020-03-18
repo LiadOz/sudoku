@@ -273,7 +273,12 @@ int set_cell(Board* b, int x, int y, int val) {
 	}
 	free_set_cell(b, x, y, val);
 	if (b->mode == EDIT) {
-		b->fixed[x][y] = 1;
+		if (val != 0) {
+			b->fixed[x][y] = 1;
+		}
+		else {
+			b->fixed[x][y] = 0;
+		}
 	}
 	return SUCCESS;
 }

@@ -27,7 +27,7 @@ int game_flow(){
 
     /* the game loop starts until the user uses the exit command or finished the board */
     while(1){
-        printf("Enter next command\n");
+        printf("Enter next command:\n");
         user_input(&cmd);
         execute_command(&b, &cmd);
 		if (b != NULL && (b->correct_cells == (b->size * b->size))) {
