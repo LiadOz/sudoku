@@ -48,7 +48,6 @@ int init_entry_table(EntryTable* et, Board* b){
                 temp->percent = calloc(temp->count, sizeof(double));
             }
             options[i][j] = temp;
-            free(temp);
         }
     }
     et->entries = options;
@@ -144,6 +143,7 @@ void fill_with_thresh(EntryTable* et, Board* b, double thresh){
 void free_possible_entry(PossibleEntry* pe){
     free(pe->valid_nums);
     free(pe->percent);
+    free(pe);
 }
 
 void free_entry_table(EntryTable* et){
@@ -152,6 +152,9 @@ void free_entry_table(EntryTable* et){
         for(j = 0; j < et->size; j++){
             if(!et->entries[i][j]->value){
                 free_possible_entry(et->entries[i][j]);
+            }
+            else{
+                free(et->entries[i][j]);
             }
         }
         free(et->entries[i]);
