@@ -5,6 +5,10 @@
 
 Node* new_node(int x, int y, int value, int counter) {
 	Node* node = (Node*)malloc(sizeof(Node));
+	if (node == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
 	node->x = x;
 	node->y = y;
 	node->value = value;

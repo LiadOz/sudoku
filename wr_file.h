@@ -9,6 +9,6 @@
 #define FILE_SAVED 5
 
 int save_board(Board* b, char file_path[]);
-int read_file(Board** old_b, char file_path[]);
+int read_file(Board** old_b, char file_path[], int mode);
 
 #endif

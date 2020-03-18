@@ -37,14 +37,19 @@ int save_board(Board* b, char file_path[]){
 
 /* Reads a file and creates a new board according to it */
 int read_file(Board** old_b, char file_path[], int mode){
+	FILE* fptr;
+	unsigned long pos;
+	int height, width;
+	int i, j, flag;
+	char temp[READ_MAX_SIZE];
+	char* point_ptr;
+	int val;
     Board* b = (Board *)malloc(sizeof(Board));
-    FILE *fptr;
-    unsigned long pos;
-    int height, width;
-    int i, j, flag;
-    char temp[READ_MAX_SIZE];
-    char* point_ptr;
-    int val;
+	if (b == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
+
     fptr = fopen(file_path, "r");
     if(fptr == NULL){
         return FILE_NOT_FOUND;
