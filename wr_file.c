@@ -84,6 +84,7 @@ int read_file(Board** old_b, char file_path[], int mode){
         }
     }
     fseek(fptr, pos, 0);
+    /* then insert the rest of the values */
     for(i = 0; i < b->size; i++){
         for(j = 0; j < b->size; j++){
             fscanf(fptr, "%s", temp);
@@ -100,6 +101,7 @@ int read_file(Board** old_b, char file_path[], int mode){
         }
     }
     fclose(fptr);
+    /* replace the old board */
     if(*old_b){
         free_board(*old_b);
     }
