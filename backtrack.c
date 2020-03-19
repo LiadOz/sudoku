@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "util.h"
 #include "board.h"
@@ -24,6 +23,7 @@ Node* first_empty_cell(Board* b) {
 	return next_empty_cell(b, 0, 0);
 }
 
+/* finds the number of solutions using backcrack algorithm */
 int num_of_solutions(Board* b) {
 	int x, y;
 	Node* node = first_empty_cell(b);

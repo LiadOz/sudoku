@@ -370,30 +370,3 @@ void create_board_copy(Board* orig, Board* new_b){
         for(j = 0; j < orig->size; j++)
             new_b->state[i][j] = orig->state[i][j];
 }
-
-/*************************************************************************
- ************************ CODE FROM HW3 **********************************
- ************************************************************************/
-
-/* sets the game state to user according to solved board and a number of cells to be keep */
-/*
-void set_from_solution(Board* b, int empty_cells){
-    int r_x, r_y;
-    b->filled_cells = empty_cells;
-    while(empty_cells > 0){
-        r_x = rand() % b->size;
-        r_y = rand() % b->size;
-        if(b->fixed[r_y][r_x] == 0){
-            b->state[r_y][r_x] = b->solution[r_y][r_x];
-            b->fixed[r_y][r_x] = 1;
-            empty_cells--;
-        }
-    }
-}*/
-
-/* gives hint to cell (x, y) when they start at 1 */
-/*
-void hint(Board* b, int x, int y){
-    printf("Hint: set cell to %d\n", b->solution[x][y]);
-} */
-

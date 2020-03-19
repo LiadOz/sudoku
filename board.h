@@ -1,3 +1,18 @@
+/* 
+ * This module houses the core logic and structure of the board at any given moment
+ * it has the main functions to manipulate the board.
+ *
+ * get_options_array - returns an allocated array with every possible value to a given cell.
+ * valid_set_value - indicates whether a cell can be set to a value.
+ * set_cell - sets cell to a value if it isn't fixed.
+ * free_set_cell - sets a cell to a value without checking fixed cell.
+ *
+ * create_board_copy - creates a copy of the board.
+ * generate_random_cells - randomly fills cells with x values.
+ * generate_from_solution - generates a board by removing cells from a solved board.
+ * autofill - autofills obvious cells.
+ */
+
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -12,13 +27,8 @@
 #define FIXED_CELL 0
 #define SUCCESS 1
 #define NO_FILL 1
-/*
- * Board struct:
- * state - the state of the board with user guesses
- * fixed - determine wheter a cell is fixed (1) or not (0)
- * filled_cells - the number of cells inputted correctly
- */
 
+/* A node in Doubly Linked List of moves */
 typedef struct Move{
 	int x;
 	int y;
@@ -27,6 +37,17 @@ typedef struct Move{
 	struct Move* next;
 } Move;
 
+/* 
+ * Represents a node in Doubly Linked List
+ * Each of these nodes contains a Doubly Linked List of moves commited in the current node
+ * so each node represents a bundle of changes to the board.
+ * If the user used the set command which changes at most 1 cell then the node will have
+ * only one move in the Linked List.
+ * If the user used the autofill command the node will have the entire list of moves committed
+ * by the autofill command.
+ * 
+ * The commit variable tells whether or not more moves can be appended to the bundle.
+ */
 typedef struct Moves_Bundle {
 	int first;
     int commited;
@@ -36,6 +57,16 @@ typedef struct Moves_Bundle {
 	struct Moves_Bundle* prev;
 } Moves_Bundle;
 
+/*
+ * Board struct:
+ * movePointer - A Doubly Linked List which contains the previous moves.
+ * state - A 2D int array with with user guesses.
+ * fixed - Determine wheter a cell is fixed (1) or not (0)
+ * filled_cells - The number of cells inputted.
+ * wrong_cells - The number of errornous cells.
+ * mode - Current mode of the game.
+ * mark_errors - Whether or not to show errors.
+ */
 typedef struct {
     int **state;
     int **fixed;
@@ -50,19 +81,17 @@ typedef struct {
 	Moves_Bundle* movePointer;
 } Board;
 
-
-
 void init_board(Board* b, int width, int height);
 void free_board(Board* b);
-int valid_set_value(Board* b, int x, int y, int val);
+
 int get_options_array(Board* b, int i, int j, int** arr);
-int generate_random_cells(Board* b, int x);
-void reset_board_state(Board* b);
-void generate_from_solution(Board* b, Board* solved, int x);
-int autofill(Board* b);
+int valid_set_value(Board* b, int x, int y, int val);
 int set_cell(Board* b, int x, int y, int val);
-void create_board_copy(Board* orig, Board* new_b);
 void free_set_cell(Board* b, int x, int y, int val);
 
+void create_board_copy(Board* orig, Board* new_b);
+int generate_random_cells(Board* b, int x);
+void generate_from_solution(Board* b, Board* solved, int x);
+int autofill(Board* b);
 
 #endif
