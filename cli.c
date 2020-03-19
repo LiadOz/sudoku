@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cli.h"
-#include "printing.h"
 #include "board.h"
 #include "lp_solver.h"
 #include "util.h"
