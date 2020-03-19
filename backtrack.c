@@ -1,7 +1,7 @@
+
 #include <stdio.h>
 #include "util.h"
 #include "board.h"
-#include "printing.h"
 
 
 /*Return new node of the next empty cell*/

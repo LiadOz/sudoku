@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cli.h"
-#include "printing.h"
 #include "board.h"
 #include "lp_solver.h"
 #include "util.h"
@@ -279,7 +278,7 @@ int generate_command(Board** b, Command* cmd){
         printf(PARAMETER_ERROR, "1st", "non-negative value");
         return COMMAND_FAILED;
     }
-    max_cells = (*b)->size * (*b)->size - (*b)->correct_cells;
+    max_cells = (*b)->size * (*b)->size - (*b)->filled_cells;
     if (max_cells - first_arg < 0){
         printf("Error: in 1st parameter expected up to %d cells\n", max_cells);
         return COMMAND_FAILED;

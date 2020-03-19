@@ -5,8 +5,7 @@
 #include "board.h"
 #include "cli.h"
 #include "game.h"
-#include "printing.h"
-#include "solver.h"
+#include "util.h"
 #include "moves.h"
 #include "backtrack.h"
 
@@ -30,7 +29,7 @@ int game_flow(){
         printf("Enter next command:\n");
         user_input(&cmd);
         execute_command(&b, &cmd);
-		if (b != NULL && (b->correct_cells == (b->size * b->size))) {
+		if (b != NULL && (b->filled_cells == (b->size * b->size))) {
 			if (b->wrong_cells == 0) {
 				printf("The puzzle was solved successfully!\n");
 				free(b);
@@ -47,7 +46,7 @@ int game_flow(){
         next_command = execute_command(&b, &cmd, game_finished);
         if(next_command == PRINT_AFTER){
             printBoard(&b);
-            if(b.correct_cells == b.size * b.size){
+            if(b.filled_cells == b.size * b.size){
                 printf("Puzzle solved successfully\n");
                 game_finished = FINISHED;
             }

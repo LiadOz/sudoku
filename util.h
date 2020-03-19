@@ -21,6 +21,7 @@ int top(Node* top);
 #define NOT_INT 1
 #define NOT_FLOAT 1
 
+void printBoard(Board* b);
 
 int check_if_int(char* s, int* flag);
 float check_if_float(char* s, int* flag);

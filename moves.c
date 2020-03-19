@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "game.h"
 #include "moves.h"
 
 Move* create_new_move(Board* b, int x, int y, int val) {
@@ -19,6 +18,7 @@ Move* create_new_move(Board* b, int x, int y, int val) {
 	return move;
 }
 
+/* given a board, free all the moves(and the bundles) that are coming after the current move. */
 void free_next_moves(Board* b) {
 	Moves_Bundle* bundle = b->movePointer->next;
 	Moves_Bundle* next_bundle;
@@ -36,26 +36,7 @@ void free_next_moves(Board* b) {
 	}
 }
 
-
-void add_moves_to_board(Board* b, Move* head) {
-	Moves_Bundle* bundle = (Moves_Bundle*)malloc(sizeof(Moves_Bundle));
-	if (bundle == NULL) {
-		printf("Error: malloc has failed\n");
-		exit(0);
-	}
-	bundle->head = head;
-	if (b->movePointer != NULL) {
-		if (b->movePointer->next != NULL) {
-			free_next_moves(b);
-		}
-		b->movePointer->next = bundle;
-	}
-	bundle->prev = b->movePointer;
-	bundle->next = NULL;
-	bundle->first = 0;
-	b->movePointer = bundle;
-}
-
+/* given a board and a command (undo/redo), moves the board's moves pointer to the given location by one step. */
 void move_pointer(Board* b, char* command) {
 	if (strcmp(command, REDO_COMMAND) == 0) {
 		b->movePointer = b->movePointer->next;
@@ -78,18 +59,12 @@ void exec_moves(Board* b, char* command, int reset) {
 	Move* move = b->movePointer->head;
 	while (move != NULL) {
 		if (strcmp(command, REDO_COMMAND) == 0) {
-            /*
-			set_cell(b, move->x, move->y, move->currVal, &move, 0);
-            */
 			set_cell(b, move->x, move->y, move->currVal);
 			if (!reset) {
 				print_change(REDO_COMMAND, move);
 			}
 		}
 		else if (strcmp(command, UNDO_COMMAND) == 0) {
-            /*
-			set_cell(b, move->x, move->y, move->prevVal, &move, 0);
-            */
 			set_cell(b, move->x, move->y, move->prevVal);
 			if (!reset) {
 				print_change(UNDO_COMMAND, move);
@@ -133,7 +108,6 @@ void free_all_moves(Board* b) {
 	free(b->movePointer);
 }
 
-/* creating a container to store the next moves */
 void new_commit(Board* b){
     Moves_Bundle* new_commit = malloc(sizeof(Moves_Bundle));
 	if (new_commit == NULL) {
@@ -156,7 +130,7 @@ void new_commit(Board* b){
 	b->movePointer = new_commit;
 }
 
-/* adds a move to last uncommited bundle */
+
 void add_move(Board* b, int x, int y, int val){
     Move* move;
     Moves_Bundle* curr_bundle = b->movePointer;
@@ -187,7 +161,6 @@ void add_move(Board* b, int x, int y, int val){
 
 }
 
-/* closes the commit */
 void finish_commit(Board *b){
     b->movePointer->commited = COMMITED;
     /* remove if empty */

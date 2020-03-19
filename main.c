@@ -13,7 +13,7 @@ int main(){
     while(1){
         execute_command(&b);
         /* test check if the board is finished */
-		if (b != NULL && (b->correct_cells == (b->size * b->size))) {
+		if (b != NULL && (b->filled_cells == (b->size * b->size))) {
 			if (b->wrong_cells == 0) {
 				printf("The puzzle was solved successfully!\n");
 				free(b);
