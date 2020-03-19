@@ -22,6 +22,10 @@
 #ifndef MOVES_H
 #define MOVES_H
 
+#define UNDO_COMMAND "undo"
+#define REDO_COMMAND "redo"
+
+
 #define COMMITED 1
 
 Move* create_new_move(Board* b, int x, int y, int val);

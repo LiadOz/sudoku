@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "game.h"
 #include "moves.h"
 
 Move* create_new_move(Board* b, int x, int y, int val) {

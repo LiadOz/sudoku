@@ -39,20 +39,21 @@ int read_file(Board** old_b, char file_path[], int mode){
 	FILE* fptr;
 	unsigned long pos;
 	int height, width;
-	int i, j, flag;
+	int i, j, flag = 0;
 	char temp[READ_MAX_SIZE];
 	char* point_ptr;
 	int val;
-    Board* b = (Board *)malloc(sizeof(Board));
-	if (b == NULL) {
-		printf("Error: malloc has failed\n");
-		exit(0);
-	}
+    Board* b;
 
     fptr = fopen(file_path, "r");
     if(fptr == NULL){
         return FILE_NOT_FOUND;
     }
+    b = (Board *)malloc(sizeof(Board));
+	if (b == NULL) {
+		printf("Error: malloc has failed\n");
+		exit(0);
+	}
     fscanf(fptr, "%d", &height);
     fscanf(fptr, "%d", &width);
     if(height < 1 || width < 1)

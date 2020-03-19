@@ -1,20 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-/* currentrly these are not correct:
- * save_board - should check for errornous in edit mode
- * generate - needs to check if there are X empty values
- * guess - need to check errornous
- * validate board does not work currently because errornous is not checked */
-#include "parsing.h"
-#include "util.h"
+#include "cli.h"
 #include "board.h"
 #include "lp_solver.h"
 #include "wr_file.h"
 #include "util.h"
 #include "moves.h"
 #include "backtrack.h"
-#include "game.h"
 
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
@@ -425,25 +418,6 @@ User_Command commands[] = {
     {"exit",            0, exit_command,            0, 1, 1, 1, 0}
 };
 
-/* Checks if the following command is a available in a mode */
-int available_command(User_Command* uc, int mode){
-    switch (mode) {
-        case INIT:
-            if(uc->available_in_init == 1)
-                return SUCCSESS;
-            break;
-        case EDIT:
-            if(uc->available_in_edit == 1)
-                return SUCCSESS;
-            break;
-        case SOLVE:
-            if(uc->available_in_solve == 1)
-                return SUCCSESS;
-            break;
-    }
-    return COMMAND_FAILED;
-}
-
 /* Used when a command failes due to not being in the correct mode
  * and prints a descriptive information about where the command is available. */
 void print_available_modes(User_Command* uc){
@@ -467,9 +441,32 @@ void print_available_modes(User_Command* uc){
     printf(".\n");
 }
 
+/* Checks if the following command is a available in a mode */
+int available_command(User_Command* uc, int mode){
+    switch (mode) {
+        case INIT:
+            if(uc->available_in_init == 1)
+                return SUCCSESS;
+            break;
+        case EDIT:
+            if(uc->available_in_edit == 1)
+                return SUCCSESS;
+            break;
+        case SOLVE:
+            if(uc->available_in_solve == 1)
+                return SUCCSESS;
+            break;
+    }
+    printf("Error: %s not available in current mode it is available in ", uc->name);
+    print_available_modes(uc);
+    return COMMAND_FAILED;
+}
+
+
 /* Checks for the correct number of params */
 int check_args_num(User_Command* uc, int args){
         if((!uc->optional_arg && args != uc->args_num) || (uc->optional_arg && args > uc->args_num)){
+            printf("Error: %s takes %d arguments\n", uc->name, uc->args_num);
             return COMMAND_FAILED;
         }
     return SUCCSESS;
@@ -480,11 +477,17 @@ int check_args_num(User_Command* uc, int args){
  * it find the correct command checks if the command is available in the current mode,
  * checks the number of paramters passed and the starts command execution.
 *****************************************************************************/
-int execute_command(Board** board_pointer, Command* cmd){
+int execute_command(Board** board_pointer){
     Board* b = *board_pointer;
     int i, mode = INIT;
     User_Command uc;
+    Command user_command;
+    Command* cmd;
     int command_found = 0;
+    printf("Enter next command:\n");
+    user_input(&user_command);
+    cmd = &user_command;
+
     /* exits on eof */
     if (feof(stdin)){
         exit_command(board_pointer, cmd);
@@ -501,17 +504,17 @@ int execute_command(Board** board_pointer, Command* cmd){
     for(i = 0; i < COMMANDS_NUM; i++){
         uc = commands[i];
         command_found = 0;
+        /* check if inputted command exists */
         if(!strcmp(cmd->name, uc.name)){
             command_found = 1;
             if(b != NULL)
                 mode = b->mode;
+            /* check if command is available in current mode */
             if(available_command(&uc, mode) == COMMAND_FAILED){
-                printf("Error: %s not available in current mode it is available in ", uc.name);
-                print_available_modes(&uc);
                 return COMMAND_FAILED;
             }
+            /* check number of arguments */
             if (check_args_num(&uc, cmd->arg_length) == COMMAND_FAILED){
-                printf("Error: %s takes %d arguments\n", uc.name, uc.args_num);
                 return COMMAND_FAILED;
             }
             /* stages 3-5 of checking are handled in the following funcion */

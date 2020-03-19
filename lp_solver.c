@@ -11,7 +11,7 @@
 #define RANDOM_UB 15
 #define MAX_GENERATE_TRIES 1000
 
-#define GUROBI_ERROR_PRINT "Error in Gurobi function exiting game\n"
+#define GUROBI_ERROR_PRINT "Error in Gurobi library exiting game\n"
 
 /* creates constraints for cell and inside ind and val
  * returns the length
@@ -103,6 +103,7 @@ int create_block_constraint(EntryTable* et, int block_number, int value, int* in
     return l;
 }
 
+/* adds a single constaraint to gurobi module */
 void add_constraint(GRBmodel* model,GRBenv* env, int size, int* ind, double* val, int rhs){
     int error;
     error = GRBaddconstr(model, size, ind, val, GRB_EQUAL, rhs, NULL);
@@ -115,6 +116,7 @@ void add_constraint(GRBmodel* model,GRBenv* env, int size, int* ind, double* val
     }
 }
 
+/* adds all board constraints to gurobi module */
 void add_all_constraints(GRBmodel* model, GRBenv* env,EntryTable* et){
     int i, j;
     int* ind;

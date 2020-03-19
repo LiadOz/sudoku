@@ -3,7 +3,6 @@
 #include "board.h"
 #include "possible_table.h"
 #include "moves.h"
-#include "game.h"
 #include "util.h"
 
 #define UNUSED(x) (void)(x)
