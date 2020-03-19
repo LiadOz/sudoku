@@ -88,7 +88,7 @@ void init_board(Board* b, int width, int height){
     b->width = width;
     b->height = height;
     b->size = width * height;
-    b->correct_cells = 0;
+    b->filled_cells = 0;
     b->mode = INIT;
 	b->wrong_cells = 0;
 }
@@ -264,10 +264,10 @@ int get_options_array(Board* b, int i, int j, int** arr){
 void free_set_cell(Board* b ,int x, int y, int val){
     add_move(b, x, y, val);
 	if (b->state[x][y] == 0 && val != 0) {
-		b->correct_cells++;
+		b->filled_cells++;
 	}
 	if (b->state[x][y] != 0 && val == 0) {
-		b->correct_cells--;
+		b->filled_cells--;
 	}
 	b->state[x][y] = val;
 	board_errorness(b);
@@ -395,7 +395,7 @@ void create_board_copy(Board* orig, Board* new_b){
 /*
 void set_from_solution(Board* b, int empty_cells){
     int r_x, r_y;
-    b->correct_cells = empty_cells;
+    b->filled_cells = empty_cells;
     while(empty_cells > 0){
         r_x = rand() % b->size;
         r_y = rand() % b->size;

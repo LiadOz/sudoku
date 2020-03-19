@@ -3,8 +3,61 @@
 #include <stdio.h>
 #include "util.h"
 #include "parsing.h"
-#include "printing.h"
 #include "board.h"
+
+/*generic line length calculation*/
+int lineCalc(Board* b) {
+	return 4 * b->size + b->height + 1;
+}
+
+/*prints the board to the screen*/
+void printBoard(Board* b) {
+	int lineLength = lineCalc(b);
+	int x, y, i;
+
+	for (x = 0; x < b->size; x++) {
+		if (x % b->height == 0) {
+			for (i = 0; i < lineLength; i++) {
+				printf("-");
+			}
+			printf("\n");
+		}
+		for (y = 0; y < b->size; y++) {
+			if (y % b->width == 0) {
+				printf("|");
+			}
+			/* fixed cell */
+			if ((!(b->mode == EDIT) && b->fixed[x][y] == 1) && b->state[x][y] != 0) {
+				printf(" ");
+				printf("%2d.", b->state[x][y]);
+			}
+			/* errorness cell */
+			else if ((b->mark_errors == MARK_ERRORS || b->mode == EDIT) && b->wrong[x][y] == 1 && b->state[x][y] != 0) {
+				printf(" ");
+				printf("%2d*", b->state[x][y]);
+			}
+			/* regular cell */
+			else if (b->state[x][y] != 0) {
+				printf(" ");
+				printf("%2d", b->state[x][y]);
+				printf(" ");
+			}
+			/* empty cell */
+			else {
+				printf(" ");
+				printf("   ");
+			}
+		}
+		printf("|");
+		if (x == b->size - 1) {
+			printf("\n");
+			for (i = 0; i < lineLength; i++) {
+				printf("-");
+			}
+		}
+		printf("\n");
+	}
+}
 
 /* Returns NOT_INT if is not int
  * if it is int it returns the number */

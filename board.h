@@ -17,7 +17,7 @@
  * solution - the last solution given by the validate method
  * state - the state of the board with user guesses
  * fixed - determine wheter a cell is fixed (1) or not (0)
- * correct_cells - the number of cells inputted correctly
+ * filled_cells - the number of cells inputted correctly
  */
 
 typedef struct Move{
@@ -46,7 +46,7 @@ typedef struct {
     int height;
     int size;
     int mode;
-    int correct_cells;
+    int filled_cells;
     int wrong_cells;
     int mark_errors;
 	Moves_Bundle* movePointer;

@@ -7,7 +7,6 @@
 #include "util.h"
 #define READ_MAX_SIZE 3
 
-#include "printing.h"
 /* save the board state to location 'file_path' */
 int save_board(Board* b, char file_path[]){
     FILE *fptr;
