@@ -5,11 +5,9 @@
 #include "printing.h"
 #include "board.h"
 #include "lp_solver.h"
-#include "wr_file.h"
 #include "util.h"
 #include "moves.h"
 #include "backtrack.h"
-#include "game.h"
 
 #define COMMAND_DELIMITER " \t\r\n"
 #define COMMANDS_NUM 17
@@ -197,12 +195,14 @@ int mark_errors_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* prints the board */
 int print_board_command(Board** b, Command* cmd){
     printBoard(*b);
     UNUSED(cmd);
     return SUCCSESS;
 }
 
+/* sets a cell to inputted value */
 int set_command(Board** b, Command* cmd){
 	int* args;
 	int i;
@@ -237,6 +237,7 @@ int set_command(Board** b, Command* cmd){
 	return COMMAND_FAILED;
 }
 
+/* checks if the board is solvable */
 int validate_command(Board** b, Command* cmd){
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
@@ -247,6 +248,7 @@ int validate_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* guesses the board using a threshold */
 int guess_command(Board** b, Command* cmd){
     int flag = 0;
     float val = check_if_float(cmd->args[0], &flag);
@@ -264,6 +266,7 @@ int guess_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* generates a board using ILP */
 int generate_command(Board** b, Command* cmd){
     int flag = 0;
     int second_arg, first_arg = check_if_int(cmd->args[0], &flag);
@@ -304,6 +307,7 @@ int generate_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* undo last command */
 int undo_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	if (undo(*b, 0)) {
@@ -313,6 +317,7 @@ int undo_command(Board** b, Command* cmd){
     return COMMAND_FAILED;
 }
 
+/* redo last command */
 int redo_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	if (redo(*b, 0)) {
@@ -322,6 +327,7 @@ int redo_command(Board** b, Command* cmd){
 	return COMMAND_FAILED;
 }
 
+/* saves the board */
 int save_command(Board** b, Command* cmd){
     int status = 0;
     if((*b)->mode == EDIT && errornous_check(*b, cmd) == COMMAND_FAILED)
@@ -334,6 +340,7 @@ int save_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* gives a hint to a cell using ILP */
 int hint_command(Board** b, Command* cmd){
     if(check_coordinates(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
@@ -341,6 +348,7 @@ int hint_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* gives a hint to a cell using LP */
 int guess_hint_command(Board** b, Command* cmd){
     if(check_coordinates(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
@@ -348,6 +356,7 @@ int guess_hint_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* prints the number of solutions */
 int num_solutions_command(Board** b, Command* cmd){
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
@@ -356,6 +365,7 @@ int num_solutions_command(Board** b, Command* cmd){
     return SUCCSESS;
 }
 
+/* autofills obvious cells */
 int autofill_command(Board** b, Command* cmd){
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
@@ -367,12 +377,14 @@ int autofill_command(Board** b, Command* cmd){
 	
 }
 
+/* resets board to initial state */
 int reset_command(Board** b, Command* cmd){
     UNUSED(cmd);
 	reset(*b);
     return SUCCSESS;
 }
 
+/* exits the game */
 int exit_command(Board** b, Command* cmd){
     printf("Exiting...\n");
     if(*b)
@@ -533,5 +545,5 @@ int execute_command(Board** board_pointer){
         printf("Error: invalid command\n");
         return COMMAND_FAILED;
     }
-    return SUCCSESS;
+    return COMMAND_EXECUTED;
 }

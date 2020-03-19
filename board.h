@@ -14,7 +14,6 @@
 #define NO_FILL 1
 /*
  * Board struct:
- * solution - the last solution given by the validate method
  * state - the state of the board with user guesses
  * fixed - determine wheter a cell is fixed (1) or not (0)
  * correct_cells - the number of cells inputted correctly
@@ -38,7 +37,6 @@ typedef struct Moves_Bundle {
 } Moves_Bundle;
 
 typedef struct {
-    int **solution;
     int **state;
     int **fixed;
     int **wrong;

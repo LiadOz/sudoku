@@ -21,12 +21,6 @@ void init_board(Board* b, int width, int height){
 		printf("Error: malloc has failed\n");
 		exit(0);
 	}
-    p = malloc(width * height * sizeof(int *));
-    if(p == NULL){
-        printf("Error: malloc has failed\n");
-        exit(0);
-    }
-    b->solution = p;
     
     p = malloc(width * height * sizeof(int *));
     if(p == NULL){
@@ -50,13 +44,6 @@ void init_board(Board* b, int width, int height){
     b->wrong = p;
 
     for(i = 0; i < width * height; i++){
-        p2 = calloc(width * height, sizeof(int));
-        if(p2 == NULL){
-            printf("Error: calloc has failed\n");
-            exit(0);
-        }
-        b->solution[i] = p2;
-
         p2 = calloc(width * height, sizeof(int));
         if(p2 == NULL){
             printf("Error: calloc has failed\n");
@@ -99,12 +86,10 @@ void free_board(Board* b){
     if(b){
         free_all_moves(b);
         for(i = 0; i < b->size; i++){
-            free(b->solution[i]);
             free(b->state[i]);
             free(b->fixed[i]);
             free(b->wrong[i]);
         }
-        free(b->solution);
         free(b->state);
         free(b->fixed);
         free(b->wrong);

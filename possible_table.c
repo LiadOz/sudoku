@@ -145,6 +145,7 @@ int choose_random_number(EntryTable* et, Board* b, int i, int j, double thresh){
     return pt->valid_nums[min_index];
 }
 
+/* fills a board with threshold using an EntryTable */
 void fill_with_thresh(EntryTable* et, Board* b, double thresh){
     int i, j, set_value;
     new_commit(b);
