@@ -11,6 +11,7 @@
  * generate_random_cells - randomly fills cells with x values.
  * generate_from_solution - generates a board by removing cells from a solved board.
  * autofill - autofills obvious cells.
+ * reset_board_state - resets board to 0's.
  */
 
 #ifndef BOARD_H
@@ -93,5 +94,6 @@ void create_board_copy(Board* orig, Board* new_b);
 int generate_random_cells(Board* b, int x);
 void generate_from_solution(Board* b, Board* solved, int x);
 int autofill(Board* b);
+void reset_board_state(Board* b);
 
 #endif

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cli.h"
+#include "printing.h"
 #include "board.h"
 #include "lp_solver.h"
 #include "util.h"
@@ -232,6 +233,7 @@ int set_command(Board** b, Command* cmd){
 		return SUCCSESS;
 	}
     finish_commit(*b);
+    free(args);
     printf("Error: cell is fixed\n");
 	return COMMAND_FAILED;
 }
