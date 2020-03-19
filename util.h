@@ -1,9 +1,20 @@
-/* Utility functions and structures used across the project */
+/*
+* This module contains all util functions that supports the other moduls.
+* ******      Functions:      ******
+* printBoard - prints the board to the screen.
+* check_if_int - Returns NOT_INT if is not int, if it is int it returns the number.
+* check_if_float - Returns NOT_FLOAT if is not float, if it is int it returns the number.
+* set_params_int -Check if the parameters are ints, if those are ints' it returns an array of them.
+* out_of_range - Returns 1 if 1 of the parameters is out of range, 0 otherwise.
+* board_errorness - Returns 1 if cell is errorness, 0 otherwise.
+* save_board -
+* read_file - Reads a file and creates a new board according to it.
+*/
+
 #ifndef UTIL_H_
 #define UTIL_H_
 #include "cli.h"
 #include "board.h"
-
 
 
 /* Represents a node in a stack which is used in bactrack.c */
