@@ -7,6 +7,7 @@
 #include "board.h"
 
 #define READ_MAX_SIZE 3
+
 /*generic line length calculation*/
 int lineCalc(Board* b) {
 	return 4 * b->size + b->height + 1;
@@ -246,6 +247,7 @@ int top(Node* top) {
 	return top->value;
 }
 
+/* saves the current state of the board */
 int save_board(Board* b, char file_path[]){
     FILE *fptr;
     int i, j;

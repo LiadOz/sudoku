@@ -369,4 +369,5 @@ void create_board_copy(Board* orig, Board* new_b){
     for(i = 0; i < orig->size; i++)
         for(j = 0; j < orig->size; j++)
             new_b->state[i][j] = orig->state[i][j];
+
 }
