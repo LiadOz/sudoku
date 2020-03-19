@@ -1,6 +1,6 @@
 #ifndef UTIL_H_
 #define UTIL_H_
-#include "parsing.h"
+#include "cli.h"
 #include "board.h"
 
 typedef struct Node {

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "board.h"
-#include "parsing.h"
+#include "cli.h"
 #include "game.h"
 #include "printing.h"
 #include "solver.h"
