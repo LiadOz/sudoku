@@ -186,7 +186,7 @@ void board_errorness(Board* b) {
 	}
 }
 
-/*Returns 1 if 1 of the parameters is out of range, 0 otherwise*/
+/* Returns 1 if 1 of the parameters is out of range, 0 otherwise */
 int out_of_range(Board* b, int* args) {
 	if ((args[0] - 1 > b->size) || ((args[1] - 1) > b->size) || (args[2] > b->size) ||
 		(args[0] - 1 < 0) || ((args[1] - 1) < 0) || (args[2] < 0)) {
