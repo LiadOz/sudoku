@@ -48,8 +48,8 @@ int get_args(char* input, char args[MAX_ARGS_SIZE][MAX_INPUT_SIZE-1]){
 void user_input(Command *cmd){
     char input[MAX_INPUT_SIZE];
     char input_copy[MAX_INPUT_SIZE];
-    fgets(input, MAX_INPUT_SIZE + 1, stdin);  
-    if(strlen(input) == OVERFLOW){
+    fgets(input, MAX_INPUT_SIZE, stdin);  
+    if(strlen(input) > OVERFLOW){
         cmd->c_status = TOO_MUCH_CHARS;
         /* flushing the rest of input */
         while(!strchr(input, '\n'))
@@ -98,7 +98,7 @@ int errornous_check(Board* b, Command* cmd){
 
 /* checks for errornous and for parameters in range */
 int check_coordinates(Board* b, Command* cmd){
-    int flag;
+    int flag = 0;
     int y, x = check_if_int(cmd->args[0], &flag) - 1;
     if(flag == NOT_INT){
         printf(PARAMETER_ERROR, "1st", "int");
@@ -110,11 +110,11 @@ int check_coordinates(Board* b, Command* cmd){
         return COMMAND_FAILED;
     }
     if(x < 0 || x >= b->size){
-        printf("Error: 1st parameter expected ranged 1 up to %d\n", b->size);
+        printf("Error: 1st parameter expected range 1 up to %d\n", b->size);
         return COMMAND_FAILED;
     }
     if(y < 0 || x >= b->size){
-        printf("Error: 2nd parameter expected ranged 1 up to %d\n", b->size);
+        printf("Error: 2nd parameter expected range 1 up to %d\n", b->size);
         return COMMAND_FAILED;
     }
     if(errornous_check(b, cmd) == COMMAND_FAILED)
@@ -183,7 +183,7 @@ int edit_command(Board** b, Command* cmd){
 
 /* Sets the mark errors flag in the board */
 int mark_errors_command(Board** b, Command* cmd){
-    int flag;
+    int flag = 0;
     int arg = check_if_int(cmd->args[0], &flag);
     if(flag == NOT_INT){
         printf(PARAMETER_ERROR, "1st", "int");
@@ -253,7 +253,7 @@ int validate_command(Board** b, Command* cmd){
 }
 
 int guess_command(Board** b, Command* cmd){
-    int flag;
+    int flag = 0;
     float val = check_if_float(cmd->args[0], &flag);
     if(flag == NOT_FLOAT){
         printf(PARAMETER_ERROR, "1st", "float");
@@ -270,7 +270,7 @@ int guess_command(Board** b, Command* cmd){
 }
 
 int generate_command(Board** b, Command* cmd){
-    int flag;
+    int flag = 0;
     int second_arg, first_arg = check_if_int(cmd->args[0], &flag);
     int max_cells = 0;
     if(flag == NOT_INT){
@@ -328,9 +328,15 @@ int redo_command(Board** b, Command* cmd){
 }
 
 int save_command(Board** b, Command* cmd){
+    int status = 0;
     if((*b)->mode == EDIT && errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
-    return get_file_status(save_board(*b, cmd->args[0]));
+    status = get_file_status(save_board(*b, cmd->args[0]));
+    if (status == COMMAND_FAILED)
+            return COMMAND_FAILED;
+
+    printf("File saved succsessfully\n");
+    return SUCCSESS;
 }
 
 int hint_command(Board** b, Command* cmd){
@@ -358,8 +364,10 @@ int num_solutions_command(Board** b, Command* cmd){
 int autofill_command(Board** b, Command* cmd){
     if(errornous_check(*b, cmd) == COMMAND_FAILED)
         return COMMAND_FAILED;
-	if (autofill(*b) == NO_FILL)
+	if (autofill(*b) == NO_FILL){
+        printf("No cells to fill\n");
         return COMMAND_FAILED;
+    }
 	return SUCCSESS;
 	
 }
@@ -442,19 +450,19 @@ void print_available_modes(User_Command* uc){
     int add_delim = 0;
     if(uc->available_in_init){
         add_delim = 1;
-        printf("init");
+        printf("init mode");
     }
-    if(add_delim)
-        printf(", ");
     if(uc->available_in_solve){
+        if(add_delim)
+            printf(", ");
         add_delim = 1;
-        printf("solve");
+        printf("solve mode");
     }
-    if(add_delim)
-        printf(", ");
     if(uc->available_in_edit){
+        if(add_delim)
+            printf(", ");
         add_delim = 1;
-        printf("edit");
+        printf("edit mode");
     }
     printf(".\n");
 }
