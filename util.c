@@ -88,6 +88,8 @@ float check_if_float(char* s, int* flag){
     return 0;
 }
 
+/* Check if the parameters are ints 
+* if those are ints' it returns an array of them */
 int* set_params_int(Command* cmd, int* flags) {
 	int i;
 	int* args = (int*)malloc(cmd->arg_length * sizeof(int));
@@ -112,6 +114,7 @@ int* set_params_int(Command* cmd, int* flags) {
 	return args;
 }
 
+/* Checks for row errorness */
 void errorness_row(Board* b, int x, int y, int val, int* error) {
 	int i;
 	for (i = 0; i < b->size; i++) {
@@ -125,7 +128,7 @@ void errorness_row(Board* b, int x, int y, int val, int* error) {
 		}
 	}
 }
-
+/* Checks for column errorness */
 void errorness_column(Board* b, int x, int y, int val, int* error) {
 	int i;
 	for (i = 0; i < b->size; i++) {
@@ -140,6 +143,7 @@ void errorness_column(Board* b, int x, int y, int val, int* error) {
 	}
 }
 
+/* Checks for block errorness */
 void errorness_block(Board* b, int x, int y, int val, int* error) {
 	int i, j;
 
@@ -157,8 +161,7 @@ void errorness_block(Board* b, int x, int y, int val, int* error) {
 	}
 }
 
-/*call this after set cell's value (board->state)*/
-
+/* Returns 1 if cell is errorness, 0 otherwise */
 int check_cell_errorness(Board* b, int x, int y, int val) {
 	int error = 0;
 	errorness_row(b, x, y, val, &error);
@@ -167,6 +170,7 @@ int check_cell_errorness(Board* b, int x, int y, int val) {
 	return error;
 }
 
+/* Updates errornesses in baord */
 void board_errorness(Board* b) {
 	int i, j;
 	b->wrong_cells = 0;
@@ -182,6 +186,7 @@ void board_errorness(Board* b) {
 	}
 }
 
+/*Returns 1 if 1 of the parameters is out of range, 0 otherwise*/
 int out_of_range(Board* b, int* args) {
 	if ((args[0] - 1 > b->size) || ((args[1] - 1) > b->size) || (args[2] > b->size) ||
 		(args[0] - 1 < 0) || ((args[1] - 1) < 0) || (args[2] < 0)) {
@@ -190,6 +195,7 @@ int out_of_range(Board* b, int* args) {
 	return 0;
 }
 
+/* Stack implementation */
 
 Node* new_node(int x, int y, int value, int counter) {
 	Node* node = (Node*)malloc(sizeof(Node));
