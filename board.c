@@ -229,11 +229,6 @@ int get_options_array(Board* b, int i, int j, int** arr){
             count++;
         }
     }
-    options = realloc(options, count * sizeof(int));
-	if (options == NULL) {
-		printf("Error: realloc has failed\n");
-		exit(0);
-	}
     *arr = options;
     return count;
 
